@@ -1,0 +1,46 @@
+{% extends "admin/base_site.html" %}
+{% load compress %}
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+       <a href="/admin/">Home</a> &rsaquo;
+       Send user a message
+       </div>
+{% endblock breadcrumbs %}
+
+
+
+
+{% block content_title %}<a class="brand">Send message</a>{% endblock %}
+
+{% load markup humanize %}
+
+{% block content %}
+
+<div class="unit size3of7">
+        <form action="." method="POST">
+        <table  class="table">
+            {{form.as_table}}
+
+
+        {% csrf_token %}
+        <tr>
+          <td></td>
+          <td><input type="submit" class="btn btn-danger" value="Send message immediately"></td>
+        </tr>
+      </table>
+        </form>
+
+</div>
+
+<style type="text/css">
+        ul { list-style: circle ;}
+</style>
+
+
+<div class="unit size2of7 lastUnit">
+
+
+</div>
+
+{% endblock %}
+

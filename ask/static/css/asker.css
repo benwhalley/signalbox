@@ -1,0 +1,82 @@
+
+
+label {font-weight:bold;}
+fieldset {padding:1.4em; margin:0 0 1.5em 0; border:1px solid #ccc;}
+legend {font-weight:bold;font-size:1.2em;}
+input[type=text], input[type=password], input.text, input.title, textarea, select {
+    background-color:#fff;border:1px solid #A2A2A2;}
+input[type=text]:focus, input[type=password]:focus, input.text:focus, input.title:focus, textarea:focus, select:focus {border-color:#99336E;}
+textarea {width:95%;height:10em;padding:5px; }
+input, textarea {
+    font-family:"Frugal Sans";
+    font-size:1.3em;
+}
+
+
+
+
+.notice {background:#FFF6BF;color:#514721;border-color:#FFD324;}
+.success {background:#E6EFC2;color:#264409;border-color:#C6D880;}
+.error a {color:#8a1f11;}
+.notice a {color:#514721;}
+.success a {color:#264409;}
+
+
+/* FOR QUESTIONNAIRES/FORMS */
+
+
+.not_applicable { display:block !important; float:right !important; color:#888;}
+
+
+
+label {  font-style:normal; font-weight:normal; margin-left:0px;}
+
+.page_title { color:#808080; border-bottom:1px solid #D3D3D3; font-variant:small-caps;}
+.progress { margin-top:1em; font-size:.8em;}
+
+
+.form_field_field li { display:inline !important ; }
+.vertical li  { display:block !important;}
+.horizontal li {display:inline !important;}
+
+.errorlist  { font-weight:bold; color:red; border:0;}
+.form_error  { color:red; border:0;border-top:3px solid red;}
+.field_error  { border-top:2px solid red !important;}
+
+.submit_line {margin-bottom:5em; }
+
+.form_field_wrapper { margin-top:1em; margin-bottom:3em;
+    /*border-bottom:1px #A8A8A8 dotted; */
+    padding-bottom:4em;}
+.form_field_wrapper li { list-style:disc !important;}
+.form_field_wrapper ul, ol { margin-bottom:1em !important;}
+
+.form_field_question { font-size:1em; padding-right:1em;}
+.form_field_field { }
+
+.helptext { color:#808080; font-size:.8em; font-family:sans-serif; float:right;
+            border-right:1px dotted black; padding-right:1em; margin-right:1em;
+            width:25em; text-align:right; padding-bottom:.5em;}
+
+
+
+.checksandradios label
+{
+    display: block;
+    width:100%;
+    float: left;
+    padding-right: 10px;
+    padding-left: 1.6em;
+    text-indent: -1.6em;
+    margin-bottom:.5em;
+}
+
+.checksandradios input
+{
+    vertical-align: middle;
+}
+
+.checksandradios label span
+{
+    vertical-align: middle;
+}

@@ -1,0 +1,147 @@
+{% load compress %}
+{% load signalbox_tags %}
+{% load cms_tags sekizai_tags %}
+{% load markup %}
+{% load cache menu_tags %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/png" href="http://signalbox.s3.amazonaws.com/static/favicon.ico" />
+    <title>{% block title %}Signalbox: Online Research{% endblock title %}</title>
+    <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.7.1.min.js"></script>
+    {% compress css %}
+        <link href="{{STATIC_URL}}css/bootstrap.css" rel="stylesheet" media="screen,print">
+        <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-1.8.21.custom.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
+        <link rel="stylesheet" href="{{STATIC_URL}}css/signalbox.css" type="text/css" media="screen,print">
+        <link rel="stylesheet" href="{{STATIC_URL}}css/custom.css" type="text/css" media="screen,print">
+    {% endcompress %}
+<!--     <link rel="stylesheet" type="text/css"
+       href="http://releases.flowplayer.org/5.2.0/skin/functional.css" />
+ -->
+
+    {% render_block "css"  %}
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+    <body>
+
+          {% block body %}
+              {% cms_toolbar %}
+
+            {% block nav %}
+            <div class="container">
+
+            <div class="nav navbar">
+              <div class="navbar-inner">
+
+                {% block brand %}
+                <div class="brand">
+                    <a href="/">Signalbox</a>
+                </div>
+                {% endblock %}
+
+                    {% if not hidemenu %}
+                      <ul class="nav">
+                        {% show_menu 0 2  2 2  "menu.html" %}
+                      </ul>
+                    {% endif %}
+                  </div>
+                  {% block signin %}
+                        {% include 'signin_or_show_user.html' %}
+                  {% endblock %}
+                </div>
+            </div>
+            </div>
+            {% endblock %}
+
+            <div class="container">
+
+              <div class="row">
+                <div class="span6">
+                    {% block submenu %}
+                      <ul class="nav nav-pills">
+                           {% show_menu 1 10 0 1 "sub_menu.html" %}
+                      </ul>
+                    {% endblock submenu %}
+                </div>
+              </div>
+
+              {% block progress %}
+              {% endblock %}
+                {% load signalbox_tags.messages %}
+                {% render_messages messages %}
+
+                {% for i in sorted_messages.items %}
+                <div class="alert alert-{{i.0}}">
+                  {% for j in i.1 %}
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <p>{{j}}</p>
+                {% endfor %}
+                </div>
+                {% endfor %}
+
+
+
+
+                {% block base_content %}
+                {% placeholder main %}
+                {% endblock %}
+
+
+                <hr>
+                {% block footer %}
+                  {% placeholder footer %}
+                {% endblock %}
+
+
+
+
+            </div>
+
+
+
+
+
+      {% endblock %}
+
+
+      {% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
+
+    </body>
+  </html>
+
+  {% addtoblock "js" %}
+  <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui-1.8.21.custom.min.js"></script>
+  <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui-timepicker-addon.js"></script>
+  <script type="text/javascript" src="{{STATIC_URL}}js/mousetrap.min.js"></script>
+  <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{{STATIC_URL}}js/flowplayer.min.js"></script>
+
+  <script language="JavaScript" src="{{STATIC_URL}}js/swfobject.js"></script>
+  <script language="JavaScript" src="{{ STATIC_URL }}js/tab_anchor_setter.js"></script>
+
+  {% endaddtoblock %}
+  <script type="text/javascript" src="{{STATIC_URL}}audiojs/audio.min.js"></script>
+
+{% compress js %}
+<script type="text/javascript">
+(function() {
+  $(document).ready(function() {
+    $(".datepicker").datepicker({
+      dateFormat: "dd/mm/yy"
+    });
+    $(".datetimepicker").datetimepicker({
+      dateFormat: 'dd/mm/yy'
+    });
+    return $(".timepicker").timepicker({});
+  });
+
+}).call(this);
+</script>
+{% endcompress %}

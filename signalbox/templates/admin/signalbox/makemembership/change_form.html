@@ -1,0 +1,32 @@
+{% extends "admin/change_form.html" %}
+
+{% block coltype %}colMS{% endblock %}}
+
+
+{% block sidebar %}
+<div id="content-related">
+    {% if original %}
+        <table>
+            <tr>
+                <th>
+                    User details
+                    <a href= "{% url 'admin:auth_user_change' original.user.id %}">edit</a>
+                </th>
+            </tr>
+            <tr><td>Name: {{original.user.first_name}} {{original.user.last_name}}</td></tr>
+            <tr><td>Email: {{original.user.email}}</td></tr>
+            <tr><td>Tel: {{original.user.get_profile.phone}}
+
+            <tr><td><br/><br/></td></tr>
+
+            <tr>
+                <th>
+                    <a href="{% url 'admin:signalbox_membership_change' original.id %}">Manage this study membership
+                </th>
+            </tr>
+        </table>
+    {% endif %}
+    </div>
+
+{% endblock %}
+{% block messages %}{% if messages %}<ul class="messagelist">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul> {% endif %} {% endblock %}

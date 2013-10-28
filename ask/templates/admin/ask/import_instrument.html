@@ -1,0 +1,13 @@
+{% extends "admin/base_site.html" %}
+{%load markup %}
+{% block content %}
+
+<form action="." method="POST" accept-charset="utf-8"  enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" name="" value="Submit">
+
+</form>
+
+
+{% endblock %}

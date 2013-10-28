@@ -1,0 +1,7 @@
+This email is to confirm the email address you entered when registering with
+{{site}}. 
+
+
+You have {{expiration_days}} days left to click this link.
+
+http://{{site}}/accounts/activate/{{activation_key}}/{{success_url}}

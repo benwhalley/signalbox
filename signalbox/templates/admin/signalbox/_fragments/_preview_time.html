@@ -1,0 +1,7 @@
+{% load humanize%}
+{% for i in object_list %}
+    <code>{%if i.0 %}
+        {{i.0}} ({{i.0|naturaltime}})
+        {% endif %} {%if i.1 %}{{i.1}}{% endif %}
+    </code><br/>
+{% endfor%}

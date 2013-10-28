@@ -1,0 +1,75 @@
+{% extends "django_admin_bootstrapped:admin/index.html" %}
+
+{% load signalbox_tags.observations %}
+
+{% block content_title %}{{block.super}}
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+<div class="span10">
+
+{% block leadcontent %}
+    {% if user.get_profile.obs_by_study %}
+        <h3>{{user|capfirst}}, you have tasks to complete:</h3>
+        {% include 'manage/observations_todo_fragment.html' %}
+        <hr>
+    {%endif%}
+</div>
+
+
+</div>
+
+<div class="row">
+    <h3 class="span12">Status of your active studies:</h3>
+
+    <table class="table span12">
+
+        <tr>
+            <td></td>
+            <th colspan=2>Observations missed</td>
+            <th colspan=2>Participants</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><em>Study</em></td>
+            <td><em>30 days</em></td>
+            <td><em>This week</em></td>
+            <td><em>Recruited</em></td>
+            <td><em>Un-randomised</em></td>
+            <td></td>
+        </tr>
+
+
+        {% for study in user.get_profile.dashboard_studies %}
+        <tr>
+            <td><a href="{% url 'admin:signalbox_study_change' study.id %}">{{study}}</a>
+            </td>
+            <td>
+                <span class="badge badge-warning">{%  get_observations study.id "lastmonth" "incomplete" %}</span> of {% get_observations study.id "lastmonth" "all" %}
+            </td>
+            <td>
+                <span class="badge badge-warning">{% get_observations study.id "current" "incomplete" %}</span> of {% get_observations study.id "current" "all" %}
+            </td>
+            <td>
+                <span class="badge badge-{% if study.membership_set.count %}success{% else %}important{% endif %}">{{study.membership_set.count}}</span>
+            </td>
+            <td>
+                <span class="badge badge-{% if study.unrandomised.count %}important{% endif %}">{{study.unrandomised.count}}</span>
+            </td>
+            <td>
+                <a class="btn btn-mini pull-right" href="{% url 'admin:signalbox_study_change' study.id %}">Edit</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}
+
+<h3> Applications </h3>
+{{block.super}}
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

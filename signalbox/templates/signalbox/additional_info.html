@@ -1,0 +1,27 @@
+{% extends "two.html" %}
+
+{% block title %}Adding details for: {{user}}{% endblock %}
+{% load markup %}
+
+
+
+{% block left %}
+
+<h2>Additional information about you:</h2>
+
+<p>This information is needed to take part in the study. We take your privacy very seriously, and will keep this information confidential.</p>
+
+<p>
+
+    <form method=POST>
+
+{{form.as_table}}
+{% csrf_token %}
+
+<p></p>
+<p><input type=submit class="btn btn-primary" value="Save"></p>
+</form>
+</form>
+{% endblock %}
+
+

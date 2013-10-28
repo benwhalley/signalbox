@@ -1,0 +1,31 @@
+{% extends "admin/base_site.html" %}
+
+{% block content_title %}<a class="brand">
+Confirm details of double-entered data
+</a>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="span8">
+
+<h3>These data were saved: <strong>{{object.last_submit}}</strong></h3>
+
+
+<h4> If they were originally recorded earlier, please indicate this below:</h4>
+
+
+<form action="." method="POST" accept-charset="utf-8">
+    {% csrf_token %}
+
+
+    {{form.as_p}}
+
+
+    <input class="btn-primary" type="submit" name="Save" value="Save Original Date">
+    <a class="btn" href="{% url 'admin:signalbox_observation_change' object.observation.id %}">Just return to the Observation</a>
+</form>
+
+</div>
+{% endblock %}

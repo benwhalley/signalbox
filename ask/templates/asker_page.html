@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% load compress %}
+{% load floppyforms %}
+{% load markup %}
+
+
+{% block title %}
+    {{reply.observation.dyad.study.name}}
+    {% if reply.is_preview %}
+        PREVIEW of {{reply.asker}}
+    {% endif %}
+{% endblock %}
+
+
+{% block progress %}
+
+
+<div class="row">
+{% if page.asker.step_navigation %}
+    <div class="span12">
+
+        <hr>
+        <a class=" pull-right {% if not redbutton %}disabled {%else%}btn-danger{% endif %} btn" {% if redbutton  %}onclick="javascript:$('#questionnaire_form').attr('action', '?finish=1'); $('#questionnaire_form').submit();"{% endif%} href="#">Save and Finish
+        </a>
+
+
+    <ul class="nav nav-pills">
+        {% for step, valid, complete in reply.step_availability %}
+                <li class="{% if page == step %}active
+                            {%else%}
+                                {% if not valid %}
+                                    disabled
+                                {%endif%}
+                            {% endif %}
+                ">
+                <a onclick="javascript:$('#questionnaire_form').attr('action', '?page={{step.index}}'); $('#questionnaire_form').submit();" href="#">{{step.name}}
+                    {% if complete %}<i class="icon-ok"></i>{% endif %}
+                </a>
+
+
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if page.asker.show_progress %}
+        <p> Page {{ page.progress_pages.0 }} of {{ page.progress_pages.1 }}
+        </p>
+    {% endif %}
+
+
+    <hr>
+    </div>
+{% endif %}
+
+
+</div>
+
+
+
+
+
+{% endblock %}
+
+
+
+
+
+{% block cms_toolbar %}
+{% endblock %}
+
+
+{% block breadcrumb %}
+{% endblock breadcrumb %}
+
+
+{% block base_content %}
+
+
+    <form class="form" id="questionnaire_form" action="." method="POST" enctype="multipart/form-data">
+
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="form_field_wrapper line form_error">
+            <p>There were problems with this form:</p>
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    {% if form.errors %}
+        <div class="alert alert-error">
+            <p>There were problems with a number of the questions below:</p>
+        </div>
+    {% endif %}
+    {% form form using "floppyforms/questionnaire.html" %}
+    <hr>
+    <p>
+
+            {% if page.questions_which_require_answers %}
+            <input class="btn btn" type=submit value="Save" onclick="javascript:$('#questionnaire_form').attr('action', '?page={{page.index}}');">
+            {% endif %}
+
+
+            {% if not page.is_last %}
+            <input class="btn btn-primary" type=submit value="{{page.submit_button_text}}" onclick="javascript:$('#questionnaire_form').attr('action', '?page={{page.next_page.index}}');">
+            {% endif %}
+
+            {% if redbutton %}
+                <input class="btn btn-danger" onclick="javascript:$('#questionnaire_form').attr('action', '?finish=1');" type=submit value="Save and finish">
+            {% endif %}
+    </p>
+
+
+
+
+</form>
+
+
+
+<div class="hide" id="dialog-confirm" title="Finished this page?">
+<p class="help_text">Click save, or press ctrl+enter to save your answers.</p>
+</div>
+
+<script class="text/javascript">
+
+
+</script>
+
+
+{% endblock %}
+
+
+
+
+{% block extrajs %}
+<script type="text/javascript" page="asker">
+$(document).ready(function(){
+    $('input[value*="NA"]').parent().addClass('not_applicable');
+
+    $('input').addClass('mousetrap');
+    $( "#dialog-confirm" ).hide( );
+
+    Mousetrap.bind(['ctrl+return', 'command+return', 'ctrl+s', 'command+s'], function(e) {
+        $('#questionnaire_form').submit();
+    });
+    Mousetrap.bind('return', function(e) {
+        $( "#dialog-confirm" ).dialog({
+                    resizable: false,
+                    modal: true,
+                    buttons: {
+                        "Save": function() {
+                            $('#questionnaire_form').submit()
+                        },
+                        "Continue editing": function() {
+                            $( this ).dialog( "close" );
+                        }
+                    }
+                });
+        e.preventDefault();
+    });
+});
+
+
+
+
+
+
+</script>
+
+
+
+
+{% endblock %}
+
+

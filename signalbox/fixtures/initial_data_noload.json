@@ -1,0 +1,306 @@
+[
+      {
+          "pk": 1,
+          "model": "auth.group",
+          "fields": {
+              "name": "Researchers",
+              "permissions": [
+
+              ]
+          }
+      },
+      {
+          "pk": 2 ,
+          "model": "auth.group",
+          "fields": {
+              "name": "Clinicians",
+              "permissions": [
+
+              ]
+          }
+      },
+
+      {
+          "pk": 3,
+          "model": "auth.group",
+          "fields": {
+              "name": "Research Assistants",
+              "permissions": [
+
+              ]
+          }
+      },
+      {
+          "pk": 4,
+          "model": "auth.group",
+          "fields": {
+              "name": "Assessors",
+              "permissions": [
+
+              ]
+          }
+      }
+,
+  {
+    "pk": 2,
+    "model": "signalbox.scripttype",
+    "fields": {
+      "observation_subclass_name": "Email",
+      "sends_message_to_user": true,
+      "name": "Email message",
+      "short_name": "Email",
+      "require_study_ivr_number": false
+    }
+  },
+  {
+    "pk": 3,
+    "model": "signalbox.scripttype",
+    "fields": {
+      "observation_subclass_name": "EmailSurvey",
+      "sends_message_to_user": true,
+      "name": "Send a survey link by email",
+      "short_name": "Email Survey",
+      "require_study_ivr_number": false
+    }
+  },
+  {
+    "pk": 4,
+    "model": "signalbox.scripttype",
+    "fields": {
+      "observation_subclass_name": "Survey",
+      "sends_message_to_user": true,
+      "name": "Survey with no email reminder",
+      "short_name": "Survey",
+      "require_study_ivr_number": false
+    }
+  },
+  {
+    "pk": 8,
+    "model": "signalbox.scripttype",
+    "fields": {
+      "observation_subclass_name": "TwilioSMS",
+      "sends_message_to_user": true,
+      "name": "TwilioSMS",
+      "short_name": "SMS (Twilio)",
+      "require_study_ivr_number": true
+    }
+  },
+  {
+    "pk": 9,
+    "model": "signalbox.scripttype",
+    "fields": {
+      "observation_subclass_name": "TwilioCall",
+      "sends_message_to_user": true,
+      "name": "TwilioCall",
+      "short_name": "TwilioCall",
+      "require_study_ivr_number": true
+    }
+  },
+  {
+    "pk": 1,
+    "model": "signalbox.reminder",
+    "fields": {
+      "kind": "email",
+      "subject": "TESTREMINDERSUBJECT",
+      "message": "TESTREMINDERMESSAGE\r\n{{url}}",
+      "name": "TESTREMINDER",
+      "from_address": "benwhalley@gmail.com"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "signalbox.scriptreminder",
+    "fields": {
+      "reminder": 1,
+      "hours_delay": 48,
+      "script": 17
+    }
+  },
+  {
+    "pk": 15,
+    "model": "signalbox.script",
+    "fields": {
+      "repeat_bymonths": "",
+      "jitter": null,
+      "reference": "generic-add-document",
+      "delay_by_hours": 0,
+      "repeat_interval": 10,
+      "script_body": "",
+      "delay_in_whole_days_only": false,
+      "label": "{{script.name}}",
+      "script_subject": "",
+      "allow_display_of_results": true,
+      "success_message": "Questionnaire complete.",
+      "script_type": 4,
+      "repeat": "DAILY",
+      "delay_by_weeks": 0,
+      "completion_window": null,
+      "repeat_byhours": "",
+      "repeat_from": null,
+      "delay_by_days": 0,
+      "delay_by_minutes": 0,
+      "max_number_observations": 1,
+      "name": "Add a document",
+      "asker": [
+        "generic-add-document"
+      ],
+      "breaks_blind": true,
+      "is_clinical_data": false,
+      "show_in_tasklist": false,
+      "repeat_byminutes": "",
+      "repeat_bymonthdays": "",
+      "redirect_url": "/accounts/profile/",
+      "repeat_bydays": "",
+      "user_instructions": ""
+    }
+  },
+  {
+    "pk": 16,
+    "model": "signalbox.script",
+    "fields": {
+      "jitter": null,
+      "reference": "test-email",
+      "script_body": "TEST EMAIL BODY",
+      "delay_in_whole_days_only": false,
+      "label": "{{n}} {{script.name}}",
+      "script_subject": "TEST EMAIL BODY",
+      "allow_display_of_results": false,
+      "success_message": "Questionnaire complete.",
+      "script_type": 2,
+      "completion_window": null,
+      "natural_date_syntax": "\nnow\nin 10 minutes\nin 20 minutes",
+      "name": "TEST EMAIL",
+      "asker": null,
+      "breaks_blind": false,
+      "is_clinical_data": false,
+      "show_in_tasklist": true,
+      "repeat_byminutes": "",
+      "repeat_bymonthdays": "",
+      "redirect_url": "/accounts/profile/",
+      "repeat_bydays": "",
+      "user_instructions": ""
+    }
+  },
+  {
+    "pk": 17,
+    "model": "signalbox.script",
+    "fields": {
+      "repeat_bymonths": "",
+      "jitter": null,
+      "reference": "test-email-survey",
+      "delay_by_hours": 0,
+      "repeat_interval": 10,
+      "script_body": "{{url}}",
+      "delay_in_whole_days_only": false,
+      "label": "{{script.name}}",
+      "script_subject": "TEST EMAIL SURVEY",
+      "allow_display_of_results": true,
+      "success_message": "Questionnaire complete.",
+      "script_type": 3,
+      "repeat": "MINUTELY",
+      "delay_by_weeks": 0,
+      "completion_window": null,
+      "repeat_byhours": "",
+      "repeat_from": null,
+      "delay_by_days": 0,
+      "delay_by_minutes": -1,
+      "max_number_observations": 3,
+      "name": "TEST EMAIL SURVEY",
+      "asker": [
+        "demonstration_questionnaire"
+      ],
+      "breaks_blind": true,
+      "is_clinical_data": true,
+      "show_in_tasklist": true,
+      "repeat_byminutes": "",
+      "repeat_bymonthdays": "",
+      "redirect_url": "/accounts/profile/",
+      "repeat_bydays": "",
+      "user_instructions": ""
+    }
+  },
+  {
+    "pk": 1,
+    "model": "signalbox.contactreason",
+    "fields": {
+      "followup_expected": true,
+      "name": "Missing data"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "signalbox.contactreason",
+    "fields": {
+      "followup_expected": true,
+      "name": "Other"
+    }
+  },
+
+  {
+     "pk": 1,
+     "model": "signalbox.study",
+     "fields": {
+       "consent_text": "",
+       "paused": false,
+       "visible": true,
+       "allocation_method": "balanced_groups_adaptive_randomisation",
+       "createifs": [],
+       "outbound_sms_number": "",
+       "visible_profile_fields": "",
+       "scoresheets": [],
+       "max_redial_attempts": 3,
+       "ad_hoc_scripts": [],
+       "slug": "test-study",
+       "required_profile_fields": "",
+       "blurb": "",
+       "inbound_number": "",
+       "working_day_starts": 8,
+       "redial_delay": 30,
+       "auto_add_observations": true,
+       "administrators": [
+         1
+       ],
+       "randomisation_probability": "0.5",
+       "auto_randomise": false,
+       "study_email": "test@example.com",
+       "name": "TEST STUDY",
+       "welcome_text": "Welcome to the study",
+       "show_study_condition_to_user": false,
+       "study_image": "",
+       "working_day_ends": 22,
+       "outbound_telephone_number": "",
+       "briefing": ""
+     }
+   },
+
+   {
+     "pk": 2,
+     "model": "signalbox.studycondition",
+     "fields": {
+       "study": 1,
+       "tag": "control",
+       "display_name": "CONTROL",
+       "weight": 1,
+       "scripts": [
+         16,
+         17
+       ]
+     }
+   },
+   {
+     "pk": 1,
+     "model": "signalbox.studycondition",
+     "fields": {
+       "study": 1,
+       "tag": "main",
+       "display_name": "TREATMENT",
+       "weight": 1,
+       "scripts": [
+         16,
+         17
+       ]
+     }
+   }
+
+
+]

@@ -1,0 +1,10 @@
+
+<script>
+    $(document).ready(function(){
+        audiojs.events.ready(function() {
+          var as = audiojs.createAll();
+        });
+    });
+</script>
+
+<audio src="{{object.asset.url}}" preload="auto" />

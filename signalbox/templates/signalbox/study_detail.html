@@ -1,0 +1,27 @@
+{% extends "two.html" %}
+{% load markup %}
+
+{% block title %}{{object.name}}{% endblock %}
+
+{% block left %}
+
+        <h1>{{object.name}}</h1>
+
+        {{object.briefing|markdown}}
+
+
+        <h3>Consent information</h3>
+        {{object.consent_text|markdown}}
+
+
+    	<p>{{ content|markdown }}</p>
+
+        <a href="{% url 'join_study' object.id %}" class="btn btn-large btn-primary">I consent to take part in this study</a>
+
+{% endblock %}
+
+{% block right %}
+    {% if object.study_image %}
+        <img src="{{object.study_image.url}}">
+    {% endif %}
+{% endblock %}

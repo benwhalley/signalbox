@@ -1,0 +1,27 @@
+digraph  {
+node [shape=box, fontname="Helvetica Neue Light", fontsize=10];
+edge [fontsize=8, fontname="Helvetica Neue Light", penwidth=.5, arrowsize=.6];
+
+Study -> StudyCondition [label="has a set of"]
+StudyCondition -> Script [label="has a set of"]
+Script -> Observation [label="creates a set of"]
+Reply -> Observation [label="is made in response to"]
+Observation -> Email [label="can send an"]
+Observation -> SMS [label="can send an"]
+Observation -> Call [label="can make a"]
+
+User -> Membership [label="participates in a study via a"]
+Membership -> Study
+
+Membership -> Observation [label="has a set of"]
+
+Call -> Reply [label="will prompt a"]
+Email -> Reply [label="will prompt a"]
+SMS -> Reply [label="will prompt a"]
+
+Call [shape=none]
+SMS [shape=none]
+Email [shape=none]
+
+Observation -> Reminder [label="can have a"]
+}

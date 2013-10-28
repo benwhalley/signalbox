@@ -1,0 +1,23 @@
+<div class="row">
+<div class="span9">
+<table class="radiotable">
+    <tr>
+    {% for group_name, choices in optgroups %}{% for choice in choices %}
+        <td width="{% widthratio 1 choices|length 100 %}%">
+            <input type="radio" id="{{ attrs.id }}_{{ forloop.counter }}" value="{{ choice.0 }}" name="{{ name }}"{% if required %} required{% endif %}{% if choice.0 in value %} checked{% endif %}>
+        </td>
+    {% endfor %}{% endfor %}
+</tr>
+<tr>
+    {% for group_name, choices in optgroups %}{% for choice in choices %}
+        <td>
+            <label class="radio inline" for="{{ attrs.id }}_{{ forloop.counter }}">
+            {{ choice.1 }}
+        </label>
+        </td>
+    {% endfor %}{% endfor %}
+</tr>
+
+</table>
+</div>
+</div>

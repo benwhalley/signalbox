@@ -1,0 +1,34 @@
+{% extends "two.html" %}
+{% block signin %}
+
+{% endblock %}
+
+
+{% block left %}
+
+{% if form.errors %}
+
+<ul class="errorlist">
+    <li>Your username and password didn't match. Please try again.</li>
+</ul>
+{% else %}
+    <p>If you have an account please enter your details below.</p>
+{% endif %}
+
+<div id="loginform">
+    <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+        {% csrf_token %}
+        <p>{{ form.username.label_tag }}
+        {{ form.username }}</p>
+
+        <p>{{ form.password.label_tag }}
+        {{ form.password }}</p>
+
+        <input  class="btn btn-primary" type="submit" class="submit" value="Login" />
+        <input type="hidden" name="next" value="{{next}}" />
+    </form>
+           </p>
+   <p class="login btn"><a href="{% url 'auth_password_reset' %}">Request password reset</a>                      </p>
+ </div>
+
+{% endblock %}

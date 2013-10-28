@@ -1,0 +1,22 @@
+{% extends "admin/base_site.html" %}
+{% block title %}SignalBox Dashboard{% endblock %}
+
+
+{% block content %}
+<div id="content-main">
+   <h1>Participants:</h1>
+
+
+<table>
+
+<tr><th>username</th><th>userid</th><th>email</th><th>joined</th><th>condition</th>
+</tr>   
+{% for i in memberships %}
+<tr><td>{{i.user}}</td><td> {{i.user.id}} </td><td> {{i.user.email}} </td><td> {{i.date_joined}} </td><td> {{i.condition.tag}}</td> 
+</tr>
+{% endfor %}      
+</div>            
+{% endblock %}
+
+      
+      

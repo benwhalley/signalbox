@@ -1,0 +1,95 @@
+<!--
+detect features and write ...
+ -->
+<div id="oldbrowser" class="alert hide">
+  <p>This questions requires that your computer have a webcam and that you use a recent version of Chrome or Firefox to browse the web.
+</p>
+<p>
+  <a class="btn btn-primary" href="https://www.google.com/chrome/">Download Chrome now</a>
+</p>
+</div>
+
+
+<div id="videorow" class="row">
+
+<div class="span6">
+  <p><video id="video"></video></p>
+  <p><button class="btn btn-primary" id="startbutton">Take photo</button></p>
+</div>
+
+<div class="span6">
+
+<p><canvas id="canvas"></canvas></p>
+
+<input type="{{type}}" {% if value %} value="{{ value }}"{% endif %}{% if required %} required{% endif %}
+{% include "floppyforms/attrs.html" %}>
+</div>
+
+</div>
+
+<script>
+(function() {
+
+  var streaming = false;
+  var video        = document.querySelector('#video');
+  var canvas       = document.querySelector('#canvas');
+  var photo        = document.querySelector('#photo');
+  var startbutton  = document.querySelector('#startbutton');
+  var width = {%if attrs.width %}{{attrs.width}}{%else%}240{%endif%};
+  var height = 0;
+
+  navigator.getMedia = ( navigator.getUserMedia ||
+                         navigator.webkitGetUserMedia ||
+                         navigator.mozGetUserMedia ||
+                         navigator.msGetUserMedia);
+
+  if (navigator.getMedia == undefined) {
+    $('#videorow').parent().parent().parent().hide()
+    $('#oldbrowser').insertAfter($('#videorow').parent().parent().parent());
+    $('#oldbrowser').show();
+  }
+  navigator.getMedia(
+    {
+      video: true,
+      audio: false
+    },
+    function(stream) {
+      if (navigator.mozGetUserMedia) {
+        video.mozSrcObject = stream;
+      } else {
+        var vendorURL = window.URL || window.webkitURL;
+        video.src = vendorURL.createObjectURL(stream);
+      }
+      video.play();
+    },
+    function(err) {
+      console.log("An error occured! " + err);
+    }
+  );
+
+  video.addEventListener('canplay', function(ev){
+    if (!streaming) {
+      height = video.videoHeight / (video.videoWidth/width);
+      video.setAttribute('width', width);
+      video.setAttribute('height', height);
+      canvas.setAttribute('width', width);
+      canvas.setAttribute('height', height);
+      streaming = true;
+    }
+  }, false);
+
+  function takepicture() {
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(video, 0, 0, width, height);
+    inp = document.querySelector('#id_{{name}}');
+    inp.value = canvas.toDataURL('image/png');
+  }
+
+  startbutton.addEventListener('click', function(ev){
+      takepicture();
+    ev.preventDefault();
+  }, false);
+
+})();
+</script>

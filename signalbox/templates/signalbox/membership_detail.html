@@ -1,0 +1,22 @@
+{% extends "two.html" %}
+{% block title %}Details of your study membership{% endblock %}
+{% load markup %}
+
+{% block left %}
+    <h1>{{object.study.name}}</h1>
+
+
+{% endblock %}
+
+
+
+{% block right %}
+
+<h5>Study information</h5>
+{{object.study.blurb|markdown}}
+
+<h5>Contact details</h5>
+<p>Study contact email: <a href="mailto:{{object.study.study_email}}">{{object.study.study_email}}</a>
+</p>
+
+{% endblock %}

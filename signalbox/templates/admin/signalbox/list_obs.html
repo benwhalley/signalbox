@@ -1,0 +1,48 @@
+{% extends "signalbox:admin/base_site.html" %}
+{% block title %}SignalBox Dashboard{% endblock %}
+{% block coltype %}colMS{% endblock %}}
+
+{% block breadcrumbs %}<div class="breadcrumbs">
+    <a href="/admin/">Home</a> >
+    Observations
+
+</div>{% endblock %}
+
+
+{% block content %}
+    <div id="content-main">
+    <h2>Observations:</h2>
+
+<table class="table">
+<tr>
+    {% for column in table.columns %}
+    <th><a href="?{{qstring}}&sort={{ column.name_toggled }}">{{ column }}</a></th>
+    {% endfor %}
+</tr>
+{% for row in table.rows %}
+    <tr>
+    {% for value in row %}
+        <td>{{ value }}</td>
+    {% endfor %}
+    </tr>
+{% endfor %}
+</table>
+
+</div>
+
+
+{% endblock %}
+
+
+{% block sidebar %}
+<div id="content-related">
+<form action="." method="GET">
+    <div class="module" id="tools-module">
+        <h2>Select Observations <input style="float:right;" type=submit><br/> </h2>
+        {{form.as_p}}{% csrf_token %}
+        <p><input type=submit></p>
+    </div>
+</form>
+</div>
+{% endblock %}
+

@@ -1,0 +1,29 @@
+<div class="dashboard-module draggable collapsible deletable">
+    {% if module.show_title %}<h2>{{ module.title }}</h2>{% endif %}
+
+{% if module.children  %}
+
+    <div id="dashboard-module-content module_{{ module.id }}" class="span6 ">
+        {% if module.show_title %}<h4>{{ module.title }}</h4>{% endif %}
+            {% spaceless %}
+            {% if module.pre_content %}
+            <p>{{ module.pre_content }}</p>
+            {% endif %}
+            {% block module_content %}
+
+            {% if user.get_profile.obs_by_study %}
+                <h3>Tasks to do:</h3>
+                {% include 'manage/observations_todo_fragment.html' %}
+
+            {%else%}
+                   <p>You're up to date with everything.</p>
+            {%endif%}
+
+            {% endblock %}
+            {% if module.post_content %}
+            <p>{{ module.post_content }}</p>
+            {% endif %}
+            {% endspaceless %}
+    </div>
+{% endif %}
+</div>

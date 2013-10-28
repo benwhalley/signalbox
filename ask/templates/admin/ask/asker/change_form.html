@@ -1,0 +1,81 @@
+{% extends "signalbox:admin/change_form.html" %}
+{% load compress %}
+
+{% block object-tools-items %}
+{% endblock %}
+
+
+{% block content %}
+
+<ul class="nav nav-tabs" id="usertabs">
+    <li class="active">
+        <a href="#tabmain" data-toggle="tab">Main</a>
+    </li>
+    <li>
+        <a href="#tabextra" data-toggle="tab">Usage information</a>
+    </li>
+
+    <div class="pull-right">
+    {% if object_id %}
+	    <a id="copy-button" href="#" data-clipboard-text="{{ABSOLUTE_ROOT}}{% url "start_anonymous_survey" object_id %}" class='btn btn-mini' >Copy anonymous URL</a>
+	   <a class='btn btn-mini' href='{{original.get_absolute_url}}'>Preview</a>
+	    <a class='btn btn-mini' href='{% url 'print_asker' object_id %}'>Print</a>
+	    <a class='btn btn-mini' href='{% url 'show_codebook' object_id %}'>Codebook</a>
+	    <a class='btn btn-mini' href='{% url 'export_asker' object_id %}'>Export JSON</a>
+	    {% if user.is_superuser %}
+	      <a class='btn btn-mini' href='{% url 'edit_markdown_survey' object_id %}'>Edit in Markdown</a>
+	    {% endif %}
+
+	{% endif %}
+
+    <script type="text/javascript" src="{{STATIC_URL}}js/ZeroClipboard.min.js"></script>
+    <script type="text/javascript">
+
+    ZeroClipboard.setDefaults({
+      trustedOrigins: [window.location.protocol + "//" + window.location.host]
+    });
+    ZeroClipboard.setDefaults( { moviePath: '{{STATIC_URL}}js/ZeroClipboard.swf' } );
+    var clip = new ZeroClipboard($("#copy-button"));
+
+    clip.on( 'complete', function ( client, args ) {
+      alert("Copied text to clipboard: " + args.text );
+    } );
+    </script>
+
+</div>
+</ul>
+
+
+<div class="tab-content">
+    <div class="tab-pane active" id="tabmain">
+        {{block.super}}
+    </div>
+
+    <div class="tab-pane" id="tabextra">
+            {% if original %}
+
+                {% if original.used_in_study_conditions %}
+                <h4>Questionnaire used in:</h4>
+
+                    <table class="table">
+
+                    {% for s in original.used_in_study_conditions %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'admin:signalbox_study_change' s.study.id %}">{{s.study.name}}</a> >
+                                <a href="{% url 'admin:signalbox_studycondition_change' s.id %}">{{s.tag}}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    {% else %}
+                        <h4>Questionnaire not used currently.</h4>
+                    {% endif %}
+                </table>
+
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+

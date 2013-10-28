@@ -1,0 +1,17 @@
+{%load compress %}
+<form  class="form navbar-search pull-left" action="{% url 'find_participant' %}" method="POST">
+    <label><i class="icon-search icon-white"></i> {{find_participant_form.participant}}</label>
+    {% csrf_token %}
+</form>
+{% compress js %}
+<script type="text/javascript">
+(function() {
+
+  $(document).ready(function() {
+    $('#id_participant_0').addClass('search-query');
+    return $('#id_participant_0').attr('placeholder', "Find a participant");
+  });
+
+}).call(this);
+</script>
+{% endcompress %}

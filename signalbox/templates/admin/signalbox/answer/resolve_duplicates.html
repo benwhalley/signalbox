@@ -1,0 +1,70 @@
+{% extends "admin/base_site.html" %}
+{% block title %}SignalBox Dashboard{% endblock %}
+
+
+
+{% block content_title %}<a class="brand">Resolve duplicate replies for observation #{{observation.id}}</a><a class="btn pull-right" href="{% url 'admin:signalbox_observation_change' observation.id %}">Edit Observation</a>{% endblock %}
+
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="/admin">Home</a> > <a href="/admin/signalbox">Signalbox</a>
+>
+<a href="{% url 'resolve_double_entry_conflicts' %}">Resolve Duplicate Observations</a>
+ > <a href="{% url 'resolve_double_entry_conflicts_for_study' observation.dyad.study.id %}">{{observation.dyad.study.name}}</a>
+</div>
+{% endblock %}
+
+
+
+{% block content %}
+
+
+    <form action="." method="POST">
+    {% with observation.variables_which_differ_between_multiple_replies as diffs %}
+        <ul class="thumbnails">
+        {% for r in observation.reply_set.all %}
+
+
+        <li class="span4">
+            <div class="thumbnail">
+                {% if not r.is_canonical_reply %}
+                    <a class="btn pull-right" href="{% url 'mark_reply_as_canonical' r.id %}">Choose Reply</a>
+                {% else %}
+                    <a class="btn btn-primary pull-right" href="{% url 'unmark_reply_as_canonical' r.id %}">Deselect Reply</a>
+                {% endif %}
+
+              <h4>Reply <a href="{% url 'admin:signalbox_reply_change' r.id %}">{{r.token|truncatechars:10}}</a> {% if r.is_canonical_reply %}{% endif %}</h4>
+
+              <p>Last submit date: {{r.last_submit}} by
+                {% if r.user%}
+                    <a href="{% url 'participant_overview' r.user.id %}">{{r.user}}</a>
+                {% else %}
+                    Unknown
+                {% endif %}
+                </p>
+
+
+
+
+
+
+
+                <table class="table">
+
+                <tr><th>Question</th><th>Answer</th></tr>
+                {% for a in r.answer_set.all %}
+                    {% if a.question in diffs %}
+                        <tr><td>{{a.question}}</td><td>{{a.display_answer}}</td></tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+
+            </div>
+          </li>
+    {% endfor %}
+    <ul>
+    </form>
+{% endwith %}
+
+{% endblock %}

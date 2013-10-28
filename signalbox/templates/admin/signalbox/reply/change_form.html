@@ -1,0 +1,13 @@
+{% extends "signalbox:admin/change_form.html" %}
+{% block sidebar %}
+<div class="span3">
+
+{% if original %}
+    <h4>Tools:</h4>
+	{% if original.observation %}
+        <p><a class="btn" href={% url 'admin:signalbox_observation_change' original.observation.id %}>Edit observation</a></p>
+        <p><a class='btn' href='{% url 'participant_overview' original.observation.dyad.user.id %}'>Participant overview</a></p>
+    {% endif %}
+{% endif %}
+</div>
+{% endblock %}

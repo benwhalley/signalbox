@@ -1,0 +1,61 @@
+{% extends "admin/change_form.html" %}
+
+{% block coltype %}colMS{% endblock %}}
+
+
+{% block object-tools-items %}
+{{block.super}}
+
+{% endblock %}
+
+{% block content_title %}<a class="brand" href="#">Change {{original}}</a>
+{% endblock %}
+
+
+{% block content %}
+{% if original %}
+<p><a href="{{original.asker.admin_edit_url}}">&lt; back to questionnaire ({{original.asker}})</a></p>
+{% endif %}
+
+<script type="text/javascript">
+function updatepreview (id) {
+    url = "/api/v1/choiceset/" + id + "?format=json";
+    $.get(url, {  },
+          function(data) {
+              $('#choicesetpreview').html(data.choice_preview);
+          }
+    )
+}
+
+// updatepreview($('#id_choiceset').val());
+</script>
+
+
+<style type="text/css">
+/*.hidden_order_field{display:None !important; color:red !important;}*/
+
+.tab-content{ padding:1em;}
+.question_text_field { font-size:2em !important; width:98%; line-height: 1.4em; }
+.variable_name_field { font-family: "Consolas", "Monaco", monospace; width: 32em !important;}
+select, option { width: 33% !important; }
+
+.inline-group h3 { background: none; background-color: #eeeeee; font-size:1.5em; }
+
+</style>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+    $('.hidden_order_field').parent().parent().hide()
+})
+
+</script>
+</ul>
+
+
+
+{{block.super}}
+
+
+{% endblock %}
+

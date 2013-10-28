@@ -1,0 +1,44 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Observations due{% endblock %}
+{% block coltype %}colMS{% endblock %}}
+{% load markup humanize %}
+
+{% block content_title %}
+<a class="brand">Observations for
+        <strong>{% if form.cleaned_data.participant %}{{form.cleaned_data.participant.username}}{% else %}Everyone{% endif%}</strong></a>
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+<div class="span8">
+    <table class="table">
+        <tr>
+            <th>ID#</th>
+            <th>Label</th>
+            <th>Username</th>
+            <th>Due</th>
+            <th></th>
+        </tr>
+        {% for observation in observation_list %}
+            <tr>
+                <td>{{observation.id}}</td>
+                <td>{{observation.label}}</td>
+                <td>{{observation.dyad.user.username}}</td>
+                <td>{{observation.due|naturalday}}</td>
+                <td><a href="{% url 'start_double_entry' observation.token %}?success_url={% url 'observations_outstanding' %}">Enter data</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="span4">
+<form class="form" action="." method="POST" accept-charset="utf-8">
+    {{form.as_p}}
+    {% csrf_token %}
+
+    <p><input type="submit" value="Find observations &rarr;"></p>
+</form>
+</div>
+</div>
+{% endblock %}

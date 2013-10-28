@@ -1,0 +1,6 @@
+signalbox.egg-info
+MANIFEST
+*.pyc
+docs/_build
+lib/
+dist/

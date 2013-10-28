@@ -1,0 +1,27 @@
+{% extends "admin/change_form.html" %}
+{% block coltype %}colMS{% endblock %}}
+
+{% block sidebar %}
+	<div id="content-related">
+	{% if original %}
+		<div class="module" id="tools-module">
+		{% if original.recording_uri %}    
+		<h2>Audio:</h2>
+		        <table>
+		            <tr>                       
+						<td> 
+							<p>Listen to the audio message: </p>
+							<p><audio controls="controls">
+							  <source src="{{original.recording_uri}}" type="audio/wav" />
+							  <source src="{{original.recording_uri}}.mp3" type="audio/mp3" />
+		  					Your browser does not support the audio tag. <a target="_new" class='' href='{{original.recording_uri}}'>Download audio file</a>
+							</audio>
+							</p>
+						</td>
+					</tr>
+		    </table>             
+		{% endif %}     
+		</div>              
+	{% endif %}
+	</div>                    
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "admin/change_form.html" %}
+{% block coltype %}colMS{% endblock %}}
+
+{% block sidebar %}
+<div id="content-related">
+    {% if original %}
+        <table>
+            <tr>
+                <th>
+                   Trial sub-study memberships
+                   <img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif">
+                   <a href="{% url 'add_participant' %}">add</a>
+
+                </th>
+            </tr>
+            {% for i in original.memberships %}
+                <tr><td>
+                    <a href="{% url 'admin:signalbox_membership_change' original.id %}">{{i}}</a>
+                    <table>
+                    {% for j in i.notes %}
+                        <tr><td>
+                            <h3>Notes
+                                <a href="{% url 'admin:rct_note_add' %}">
+                                <img src="{{STATIC_URL}}admin/img/admin/icon_addlink.gif"> add</a>
+                                </h3>
+                            <strong>{{j.text|truncatewords:8}}</strong> (written by {{j.author}} on {{j.added}})
+                            <a href="{% url 'admin:rct_note_change' j.id %}">view</a>
+                        {% if forloop.last %}
+                        {% endif %}
+                        </td></tr>
+                    {% endfor %}
+
+                    </td></tr>
+                    </table>
+                </td></tr>
+            {% endfor %}
+            </table>
+        </table>
+     {% endif %}
+
+</div>
+
+{% endblock %}

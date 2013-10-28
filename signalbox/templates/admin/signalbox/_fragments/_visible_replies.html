@@ -1,0 +1,47 @@
+{% load markup humanize %}
+<h4>Observations & Replies</h4>
+{% if replies %}
+
+        <table class="table table-hover">
+            {% regroup replies by observation as observation_list %}
+            <tr>
+                <th>Observation</th>
+                <th>Originally due</th>
+                <th></th>
+                <th>Replied on</th>
+                <th># Answers recorded</th>
+                <th></th>
+
+            </tr>
+
+            {% for o in observation_list %}
+            {% cycle 'rowhighlight' '' as rowcolors silent %}
+
+            {% for r in o.list %}
+            <tr class="{{rowcolors}}">
+                {% if forloop.first %}
+                <td style="{% if forloop.last %}padding-bottom:2em;{%endif%}">
+                    {{o.grouper.label}}</td><td>{{o.grouper.due_original|naturalday}}</td>{%else%}<td colspan=2 style="border-top:none !important;"></td>{% endif %}
+                <td class="text-warning">
+                    {% if r.observation.created_by_script.is_clinical_data %}Clinical data{% endif %}
+                </td>
+                <td>
+                    {{r.last_submit}}
+                </td>
+                <td>
+                    {% with r.answer_set.all.count as c %}
+                    {% if c %}{{c}} answers saved.{% endif %}
+                    {% endwith %}
+                </td>
+                <td>
+                    <a class="btn btn-small pull-right" href="{% url 'preview_reply' r.id %}">Show responses</a>
+                </td>
+
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </table>
+        </ul>
+        {% else %}
+                <p>No responses available to view</p>
+        {% endif %}

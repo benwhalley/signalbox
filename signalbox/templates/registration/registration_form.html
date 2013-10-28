@@ -1,0 +1,33 @@
+{% extends "two.html" %}
+
+{% block title %}{% endblock %}
+
+{% block left %}
+
+    <h1>Register</h1>
+    <p> Please choose a username and password and enter your email address below. </p>
+
+    <p>If you have taken part in a study on this site DO NOT CREATE A NEW ACCOUNT. </p>
+
+
+    <div id="loginform">
+    	<form action="{% url 'study_registration' study.id %}" method="POST" style="">
+            {% csrf_token %}
+			{{form.as_p}}
+            <input class="btn btn-primary btn-large" type="submit" class="submit" value="Submit" />
+                {% csrf_token %}
+    	</form>
+    </div>
+{% endblock %}
+
+
+{% block right %}
+    <h3>Already a user? </h3>
+
+    <p><a class="btn btn-primary" href="/accounts/login{%if study%}?next={% url 'join_study' study.id  %}{%endif%}">Login here</a>
+
+            <a class="btn" href="/accounts/password/reset/">Recover your password</a>
+            </p>
+                           <p>&nbsp;</p>
+
+{% endblock %}

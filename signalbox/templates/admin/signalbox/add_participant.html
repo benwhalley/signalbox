@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Add a new participant{% endblock %}
+
+
+{% block content_title %}
+    <a class="brand">Add a user to a study</a>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+<form method=POST action=".">
+    {% csrf_token %}
+{{form.as_p}}
+<input type=submit value="Add user to this study">
+</form>
+</div>
+{% endblock %}
+

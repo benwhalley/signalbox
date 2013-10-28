@@ -1,0 +1,67 @@
+{% extends "signalbox:admin/base_site.html" %}
+
+{% block content_title %}{{block.super}}<a class="btn pull-right" href="{% url 'participant_overview' membership.user.id %}">Participant overview</a>
+{% endblock %}
+
+{% block content %}
+
+
+
+
+<table class="table">
+
+    <thead>
+        <tr>
+            <th>Observation</th>
+            <th>Label</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Attempts</th>
+            <th>Replies/Answers</th>
+            <th width=25% colspan=2>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in object_list %}
+        <tr>
+            <td >{{i.due}}</td>
+            <td>{{i.label}}</td>
+            <td >{{i.script_type}}</td>
+            <td>{{i.status_string}}</td>
+            <td>{{i.attempt_count}}</td>
+            <td>
+                {{i.reply_set.count}} repl{{i.reply_set.count|pluralize:"y,ies"}}.
+            </td>
+
+            <td>
+                {% if i.can_add_answers %}
+                <a class="btn  btn-mini" href="{% url 'start_double_entry' i.token %}">Add data</a>
+                {% endif %}
+
+                {% if i.script_type.sends_message_to_user %}
+                <a class='btn btn-mini {% if i.attempt_count == 0 %}btn-danger{% endif %}' href='{% url 'resend_observation_signal' i.id %}'>
+                    {% if i.attempt_count == 0 %}
+                    <i class="icon-share-alt"></i> Send early
+                    {% else %}
+                    <i class="icon-refresh"></i> Resend
+                    {% endif %}
+
+                </a>
+                {% endif %}
+
+            </td>
+            <td>
+                <a  class="btn btn-mini btn-primary" href="{% url 'admin:signalbox_observation_change' i.id %}">Details</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% load bootstrap_pagination %}
+{% bootstrap_paginate page_obj range=10 show_prev_next="false" show_first_last="true" %}
+
+
+
+{% endblock %}

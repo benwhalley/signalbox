@@ -1,0 +1,22 @@
+{% load humanize %}
+<table class="table">
+  <tr>
+    <th>Syntax</th>
+    <th>Calculated date</th>
+    <th>Calculated offset</th>
+    <th>Script reference</th>
+    <th>Visible Name</th>
+    <th></th>
+  </tr>
+  {{dl}}
+{% for i in dl %}
+  <tr>
+    <td><code>{{i.0.syntax}}</code></td>
+    <td>{{i.0.datetime}}</td>
+    <td>{{i.0.datetime|naturaltime}}</td>
+    <td>{{i.1.reference}}</td>
+    <td>{{i.1.name}}</td>
+    <td><a class="btn btn-mini" href="{% url 'admin:signalbox_script_change' i.1.id %}">Edit script</a></td>
+  </tr>
+{% endfor %}
+</table>

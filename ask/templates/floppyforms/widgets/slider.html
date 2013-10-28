@@ -1,0 +1,25 @@
+<div class="row">
+<div class="span9">
+
+<div class="span7" id="{{attrs.id}}_slider"></div>
+<div class="span1" id="{{attrs.id}}_label">{{attrs.value}}</div>
+<script>
+  $(function() {
+    $("#{{attrs.id}}_slider").slider({
+        min: {{attrs.min}},
+        max: {{attrs.max}},
+        value: {{attrs.value}},
+    });
+    $( "#{{attrs.id}}_slider" ).on(
+        "slidechange", function( event, ui ) {
+            $("input[name={{attrs.name}}]").val(ui.value);
+            $("#{{attrs.id}}_label").html(ui.value) } );
+  });
+</script>
+
+
+<input type=hidden value="" name="{{attrs.name}}">
+
+
+</div>
+</div>

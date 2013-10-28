@@ -1,0 +1,31 @@
+    {% extends "admin/base_site.html" %}
+    {% block title %}SignalBox Dashboard{% endblock %}
+
+    {% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="/admin">Home</a> > <a href="/admin/signalbox">Signalbox</a> > Resolve Duplicate Observations
+    </div>
+    {% endblock %}
+
+
+
+    {% block content_title %}<a class="brand">Studies with duplicate replies</a>{%endblock%}
+
+    {% block content %}
+
+
+    <table class="table">
+        <tr>
+            <th>Study</th><th>Duplicates</th><th>Unresolved</th><th></th>
+        </tr>
+    {% for i, unresolved, total in studies %}
+    <tr>
+        <td>{{i}}</td>
+        <td>{{total}}</td>
+        <td>{{unresolved}}</td>
+        <td>
+            <a class="btn btn-primary" href="{% url 'resolve_double_entry_conflicts_for_study' i.id %}">view</a></td>
+    </tr>
+    {% endfor %}
+</table>
+    {% endblock %}

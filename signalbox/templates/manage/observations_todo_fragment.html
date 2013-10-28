@@ -1,0 +1,51 @@
+{%load humanize%}
+
+{% if user.get_profile.has_observation_expiring_today %}
+<h2> Alert: You have questionnaires which must be completed today...</h2>
+{% else %}
+{% endif %}
+<table class="table table-hover">
+    {% for study, obs_due in user.get_profile.obs_by_study %}
+    {% if forloop.first %}
+    {% endif %}
+
+    {% for o in obs_due %}
+            <tr>
+                <td width=1%><span class="text-warning">
+                    {% if not o.display_time_remaining %}
+                    <i class="icon-pencil"></i>
+                    {% else %}
+                    <i class="icon-time"></i>{% endif %}
+                    {{o.display_time_remaining}}
+                    </span>
+                </td>
+                <td>
+                    {% if o.link %}
+                            {{o.label}}
+                    {% endif %}
+                </td>
+                <td>
+                    Will take approx {{o.script.asker.approximate_time_to_complete}} minutes
+                </td>
+                <td>
+                    <a class="btn  {% if not forloop.first %}disabled{% endif %}
+                     {% if forloop.first %}btn-primary{% endif %}
+                    {% if o.display_time_remaining %}btn-primary{% endif %}" href="
+                            {% if perms.ask.can_double_enter %}
+                            {% url 'start_data_entry' o.token %}?next={{next}}
+                            {% else %}
+                            {% url 'start_data_entry' o.token %}
+                            {% endif %}
+                        ">
+                        {% if o.script.user_instructions %}
+                            {{o.script.user_instructions}}
+                        {% else %}
+                            Start questionnaire
+                        {% endif %}
+                    </a>
+
+                </td>
+            </tr>
+    {% endfor %}
+{% endfor %}
+</table>

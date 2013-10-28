@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}{{participant}}{% endblock %}
+
+{% load markup humanize %}
+
+{% block content_title %}<a class="brand">Edit profile information for {{form.instance.user.username }}</a>{% endblock %}
+
+{% block content %}
+<div class="row">
+<div class="span8">
+        <form class="form" action="." method="POST">
+        <table border="0" cellspacing="5" cellpadding="5">
+            {{form.as_p}}
+
+            <p><input class="btn btn-primary" type="submit" value="Save"></p>
+        {% csrf_token %}
+        </table>
+        </form>
+</div>
+
+        {% if user %}
+
+
+
+
+            <div class="span4">
+
+            <p><a class="btn" href="{% url 'admin:auth_user_change' user.id %}">Edit full user details</a></p>
+            <p><a  class="btn"  href="{% url 'admin:auth_user_change' user.id %}password">Change password</a></p>
+
+            <p><a  class="btn" href="{% url 'send_password_reset' user.id %}">Send 'reset password' email</a></p>
+            </div>
+
+
+
+        {% endif %}
+
+</div>
+{% endblock %}
+

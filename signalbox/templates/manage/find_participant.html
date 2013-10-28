@@ -1,0 +1,24 @@
+{% extends "signalbox:admin/base.html" %}
+{% load markup %}
+
+
+{% block content_title %}<a class="brand">Find participant</a>{% endblock %}
+
+
+{% block content %}
+
+<div class="line">
+<div class="unit size3of7">
+        <form action="." method="POST">
+        {{form.as_p}}
+        {% csrf_token %}
+        <p><input type="submit" value="Find"></p>
+        </form>
+</div>
+
+<div class="unit lastUnit size2of7">
+
+</div>
+</div>
+{% endblock %}
+

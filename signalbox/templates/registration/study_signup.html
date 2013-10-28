@@ -1,0 +1,13 @@
+{% extends "two.html" %}
+
+{% block title %}Register for this study{% endblock %}
+
+{% block left %}
+	{% if errors %}
+	{{ errors }}
+	{% else %}
+	{{ content }}
+	{% endif %}
+
+{% endblock %}
+

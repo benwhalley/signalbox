@@ -1,0 +1,38 @@
+{% load markup humanize %}
+
+
+{% load signalbox_tags %}
+
+{% if participant.membership_set.all.count %}
+<table class="table span8">
+
+    <tr>
+        <th>Study</th>
+        <th>Script name</th>
+        <th></th>
+    </tr>
+        {% ad_hoc_scripts participant as ad_hoc %}
+        {% for m, scripts in ad_hoc %}
+        {% if scripts %}
+            {% for i in scripts %}
+            <tr>
+                <td>{% if m.relates_to.user %}
+                        <span class="badge badge-info">{{m.relates_to.user}}</span>
+                    {% endif %}
+
+                    {{m.study}}
+
+                </td>
+                <td>{{i.name}}</td>
+                <td><a class="btn btn-mini btn-primary" href="{% url 'use_ad_hoc_script' m.id i.id %}">Start</a>
+                </td>
+            </tr>
+            {% endfor %}
+
+        {% endif %}
+        {% endfor %}
+</table>
+{% else %}
+    No additional questionnaires available
+{% endif %}
+

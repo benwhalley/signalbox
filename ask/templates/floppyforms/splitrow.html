@@ -1,0 +1,48 @@
+{%load markup %}
+{% load floppyforms  %}
+{% block row %}
+
+
+
+{% for field in fields %}
+    {% with classes=field.css_classes label=label|default:field.label help_text=help_text|default:field.help_text %}
+        {% block field %}
+        <!-- {{field|id}} -->
+        <div id="row_{{field|id}}" class="form_field_wrapper  {{ classes }} {% if field.errors %} alert alert-warning{% endif %}">
+                {% block errors %}
+                    <div class="">
+                        {% include "floppyforms/errors.html" with errors=field.errors %}
+                    </div>
+                {% endblock %}
+
+                {% block label %}
+                    {% if field|id %}
+                        <label class="lead" for="{{ field|id }}">{% endif %}
+                            {{ label }}{% if label|last not in ">.:!?" %}:{% endif %}{% if field|id %}
+                        </label>
+                    {% endif %}
+                {% endblock %}
+                {% block help_text %}
+                    {% if help_text %}
+                        <span class="help-block">{{ help_text|markdown }}</span>
+                    {% endif %}
+                {% endblock %}
+
+            <div class="form_field_field">
+                {% block widget %}
+                    {% formfield field %}
+                {% endblock %}
+                {% block hidden_fields %}
+                    {% for field in hidden_fields %}
+                        {{ field.as_hidden }}
+                    {% endfor %}
+                {% endblock %}
+            </div>
+            &nbsp;
+
+        </div>
+
+        {% endblock %}
+    {% endwith %}
+    {% endfor %}
+{% endblock %}

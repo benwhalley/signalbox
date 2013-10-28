@@ -1,0 +1,17 @@
+{% extends "admin/app_index.html" %}
+
+{% block coltype %}colMS{% endblock %}}
+
+
+{% block title %}{{ title }} | Questionnaire management{% endblock %}
+
+{% block content_title %}
+{{block.super}}
+{% endblock %}
+
+{% block leadcontent %}
+{% endblock %}
+
+{% block sidebar %}
+<p><a class="btn pull-right" href="{% url 'bulk_add_questions' %}"><i class="icon-plus"></i> Add multiple questions</a> </p>
+{% endblock %}

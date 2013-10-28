@@ -1,0 +1,47 @@
+<div class="row">
+<div class="span6">
+
+<h4>Send participant a message</h4>
+      <form class="form" action="{% url 'send_user_sms' %}" method="POST">
+      <table  class="table">
+          {{messageform.as_table}}
+        {% csrf_token %}
+      <tr>
+        <td></td>
+        <td><input type="submit" class="btn btn-danger" value="Send message immediately"></td>
+      </tr>
+    </table>
+      </form>
+
+
+</div>
+
+<div class="span6">
+
+<h4>Message history</h4>
+<table class="table">
+{% if participant.to.all %}
+{% for m in participant.to.all %}
+    <tr>
+        <td>
+            {{m.last_modified}}</a>
+        </td>
+        <td>
+            {{m.message_type}} from {{m.message_from}}</a>
+        </td>
+        <td>
+            <a href="{% url 'admin:signalbox_usermessage_change' m.id %}"> details</a>
+        </td>
+    </tr>
+{% endfor %}
+</ul>
+</td></tr>
+{% else %}
+<tr><td colspan=4>No messages sent yet. </td></tr>
+{% endif %}
+</table>
+{% if participant %}
+
+{% endif %}
+</div>
+</div>

@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="span6">
+        <form action="." method="POST" accept-charset="utf-8">
+        {% csrf_token %}
+        <h4>Add a contact note</h4>
+        <table class="table">
+        <tr><td colspan=2>{{contactrecordform.as_p}}</td></tr>
+        <tr>
+            <td colspan=2>
+                <input type="submit" value="Add note &rarr;">
+            </td>
+        </tr>
+        </table>
+
+
+    </form>
+    </div>
+
+    <div class="span6">
+    {% if participant.contactrecord_set.all %}
+            <h4>Contact history</h4>
+            <table class="table">
+            {% for m in participant.contactrecord_set.all %}
+            <tr>
+                <td>
+                    {{m.added}}</a>
+                </td>
+                <td>
+                    {{m.reason_str}} <a href="{% url 'admin:signalbox_contactrecord_change' m.id %}"> detail</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </td></tr>
+            </table>
+    {% endif %}
+
+</div>
+
+
+</div>

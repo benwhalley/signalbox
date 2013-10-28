@@ -1,0 +1,16 @@
+{% if not request.user.is_authenticated %}
+    <form class="navbar-form pull-right"
+        method="post"
+        action="{% url "django.contrib.auth.views.login"  %}"
+    >
+      {{ request.login_form.username }}
+      {{ request.login_form.password }}
+      {% csrf_token %}
+      <button type="submit" class="btn">Sign in</button>
+    </form>
+{% else %}
+    <div class="pull-right navbar-text">
+    Welcome back {{request.user.username|title}}.
+    (Not {{request.user.username|title}}? <a href="{% url 'logout' %}">Logout here </a>)
+    </div>
+{% endif %}

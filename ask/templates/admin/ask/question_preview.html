@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load floppyforms %}
+
+{% block body %}
+<style>
+body { padding-top: 0px !important }
+</style>
+
+{% if form.is_valid %}
+<div class="alert alert-success">
+    All fields validated successfully.
+</div>
+{% endif %}
+
+<div>
+<form action="." method="POST" accept-charset="utf-8">
+    {% csrf_token %}
+    {% form form using "floppyforms/questionnaire.html" %}
+
+    <p><input class="btn btn-primary" type="Submit" value="Check validation"></p>
+
+</form>
+</div>
+{% endblock %}

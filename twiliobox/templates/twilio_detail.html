@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}{{user}}{% endblock %}
+{% load markup %}
+
+
+
+{% block content %} 
+
+<div>
+<ul>
+{% for k,v in object.items %} 
+   <li> <strong>{{k}}</strong>:{{v}} </li>
+{% endfor %}
+</ul>
+</div>
+{% endblock %}
+

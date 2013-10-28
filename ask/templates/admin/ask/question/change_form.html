@@ -1,0 +1,60 @@
+{% extends "signalbox:admin/change_form.html" %}
+{% load compress %}
+
+
+
+
+{% block sidebar %}
+    <div class="span3">
+<h4>Tools</h4>
+
+{% if original %}
+<p><a href="#" onClick="$('#previewModal').modal();" class="btn" rel="tooltip" data-original-title="Remember to save first.">Preview</a></p>
+
+<hr>
+{% endif %}
+
+
+
+
+
+
+
+
+<!-- Modal -->
+{% if original %}
+<div id="previewModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+  <div class="modal-body">
+  <iframe width=100% height=350px src="{% url 'preview_questions' original.id %}"></iframe>
+</div>
+  <div class="modal-footer">
+    <p>Remember, you to have saved questions before previewing them</p>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+{% endif %}
+
+{% compress js %}
+<script type="text/javascript">
+(function() {
+  var _this = this;
+
+  $(document).ready(function() {
+    var vl, vn, vt;
+    vt = $('#id_text');
+    vn = $('#id_variable_name');
+    vl = $('#id_variable_label');
+    return vn.bind('blur', function() {
+      if (vl.val() === "") {
+        return vl.html(vt.val() || vn.val());
+      }
+    });
+  });
+
+}).call(this);
+</script>
+{% endcompress %}
+
+</div>
+{% endblock %}

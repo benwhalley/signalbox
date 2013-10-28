@@ -1,0 +1,14 @@
+# this script builds pandoc to use for markdown input
+# at some point it might be simpler just to use pyparsing instead
+# requires vagrant/virtualbox
+
+git clone https://bitbucket.org/puffnfresh/vagrant-haskell-heroku.git
+cd vagrant-haskell-heroku
+vagrant up
+vagrant ssh
+
+cabal update
+cabal install cabal-install
+cabal --version
+cabal install pandoc -fembed_data_files
+/home/vagrant/.cabal/bin/pandoc --version

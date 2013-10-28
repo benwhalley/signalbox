@@ -1,0 +1,69 @@
+
+# For twilio - need to record some standard prompts which get attached to the asker
+
+"I'm sorry, I couldn't hear a response. I'll repeat the question:"
+
+"I'm sorry, I still couldn't hear a response. I'll skip to the next question now, but if you're have a problem please press the star key for help."
+
+"If you've made mistakes and would like to start the call again, please press 1. If you're having problems and would like to be connected to a member of the study team, please press 2. If you don't want to answer any question today, please just hangup at any time."
+
+
+
+
+
+
+
+
+# IOS app to do reminders?
+
+
+
+
+# Secure messages
+
+..note:: In future participants may be able to send secure messages to study administrators via the site (which are logged)
+
+
+# Questions
+
+Pickle questions and choicsets for export of data. Version questions on each save and store that?
+
+TIDY data model for questions/instruments... make instruments and questions duplicated, and filter the main lists when adding questions.
+
+## Use managers
+
+Create managers to encapsulate logic about which groups are allowed to see which observations... e.g. assessors not seeing things which break the blind... see observations_outstanding()
+
+
+# Tests
+
+- add a study
+- add a condition
+- add a script
+- add a questionnaire with a page and a question of each type
+- add a participant (front and and backend)
+- join participant and study - check randomisation
+- create observations
+- test sending (all types)
+- rest replies gathered through questionnaire
+- test replies via ad hoc questionnaire
+- test replies via ad hoc questionnaire attached to a treatment
+- test data exporting from above
+
+
+- test resolving duplicate observations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load compress %}
+{% load floppyforms %}
+{% load markup %}
+
+
+{% block nav %}{% endblock %}
+
+{% block title %}
+{{asker.name}} –– Print view
+{% endblock %}
+
+
+{% block base_content %}
+
+				<style  type="text/css" media="screen,print">
+		            textarea {
+		            	display:block; width:80%; border:1px solid grey;
+		            }
+					.clearpage { page-break-after:always;}
+					.form_field_wrapper {
+						page-break-inside:avoid; page-break-after:auto;
+					}
+				</style>
+				<style  type="text/css" media="print">
+					.noprint { display: none;}
+				</style>
+
+
+		<p class="noprint">
+			<a href="#" onClick="$('.pagedata, .btn-toggle').toggle();" class="btn pull-right btn-toggle noprint">Show additional page information</a>
+			<a href="#" onClick="$('.pagedata, .btn-toggle').toggle();" class="btn pull-right btn-toggle hide noprint ">Hide additional page information</a>
+		</p>
+
+		<h1>{{asker}}</h1>
+
+		{% for form, conditionals in forms %}
+
+		<div class="row {% if not forloop.first %}clearpage{% endif %}">
+			<div class="span8">
+
+			{% form form using "floppyforms/questionnaire.html" %}
+			{% if not forloop.last %}
+			{% endif %}
+
+			</div>
+
+			<div class="span4 small pagedata hide">
+				<h4>Page reference: {{form.page}}</h4>
+				{% if conditionals %}
+				<table class="table">
+					<tr>
+						<th>Variable name</th><th>Shown</th>
+					</tr>
+					{% for i in conditionals %}
+					<tr>
+					<td>{{i.question.variable_name}}</td>
+					<td>{%if i.showif%}IF {{i.showif}}{%else%}Always{%endif %}</td>
+					</tr>
+					{% endfor %}
+				</table>
+				{%else%}
+				All questions will be shown
+				{% endif %}
+
+			</div>
+		</div>
+		{% endfor %}
+
+
+
+
+		<script>
+		// turn off all default values for paper copies
+		$("input:radio").attr("checked", false);
+		</script>
+
+
+
+{% endblock %}
+
+
+
+

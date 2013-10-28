@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load markup %}
+
+{% block title %}Studies{% endblock %}
+
+{% block base_content %}
+
+
+    <h1> Current studies</h1>
+
+    {% if object_list %}
+        <ul class="thumbnails">
+            {% for s in object_list %}
+              <li class="span4">
+                  <div class="thumbnail">
+                    {% if s.study_image %}
+                    <img src="{{s.study_image.url}}" alt="">
+                    {% endif %}
+                    <div class="caption">
+                      <h3>{{s.name}}</h3>
+                      <p>{{s.blurb|markdown}}</p>
+                      <p><a href="{% url 'study' s.id %}" class="btn btn-primary">Find out more</a>
+                    </div>
+                  </div>
+              </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>We don't have any studies running right now.</p>
+    {% endif %}
+</p>
+
+
+{% endblock %}
+

@@ -1,0 +1,77 @@
+{% extends "signalbox:admin/change_form.html" %}
+{% load compress %}
+
+{% block sidebar %}
+<div class="span2">
+    <h3>Tools</h3>
+    {% if original %}
+
+    {% if original.asker %}
+    <p><a class='btn btn-primary' href='{% url 'admin:ask_asker_change' original.asker.id %}'>
+        Edit questionnaire
+    </a></p>
+    {% endif %}
+
+    <p><a class='btn viewsitelink' href='{% url 'preview_script' object_id %}'>
+        Preview script times
+    </a></p>
+
+    <p><a href="#" onClick="updatemessage(); $('#myModal').modal();" role="button" class="btn" data-toggle="modal">Preview script message</a></p>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Message preview</h3>
+      </div>
+      <pre>
+      <div id="messageP" class="modal-body">
+        Loading...
+      </div></pre>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      </div>
+    </div>
+
+
+
+{% endif %}
+
+
+<script type="text/javascript">
+// Some yucky javascript to generate a live preview of the message text
+    // goes to the server to rebuild the preview
+    function updatemessage (){
+        $.post(url,
+              { script_id: object_id, body: $('#id_script_body').val(),
+                subject:$('#id_script_subject').val()
+              }, function(data) { $('#messageP').html(data); }
+          )
+    }
+
+    $(document).ready(function(){
+        url = "{% url 'script_message_preview' %}"
+        immediate_url = "{% url 'preview_timings_as_txt' %}"
+        object_id = {{object_id}}
+
+        synbox = $('#id_natural_date_syntax');
+        synbox.addClass('span5');
+        synbox.addClass('pull-left');
+        synbox.after("<div class='span7 pull-right'><span id='timings'></span></div>");
+
+        function previewTimes(){
+          $.post(immediate_url,
+            {"syntax": synbox.val()},
+            function(data) { $('#timings').html(data);}
+          );
+        }
+
+        synbox.bind("keypress",
+          _.debounce(previewTimes, 500)
+        )
+        previewTimes();
+    });
+</script>
+<div>
+{% endblock %}
+

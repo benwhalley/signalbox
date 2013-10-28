@@ -1,0 +1,129 @@
+### Eclipse Workspace Patch 1.0
+#P wadofstuff
+Index: django/serializers/python.py
+===================================================================
+--- django/serializers/python.py    (revision 23)
++++ django/serializers/python.py    (working copy)
+@@ -4,7 +4,7 @@
+ import base
+ from django.utils.encoding import smart_unicode
+ from django.core.serializers.python import Deserializer as PythonDeserializer
+-
++from django.db import models
+ class Serializer(base.Serializer):
+     """
+     Python serializer for Django modelled after Ruby on Rails.
+@@ -123,6 +123,67 @@
+         not seekable).
+         """
+         return self.objects
++
++    def handle_related_m2m_field(self, obj, field_name):
++        """Called to handle 'reverse' m2m RelatedObjects
++        Recursively serializes relations specified in the 'relations' option.
++        """
++        fname = field_name
++        
++        if field_name in self.relations:
++            # perform full serialization of M2M
++            serializer = Serializer()
++            options = {}
++            if isinstance(self.relations, dict):
++                if isinstance(self.relations[field_name], dict):
++                    options = self.relations[field_name]
++            self._fields[fname] = [
++                serializer.serialize([related], **options)[0]
++                   for related in getattr(obj, fname).iterator()]
++        else:
++            pass
++            # we don't really want to do this to reverse relations unless 
++            # explicitly requested in relations option
++            #
++            # emulate the original behaviour and serialize to a list of ids
++            # self._fields[fname] = [
++            # smart_unicode(related._get_pk_val(), strings_only=True)
++            # for related in getattr(obj, fname).iterator()]
++
++    def handle_related_fk_field(self, obj, field_name):
++        """Called to handle 'reverse' fk serialization.
++        Recursively serializes relations specified in the 'relations' option.
++        """
++        fname = field_name
++        related = getattr(obj, fname)
++        if related is not None:
++            if field_name in self.relations:
++                # perform full serialization of FK
++                serializer = Serializer()
++                options = {}
++                if isinstance(self.relations, dict):
++                    if isinstance(self.relations[field_name], dict):
++                        options = self.relations[field_name]
++                # Handle reverse foreign key lookups that recurse on the model
++                if isinstance(related, models.Manager):
++                    # Related fields arrive here as querysets not modelfields
++                    self._fields[fname] = serializer.serialize(related.all(),
++                        **options)
++                else:
++                    self._fields[fname] = serializer.serialize([related],
++                        **options)[0]
++            else:
++                pass
++                # we don't really want to do this to reverse relations unless 
++                # explicitly requested in relations option
++                #
++                # emulate the original behaviour and serialize to a list of ids
++                # self._fields[fname] = [
++                # smart_unicode(related._get_pk_val(), strings_only=True)
++                # for related in getattr(obj, fname).iterator()]
++        else:
++            self._fields[fname] = smart_unicode(related, strings_only=True)
++
+     
+     def handle_extra_field(self, obj, field):
+         """
+Index: django/serializers/base.py
+===================================================================
+--- django/serializers/base.py  (revision 23)
++++ django/serializers/base.py  (working copy)
+@@ -57,12 +57,41 @@
+                     if field.attname not in self.excludes:
+                         if not self.fields or field.attname in self.fields:
+                             self.handle_m2m_field(obj, field)
++            
++            related_fk_objects = obj._meta.get_all_related_objects()
++            
++            for ro in related_fk_objects:
++                
++
++                field_name = ro.get_accessor_name()
++                if field_name not in self.excludes:
++                    self.handle_related_fk_field(obj, field_name)
++                    
++
++            related_m2m_objects = obj._meta.get_all_related_many_to_many_objects()
++            
++            for ro in related_m2m_objects:
++
++                field_name = ro.get_accessor_name()
++                if field_name not in self.excludes:
++                    self.handle_related_m2m_field(obj, field_name)                
++
++            
+             for extra in self.extras:
+                 self.handle_extra_field(obj, extra)
+             self.end_object(obj)
+         self.end_serialization()
+         return self.getvalue()
+ 
++    def handle_related_m2m_field(self, obj, field_name):
++        """Called to handle 'reverse' m2m serialization."""
++        raise NotImplementedError
++
++    def handle_related_fk_field(self, obj, field_name):
++        """Called to handle 'reverse' fk serialization."""
++        raise NotImplementedError
++
++    
+     def handle_extra_field(self, obj, extra):
+         """Called to handle 'extras' field serialization."""
+         raise NotImplementedError

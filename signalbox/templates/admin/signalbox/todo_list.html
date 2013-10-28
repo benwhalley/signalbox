@@ -1,0 +1,59 @@
+{% extends "admin/base_site.html" %}
+{% block title %}SignalBox Dashboard{% endblock %}
+
+
+{% block content_title %}
+<a class="brand">Observations due</a>
+{% if item_list %}
+<a class='btn btn-danger pull-right' href='{% url 'do_todo' %}'>Send all pending Observation signals now</a>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+
+
+{% if item_list %}
+   <table class="table">
+       <tr>
+           <th>Name</th>
+           <th>Study</th>
+           <th>Due date/time</th>
+           <th>Token</th>
+           <th></th>
+    </tr>
+
+{% for i in item_list %}
+
+       <tr>
+           <td>{{i.dyad.user.last_name}}, {{i.dyad.user.first_name}}</td>
+           <td>{{i.dyad.study}}</td>
+           <td>{{i.due}}</td>
+           <td>{{i.token}}</td>
+           <td><a class="btn btn-mini" href="{% url 'admin:signalbox_observation_change' i.pk %}">edit</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% else %}
+
+<h3>No Observations currently due</h3>
+
+{% endif %}
+
+
+  {% if results %}
+   <h3>Did:</h3>
+   <ul>
+       {% for i in results %}<li>{{i}}</li>{% endfor %}
+   </ul>
+   {% endif %}
+
+
+
+
+</div>
+{% endblock %}
+

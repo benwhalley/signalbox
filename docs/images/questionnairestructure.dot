@@ -1,0 +1,10 @@
+digraph  {
+node [shape=box, fontname="Helvetica Neue Light", fontsize=10];
+edge [fontsize=8, fontname="Helvetica Neue Light", penwidth=.5, arrowsize=.6];
+
+Questionnaire -> Pages [label="has a set of"]
+Pages -> Questions [label="has a list of"]
+Pages -> Instruments [label="can include"]
+Instruments -> Questions [label="has a list of"]
+Questions -> ChoiceSet [label="can reference"]
+}

@@ -1,0 +1,13 @@
+{% extends "floppyforms/layouts/table.html" %}
+{% load floppyforms %}
+{% block formconfig %}
+{% formconfig row using "floppyforms/splitrow.html" %}
+{% endblock %}
+
+{% block errors %}{% if form.non_field_errors or form|hidden_field_errors %}
+<ul class="alert alert-error">
+    {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+    {% for error in form|hidden_field_errors %}<li>{{ error }}</li>{% endfor %}
+</ul>
+{% endif %}{% endblock %}
+{% block row %}{% formrow field %}{% endblock %}

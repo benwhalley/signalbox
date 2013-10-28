@@ -1,0 +1,49 @@
+{% extends "signalbox:admin/base.html" %}
+
+{% block content_title %}
+    <a class="brand">Add multiple questions at once</a>
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+<div class="span8">
+<form class="form" method=POST action=".">
+    {% csrf_token %}
+    <table class="table">
+    {{form.as_table}}
+    <tr><td colspan=2><input value="Add questions" type=submit class="btn btn-danger"></td></tr>
+</table>
+    </form>
+</div>
+
+{% endblock %}
+
+
+{% block sidebar %}
+<div class="span4">
+    <div class="alert">
+        <p><strong>Important</strong></p>
+
+        <p>resubmitting this form WILL NOT change existing questions. To do this you will either need to edit previously added questions manually, or delete them and resubmit with this form.
+            </p>
+    </div>
+
+
+    <div class="well">
+    <h5>Also remember the following:</h5>
+    <ul>
+    <li>Variable names must not begin with a digit</li>
+
+    <li>All questions must be in the same format, and have the same multiple choice options</li>
+
+    <li>If you need a new choiceset for these questionnaire, you must create it now before adding the questions.</li>
+</ul>
+
+<a class="btn btn-primary btn-mini" onclick="return showAddAnotherPopup(this);" href="{% url 'admin:ask_choiceset_add' %}"> Create Choiceset</a>
+
+
+</div>
+</div>
+</div>
+{% endblock%}

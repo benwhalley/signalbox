@@ -1,0 +1,55 @@
+{% extends "admin/base_site.html" %}
+{%load markup %}
+
+{% block content_title %}<a class="brand">Questionnaire Codebooks </a>{% endblock %}
+
+{% block content %}
+    {% for asker in askers %}
+    <h2>{{asker}}</h2>
+
+    {% for i in asker.pages %}
+    <h3>Page {{i.progress_pages.0}}</h3>
+    <table class="table table-hover">
+        <tr>
+                <td class="" width=50%><h5>Variable name/Question text</h5></td>
+                <td class="" width=25%><h5>Choices/Conditions</h5></td>
+                <td class=""><h5>Show</h5></td>
+            </tr>
+
+            {% for j in i.get_questions %}
+            <tr>
+                <td>
+                    <p><code> {{j.question.variable_name}}</code></p>
+                    {{j.question.text|markdown}}
+                </td>
+                <td>
+                    <p class="muted">({{j.question.q_type}})</p>
+                    {% if j.question.choices.count > 0 %}
+                    <pre>
+{{j.question.choices_as_json}}
+                    </pre>
+                    {% endif %}
+                    {% if j.question.score_mapping %}
+                    Scores on this question will be remapped as follows when computing summaries:
+                    <pre>
+{{j.question.score_mapping}}
+                    </pre>
+
+                    {% endif %}
+                </td>
+                <td>
+                {%  if j.showif %}
+                <pre>
+{{j.showif.as_json}}
+                </pre>
+                {% else %}
+<code>Always</code>
+                {% endif %}
+            </td>
+            </tr>
+            {% endfor %}
+
+    </table>
+    {% endfor %}
+    {% endfor %}
+{% endblock %}

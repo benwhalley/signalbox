@@ -1,0 +1,11 @@
+{% if perms.signalbox.can_double_enter %}
+    {% with participant.get_profile.obs_by_study as obs_by_study %}
+    {% if obs_by_study %}
+        {% with participant.get_profile.participant_admin_overview as next %}
+            {% include 'manage/observations_todo_fragment.html' %}
+        {% endwith %}
+    {% else %}
+           <p>No observations outstanding</p>
+    {% endif %}
+    {% endwith %}
+{% endif %}

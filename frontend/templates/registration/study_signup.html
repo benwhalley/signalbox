@@ -1,0 +1,13 @@
+{% extends "two.html" %}
+
+{% block title %}{% endblock %}
+
+{% block left %}
+	{% if errors %}
+	{{ errors }}
+	{% else %}
+	{{ content }}
+	{% endif %}
+
+{% endblock %}
+
