@@ -1,4 +1,4 @@
-from signalbox.utilities.get_env_variable import get_env_variable
+from utilities.get_env_variable import get_env_variable
 
 
 TIME_ZONE = 'Europe/London'
