@@ -2,7 +2,7 @@ import sys
 import os
 import string
 from twilio.rest import TwilioRestClient
-from utilities.get_env_variable import get_env_variable
+from signalbox.utilities.get_env_variable import get_env_variable
 import dj_database_url
 
 # determines numbers format on input for twilio

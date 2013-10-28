@@ -26,14 +26,7 @@ sys.path.insert(0, os.path.abspath('../app/signalbox'))
 
 sys.path.insert(0, os.path.abspath('~/Envs/sbox/lib/python2.7/site-packages'))
 
-print sys.path
-# sys.path.append('/path/to/your/project') # The directory that contains settings.py
 
-# Set up the Django settings/environment
-from django.core.management import setup_environ
-from app import settings
-
-setup_environ(settings)
 
 # -- General configuration -----------------------------------------------------
 
