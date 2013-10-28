@@ -19,7 +19,7 @@ def get_object_or_none(modelclass, **kwargs):
 def current_site_url():
     """Returns fully qualified URL (no trailing slash) for the current site."""
     
-    url = 'http://%s' % (Site.objects.get_current().domain)
+    url = 'http://%s' % (Site.objects.get_current().domain, )
     return url
 
 

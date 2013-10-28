@@ -1,8 +1,9 @@
 import sys
+import os
 import string
 from twilio.rest import TwilioRestClient
 from signalbox.utilities.get_env_variable import get_env_variable
-
+import dj_database_url
 
 # determines numbers format on input for twilio
 DEFAULT_TELEPHONE_COUNTRY_CODE = get_env_variable('DEFAULT_TELEPHONE_COUNTRY_CODE', default="GB")  
@@ -12,6 +13,17 @@ SHOW_USER_CURRENT_STUDIES = get_env_variable('SHOW_USER_CURRENT_STUDIES', defaul
 
 
 DEBUG = get_env_variable('DEBUG', int_to_bool=True, required=False, default=False)
+
+
+
+# database
+os.environ["REUSE_DB"] = "1"
+# a sensible default
+DB_URL = get_env_variable('DATABASE_URL', required=False, default="postgres://localhost/sbox")
+DATABASES = {'default': dj_database_url.config(default=DB_URL)}
+
+
+
 
 # amazon files settings
 AWS_STORAGE_BUCKET_NAME = get_env_variable("AWS_STORAGE_BUCKET_NAME", default="thesignalbox")
@@ -39,6 +51,15 @@ SECURE_SSL_REDIRECT = get_env_variable('SECURE_SSL_REDIRECT', required=False, de
 SESSION_COOKIE_AGE = get_env_variable('SESSION_COOKIE_AGE', default=1.5 * 60 * 60)  # 1.5 hours in seconds
 SESSION_SAVE_EVERY_REQUEST = get_env_variable('SESSION_SAVE_EVERY_REQUEST', default=True, int_to_bool=True)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = get_env_variable('SESSION_EXPIRE_AT_BROWSER_CLOSE', default=True)
+
+# SECURITY BITS WHICH ARE NOT CUSTOMISABLE FROM ENV VARS AT PRESENT XXX
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# disable secure cookies for debugging
+SESSION_COOKIE_SECURE = not get_env_variable('DEBUG', False)
+# this must be off for django cms content editing to work
+SECURE_FRAME_DENY = False
+
+
 
 
 # see the impersonation middleware for details of what this allow

@@ -210,6 +210,8 @@ Reference for all user-configurable environment variables
 Each of these is loaded from an environment variable by signalbox.configurable_settings.py, and some are documented there. XXX Add more details here.
 
 
+DB_URL default: postgres://localhost/sbox
+
 LOGIN_FROM_OBSERVATION_TOKEN
 SHOW_USER_CURRENT_STUDIES
 

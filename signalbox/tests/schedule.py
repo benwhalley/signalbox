@@ -206,11 +206,10 @@ class TestScheduling(TestCase):
 
     def test_emailsurvey_email_contains_url(self):
         "Check that we can see an access a url in the first line of the email."
-
+        
         observation = self.test_sending_observation()
-        urlre = 'http://[\w+\d+/?.]+(?P<reply_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})'
+        urlre = 'http://[\w+\d+-/?.]+(?P<reply_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})'
         email = mail.outbox[-1]
-
         assert re.search(urlre, email.body)
         url = re.search(urlre, email.body).group(0)
         questionnaire = self.client.get(url, follow=True)
