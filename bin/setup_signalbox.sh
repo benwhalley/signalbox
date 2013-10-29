@@ -1,5 +1,4 @@
-bootstrap_signalbox
-cd $SIGNALBOXNAME
+cd `bootstrap_signalbox`
 
 chmod 755 app/manage.py
 pip install -r requirements.txt

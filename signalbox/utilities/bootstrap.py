@@ -14,7 +14,7 @@ def signalbox_bootstrap():
     newname = raw_input("Enter a new name for your project:")
     newdir = os.path.join(os.getcwd(), newname) 
     shutil.copytree(example_proj, newdir)
-    os.environ['SIGNALBOXNAME'] = newname
+    print newname
     
 
 
