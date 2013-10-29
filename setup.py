@@ -25,7 +25,7 @@ setup(
     install_requires=install_reqs,
     entry_points = {
             'console_scripts': [
-                'signalbox_bootstrap = signalbox.utilities.bootstrap:signalbox_bootstrap',
+                'signalbox_example_project_dir = signalbox.utilities.bootstrap:example_project_dir',
                 'signalbox_heroku_quickstart = signalbox.utilities.bootstrap:signalbox_heroku_quickstart',
             ]
     }

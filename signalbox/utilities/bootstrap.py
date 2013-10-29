@@ -1,25 +1,23 @@
 """Collects lots of things to setup on local machine and heroku, and tries to configure."""
 
-from boto.s3.connection import S3Connection
 from uuid import uuid1 
 import envoy
-import heroku
 import os
 import shutil
 import getpass
 
 
-def signalbox_bootstrap():
+def example_project_dir():
     example_proj = os.path.join(os.path.realpath(os.path.dirname(__file__)), "../", "example_project")
-    newname = raw_input("Enter a new name for your project:")
-    newdir = os.path.join(os.getcwd(), newname) 
-    shutil.copytree(example_proj, newdir)
-    print newname
+    print example_proj
     
 
 
 def signalbox_heroku_quickstart():
     from signalbox import configurable_settings
+    from boto.s3.connection import S3Connection
+    import heroku
+    
     
     cloud = heroku.from_pass(raw_input("What is your heroku username (this might be an email address)? "), 
         getpass.getpass("What is your heroku password? "))

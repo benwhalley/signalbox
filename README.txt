@@ -22,18 +22,14 @@ On Ubuntu 12.04, you can install everything you need for a development machine l
 Local install
 ---------------
 
-First create a virtualenv and install signalbox itself using pip::
+First create a virtualenv and install signalbox itself using pip. Then use the included setup_signalbox command to make an example project (note, you can do all this manually, just look at settings.py in the example project)::
 	
 	mkvirtualenv signalbox_virtualenv
 	pip install signalbox
+	setup_signalbox.sh
 	
 
-Then use the included setup_signalbox command to make an example project (note, you can do all this manually, just look at settings.py in the example project)::
-
-	setup_signalbox.sh
-
-
-Then open http://127.0.0.1:8000/admin  to view the admin site on your development machine.
+If everything works, open http://127.0.0.1:8000/admin  to view the admin site on your development machine.
 
 
 
