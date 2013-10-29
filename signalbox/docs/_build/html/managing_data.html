@@ -1,0 +1,174 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Managing data and Exporting Data &mdash; Signalbox 2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Signalbox 2 documentation" href="index.html" />
+    <link rel="next" title="Resources for trial administrators" href="trial-admins.html" />
+    <link rel="prev" title="Collecting data from participants" href="replies.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="trial-admins.html" title="Resources for trial administrators"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="replies.html" title="Collecting data from participants"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="managing-data-and-exporting-data">
+<h1>Managing data and Exporting Data<a class="headerlink" href="#managing-data-and-exporting-data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="exporting-study-data">
+<h2>Exporting study data<a class="headerlink" href="#exporting-study-data" title="Permalink to this headline">¶</a></h2>
+<p>Signalbox is able to export data to delimeted text, or to Stata (a common statistical package). When using Stata, the system also exports syntax which label data appropriately to help with later analysis. This syntax also computes some useful variables to help with later analyses.</p>
+<p>Signalbox understands that within a single clinical trial there may be multiple sub-studies (each set up as a Study object within the system). Because studies may be linked, and require joint analysis, Signalbox allows you to export data for multiple studies at once.</p>
+<p>If this is this case, you need to define a <cite>reference study</cite> &#8212; this will typically be the study which manages the primary randomisation, e.g. to Treatment/Control. Selecting a reference study is useful, because Signalbox uses the date of randomisation for that study to compute additional variables, including <cite>days_in_trial</cite>, which can be contrasted with <cite>days_in_study</cite> and indicates the elapsed days since the user was randomised to the reference study. <tt class="xref py py-class docutils literal"><span class="pre">StudyPeriod</span></tt> objects attached to the reference study are also used to compute a set of <cite>period_x</cite> variables: indicator variables denoting whether a <tt class="xref py py-class docutils literal"><span class="pre">Reply</span></tt> fell within period <cite>x</cite>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Additional computed variables, including <cite>period_x</cite> and <cite>days_in_trial</cite> are only computed when the exported syntax file is run using Stata, and are not present in the raw text data, <tt class="docutils literal"><span class="pre">data.txt</span></tt>.</p>
+</div>
+<div class="section" id="to-export-data">
+<h3>To export data<a class="headerlink" href="#to-export-data" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li>Select <tt class="docutils literal"><span class="pre">Tools</span> <span class="pre">&gt;</span> <span class="pre">Export</span> <span class="pre">Data</span></tt></li>
+<li>Select the studies you wish to export data for</li>
+<li>Select a <tt class="docutils literal"><span class="pre">reference</span> <span class="pre">study</span></tt> (optional), and press <tt class="docutils literal"><span class="pre">Submit</span></tt>.</li>
+<li>A zip archive will begin downloading, containing three files: <tt class="docutils literal"><span class="pre">data.txt</span></tt>, <tt class="docutils literal"><span class="pre">make.do</span></tt> and <tt class="docutils literal"><span class="pre">syntax.do</span></tt>.</li>
+<li>Open the zip and, using Stata 11 or later, run <tt class="docutils literal"><span class="pre">make.do</span></tt>.</li>
+<li>This script will generate three additional data files: <tt class="docutils literal"><span class="pre">data.dta</span></tt>, <tt class="docutils literal"><span class="pre">data_values.xlsx</span></tt>, and <tt class="docutils literal"><span class="pre">data_labels.xlsx</span></tt>. If you have StatTransfer installed it will also convert the datafile to SPSS <tt class="docutils literal"><span class="pre">.sav</span></tt> format.</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Based on data held by the system about the questions used to collect the data, Signalbox will add meta data to exported files. The <tt class="docutils literal"><span class="pre">data.dta</span></tt> file contains multiple value and variable labels and is probably what you want to use; if needed, the StatTransfer program will convert these to an SPSS file including value and variable labels transparently.  The excel file <tt class="docutils literal"><span class="pre">data_values.xlsx</span></tt> includes the labelled values (i.e. strings for numeric variables); <tt class="docutils literal"><span class="pre">data_values.xlsx</span></tt> contains the values themselves.</p>
+</div>
+</div>
+<div class="section" id="long-vs-wide-format">
+<h3>Long vs. wide format<a class="headerlink" href="#long-vs-wide-format" title="Permalink to this headline">¶</a></h3>
+<p>Signalbox exports data in a long-ish format. Individual <tt class="xref py py-class docutils literal"><span class="pre">Answers</span></tt> are grouped by <tt class="xref py py-class docutils literal"><span class="pre">Reply</span></tt> and saved one-reply-per-row in the txt file.</p>
+<p>However, because different replies will have measured different variables, the resulting file will have many columns (one per variable measured in any of the replies) and lots of blank values (where a reply did not measure a variable, it will be blank).</p>
+<p>Many analyses will require you to compute summary scores and restructure the file into a wide format (e.g. the <tt class="docutils literal"><span class="pre">reshape</span></tt> command in Stata).</p>
+</div>
+<div class="section" id="formats-and-labels">
+<h3>Formats and labels<a class="headerlink" href="#formats-and-labels" title="Permalink to this headline">¶</a></h3>
+<p>The export syntax attempts to correctly import python date/time objects as dates, and format them correctly. If this isn&#8217;t happening for you then please file a bug report.</p>
+<p>See also <tt class="xref doc docutils literal"><span class="pre">exporting_data</span></tt></p>
+</div>
+<div class="section" id="serialising-data">
+<h3>Serialising data<a class="headerlink" href="#serialising-data" title="Permalink to this headline">¶</a></h3>
+<p>Before deciding to export questionnaires, try using the markdown editing feature (<a class="reference internal" href="questionnaires.html"><em>Creating questionnaires</em></a>) and see if that gives you enough of what you want.</p>
+<p>If it doesn&#8217;t, read this first: <a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/serialization/">https://docs.djangoproject.com/en/dev/topics/serialization/</a>.</p>
+<p>Then see: <a class="reference external" href="http://stackoverflow.com/questions/1499898/django-create-fixtures-without-specifying-a-primary-key">http://stackoverflow.com/questions/1499898/django-create-fixtures-without-specifying-a-primary-key</a>.</p>
+<p>So, to export use:</p>
+<blockquote>
+<div>app/manage.py dumpdata &#8211;indent 2 &#8211;natural &gt; data.json</div></blockquote>
+<p>Then use a regex like this to replace all pk&#8217;s with null to be sure they don&#8217;t clash with others in the db:</p>
+<blockquote>
+<div>&#8220;pk&#8221;: (?&lt;path&gt;d+),</div></blockquote>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Managing data and Exporting Data</a><ul>
+<li><a class="reference internal" href="#exporting-study-data">Exporting study data</a><ul>
+<li><a class="reference internal" href="#to-export-data">To export data</a></li>
+<li><a class="reference internal" href="#long-vs-wide-format">Long vs. wide format</a></li>
+<li><a class="reference internal" href="#formats-and-labels">Formats and labels</a></li>
+<li><a class="reference internal" href="#serialising-data">Serialising data</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="replies.html"
+                        title="previous chapter">Collecting data from participants</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="trial-admins.html"
+                        title="next chapter">Resources for trial administrators</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/managing_data.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="trial-admins.html" title="Resources for trial administrators"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="replies.html" title="Collecting data from participants"
+             >previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Ben Whalley.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,197 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SignalBox’s Roles and Responsibilities &mdash; Signalbox 2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Signalbox 2 documentation" href="index.html" />
+    <link rel="next" title="Setting up studies" href="studies.html" />
+    <link rel="prev" title="Settings and customisation" href="custom.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="studies.html" title="Setting up studies"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="custom.html" title="Settings and customisation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="signalbox-s-roles-and-responsibilities">
+<h1>SignalBox&#8217;s Roles and Responsibilities<a class="headerlink" href="#signalbox-s-roles-and-responsibilities" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="role-and-permissions">
+<h2>Role and Permissions<a class="headerlink" href="#role-and-permissions" title="Permalink to this headline">¶</a></h2>
+<p>Signalbox defines 4 roles, each of which have set of permissions.</p>
+<ul class="simple">
+<li>Researchers</li>
+<li>Research assistants</li>
+<li>Assessors</li>
+<li>Clinicians</li>
+</ul>
+<p>In addition, the documentation refers to:</p>
+<ul class="simple">
+<li>Participants/Patients</li>
+</ul>
+<p>However participants are not a distinct group within the system - a participant just needs to be a registered <tt class="xref py py-class docutils literal"><span class="pre">User</span></tt> of the site. Note researchers, clinicians etc. may also be participants. Also see <a class="reference internal" href="memberships.html#membership-types"><em>Membership types</em></a> .</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">All users of the system are stored as django <tt class="xref py py-class docutils literal"><span class="pre">django.auth.User</span></tt> objects. We use the standard django authentication mechnisms to log people in and track session state (this uses a cookie for identification, but all the data gets stored in the DB). SignalBox roles are defined using Django&#8217;s <tt class="xref py py-class docutils literal"><span class="pre">Group</span></tt> models (see <a class="reference external" href="https://docs.djangoproject.com/en/1.3/topics/auth/">https://docs.djangoproject.com/en/1.3/topics/auth/</a> for more details.)</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">for many studies, the only types of users which will be required are Researchers and Participants.</p>
+</div>
+</div>
+<div class="section" id="role-based-permissions">
+<h2>Role based permissions<a class="headerlink" href="#role-based-permissions" title="Permalink to this headline">¶</a></h2>
+<p>Permissions for many views within the site are determined by group memberships.</p>
+<div class="section" id="researchers">
+<h3>Researchers<a class="headerlink" href="#researchers" title="Permalink to this headline">¶</a></h3>
+<p>Researchers have pretty much full access to data and functionality within the site. They don&#8217;t need to be a <tt class="docutils literal"><span class="pre">superuser</span></tt> within the django auth system though. Examples of things only researchers need to be able to do are resolving duplicate replies for observations (i.e. picking a canonical reply, see <a class="reference internal" href="replies.html"><em>Collecting data from participants</em></a>), and exporting data (<tt class="xref doc docutils literal"><span class="pre">exporting_data</span></tt>).</p>
+</div>
+<div class="section" id="research-assistants">
+<h3>Research assistants<a class="headerlink" href="#research-assistants" title="Permalink to this headline">¶</a></h3>
+<p>For large trials, Research Assistant&#8217;s help administer participants and memberships, but do not have full access to participant data. Research assistants can:</p>
+<ul class="simple">
+<li>Add a new user to the system (e.g. enter details for a patient who has just been recruited)</li>
+<li>Add a user to a study (create a membership)</li>
+<li>See a list of observations outstanding</li>
+<li>Enter data for a specific observation</li>
+<li>Add notes to a patient (on the patient dashboard page)</li>
+</ul>
+</div>
+<div class="section" id="assessors">
+<h3>Assessors<a class="headerlink" href="#assessors" title="Permalink to this headline">¶</a></h3>
+<p>Assessors are responsible for collating data from patients, often in interviews, and are typically blind to the condition a participant has been assigned to. Assessors have only limited access to the site, because much of the data stored from participant self reports would reveal which condition a participant was in.</p>
+<p>Assessors can:</p>
+<ul class="simple">
+<li>Find a given participant</li>
+<li>See that observations which are due for participants</li>
+<li>See observations which are overdue</li>
+<li>Enter data for an observation</li>
+</ul>
+</div>
+<div class="section" id="clinicians">
+<h3>Clinicians<a class="headerlink" href="#clinicians" title="Permalink to this headline">¶</a></h3>
+<p>Clinicians treating patients may use the system in several ways:</p>
+<ol class="arabic simple">
+<li>By adding treatment records and other clinical data</li>
+<li>By taking part in sub-studies in which they record data about other participants (see <a class="reference internal" href="memberships.html#membership-types"><em>Membership types</em></a>).</li>
+</ol>
+<p>In theory clinicians may or may not be blind to the allocation of patients (although in the Reframed study they will not be blind).</p>
+<p>Clinicians should have no access to research data (i.e. information about observations due/overdue). They will need to:</p>
+<ul class="simple">
+<li>Find a particular participant</li>
+<li>Add a TreatmentRecord for a treatment session</li>
+<li>Complete an ad-hoc questionnaire attached to a TreatmentRecord</li>
+<li>Send messages to patients</li>
+<li>Add notes to patients (patient_dashboard)</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">SignalBox&#8217;s Roles and Responsibilities</a><ul>
+<li><a class="reference internal" href="#role-and-permissions">Role and Permissions</a></li>
+<li><a class="reference internal" href="#role-based-permissions">Role based permissions</a><ul>
+<li><a class="reference internal" href="#researchers">Researchers</a></li>
+<li><a class="reference internal" href="#research-assistants">Research assistants</a></li>
+<li><a class="reference internal" href="#assessors">Assessors</a></li>
+<li><a class="reference internal" href="#clinicians">Clinicians</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="custom.html"
+                        title="previous chapter">Settings and customisation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="studies.html"
+                        title="next chapter">Setting up studies</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/roles.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="studies.html" title="Setting up studies"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="custom.html" title="Settings and customisation"
+             >previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Ben Whalley.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

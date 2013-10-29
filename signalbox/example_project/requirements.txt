@@ -1,3 +1,4 @@
+-e git+https://github.com/bigfudge/signalbox.git@HEAD#egg=signalbox
 -e git+https://github.com/Soaa-/django-nested-inlines.git@e68a758a2551f4eb739d9f0d901dff6f21230f71#egg=django_nested_inlines-dev
 django-secure==0.1.2
 django-smtp-ssl==1.0
@@ -6,3 +7,4 @@ gunicorn
 newrelic==1.10.0.28
 dj-database-url==0.2.1
 psycopg2==2.4.1
+heroku

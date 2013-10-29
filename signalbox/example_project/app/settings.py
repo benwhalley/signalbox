@@ -127,7 +127,6 @@ INSTALLED_APPS = [
     'django_admin_bootstrapped',
     'admin_tools.dashboard',
     'django.contrib.admin',
-    'localflavour',
     'cms',
     'cmsmenu_redirect',
     'registration',
@@ -238,4 +237,37 @@ CMS_LANGUAGES = {
     }
 
 
-
+LOGGING = {
+    'version': 1,
+    'formatters': {
+    'verbose': {
+        'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+    },
+        'simple': {
+        'format': '%(levelname)s %(message)s'
+        },
+    },
+'handlers': {
+    'null': {
+        'level': 'DEBUG',
+        'class': 'django.utils.log.NullHandler',
+    },
+    'console': {
+        'level': 'DEBUG',
+        'class': 'logging.StreamHandler',
+        'formatter': 'simple'
+    },
+},
+'loggers': {
+    'django': {
+        'handlers': ['null'],
+        'level': 'DEBUG',
+        'propagate': True,
+    },
+    'signalbox': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+        'propagate': True,
+    }
+}
+}

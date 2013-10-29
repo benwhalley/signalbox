@@ -29,8 +29,7 @@ from ask.models import Asker, ChoiceSet, Question, AskPage, Choice, ShowIf
 import envoy
 import os
 
-pandocpath = os.environ.get('PANDOC', None)
-
+pandocpath = os.environ.get('PANDOC', "pandoc")
 
 def get_or_modify(klass, lookups, params):
     """:: Klass -> Dict -> Dict -> (ClassObject, Bool)

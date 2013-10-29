@@ -1,0 +1,184 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Recruiting participants and study memberships &mdash; Signalbox 2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Signalbox 2 documentation" href="index.html" />
+    <link rel="next" title="Collecting data from participants" href="replies.html" />
+    <link rel="prev" title="Creating questionnaires" href="questionnaires.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="replies.html" title="Collecting data from participants"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="questionnaires.html" title="Creating questionnaires"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="recruiting-participants-and-study-memberships">
+<h1>Recruiting participants and study memberships<a class="headerlink" href="#recruiting-participants-and-study-memberships" title="Permalink to this headline">¶</a></h1>
+<p>XXX TODO XXX</p>
+<p>Add overview here</p>
+<p>XXX TODO XXX</p>
+<p>Update content below</p>
+<p id="membership-types">A <tt class="xref py py-class docutils literal"><span class="pre">Membership</span></tt> links participants &#8211; a <tt class="xref py py-class docutils literal"><span class="pre">User</span></tt> &#8211; with <tt class="xref py py-class docutils literal"><span class="pre">Study</span></tt> objects. There are two types of memberships possible within a Signalbox study:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Regular:</th><td class="field-body">This the normal situation, where a participant is simply taking part in a study.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Related:</th><td class="field-body">A second kind, where someone is participating in a study not on their own account, but instead to provide data about another participants (e.g. patients, who are the real object of study). An example of this is where a clinician might take part in a sub-study within a trial to complete assessments of patient progress (or, in fact, report on multiple patients).</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="adding-participants">
+<h2>Adding participants<a class="headerlink" href="#adding-participants" title="Permalink to this headline">¶</a></h2>
+<p>In clinical trials, participants may be recruited outside of the web system and added by administrators or researchers (rather than signing up directly online). Where this is the case, participants must be added to studies manually.
+Participants should be added via the add-participant wizard, available from the <cite>Research Tools</cite> menu, or at <a class="reference external" href="/admin/signalbox/participant/new/">/admin/signalbox/participant/new/</a>.</p>
+<p>Once a participant has been added via the wizard, you are redirected to their dashboard page, from where you can add them to a study.</p>
+<img alt="_images/admin_userhome.png" src="_images/admin_userhome.png" style="width: 40em;" />
+<p>Where the membership is the <cite>related</cite> type, it&#8217;s necessary to fill out the additional <tt class="docutils literal"><span class="pre">relates_to</span></tt> field on the add membership view. To be in the normal situation:</p>
+<ul class="simple">
+<li>The participant is the object of study</li>
+<li>The <tt class="docutils literal"><span class="pre">relates_to</span></tt> field is blank</li>
+</ul>
+<p>And in the <cite>related</cite> type of membership:</p>
+<ul class="simple">
+<li>The participant is someone providing data about the individual being studied.</li>
+<li>The <tt class="docutils literal"><span class="pre">relates_to</span></tt> field denotes the individual being studied</li>
+</ul>
+</div>
+<div class="section" id="randomisation-allocation-methods">
+<h2>Randomisation/allocation methods<a class="headerlink" href="#randomisation-allocation-methods" title="Permalink to this headline">¶</a></h2>
+<p>When a <a class="reference internal" href="glossary.html#term-user"><em class="xref std std-term">user</em></a> signs up for a study (or are added by a <a class="reference internal" href="glossary.html#term-researcher"><em class="xref std std-term">researcher</em></a>), then the system may automatically allocate them to a <tt class="xref py py-class docutils literal"><span class="pre">StudyCondition</span></tt></p>
+<p>At present, allocation is made by one of two methods:</p>
+<div class="section" id="weighted-randomisation">
+<h3>Weighted randomisation<a class="headerlink" href="#weighted-randomisation" title="Permalink to this headline">¶</a></h3>
+<p>Participants are allocated to <tt class="xref py py-class docutils literal"><span class="pre">StudyCondition`s</span> <span class="pre">within</span> <span class="pre">a</span> <span class="pre">:class:</span></tt>-signalbox.models.Study` in the proportions specified by the <tt class="docutils literal"><span class="pre">weight</span></tt> property of each <tt class="xref py py-class docutils literal"><span class="pre">StudyCondition</span></tt>.</p>
+<p>For example, if there are 3 <tt class="xref py py-class docutils literal"><span class="pre">Study</span></tt> and have weights 2, 2 and 3, then participants will be allocated.</p>
+</div>
+<div class="section" id="adaptive-randomisation">
+<h3>Adaptive randomisation<a class="headerlink" href="#adaptive-randomisation" title="Permalink to this headline">¶</a></h3>
+<p>The other method adapts the randomisation to attempt to balance group sizes:</p>
+<p>So, the key thing to remember is to set the <tt class="docutils literal"><span class="pre">randomisation_probability</span></tt> field on the study (or leave it at it&#8217;s default) to determine how frequently randomisation should be used, vs. deterministic allocation to the group which least matches the desired size (based on the StudyCondition weights).</p>
+</div>
+<div class="section" id="pausing-or-deactivating-observations-for-a-membership">
+<h3>Pausing or deactivating observations for a membership<a class="headerlink" href="#pausing-or-deactivating-observations-for-a-membership" title="Permalink to this headline">¶</a></h3>
+<p>If a participant decides to leave the study, but is happy for data provided so far to be used, the best method to pause further observations is to deselect the <tt class="docutils literal"><span class="pre">active</span></tt>  checkbox on their membership page. This will prevent all further observations being sent <em>for that study</em>.</p>
+<p>.warning:: This will not stop all observations for this <em>participant</em> — only those due for this study (i.e. for the membership). If a participant withdraws from a trial which has multiple sub-studies, be sure to deactivate all of their memberships.</p>
+</div>
+<div class="section" id="randomisation-dates-and-date-shifting-observations">
+<h3>Randomisation dates and date-shifting observations<a class="headerlink" href="#randomisation-dates-and-date-shifting-observations" title="Permalink to this headline">¶</a></h3>
+<p>In the case that a person has been randomised to a trial prior to being added to the system, it may be necessary to alter the automatically-generated <tt class="docutils literal"><span class="pre">randomisation_date</span></tt> field on the membership. This can be done through the admin interface: first find the correct membership at <a class="reference external" href="/admin/signalbox/membership/">/admin/signalbox/membership/</a> and then edit the property directly.</p>
+<p>In other cases a participant may be added to the study and observations added automatically. Sometimes, a participant may need to pause participation in the study, or may not have been added to the study early enough and may need to skip some of the observations a script creates. In these cases, a view is provided to <cite>shift</cite> the dates of observations which already exist for a membership, to correct the dates forward or backward. This is available at <a class="reference external" href="/admin/signalbox/membership/dateshift/(membership_number)">/admin/signalbox/membership/dateshift/(membership_number)</a>, or via link on the edit-membership view.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Recruiting participants and study memberships</a><ul>
+<li><a class="reference internal" href="#adding-participants">Adding participants</a></li>
+<li><a class="reference internal" href="#randomisation-allocation-methods">Randomisation/allocation methods</a><ul>
+<li><a class="reference internal" href="#weighted-randomisation">Weighted randomisation</a></li>
+<li><a class="reference internal" href="#adaptive-randomisation">Adaptive randomisation</a></li>
+<li><a class="reference internal" href="#pausing-or-deactivating-observations-for-a-membership">Pausing or deactivating observations for a membership</a></li>
+<li><a class="reference internal" href="#randomisation-dates-and-date-shifting-observations">Randomisation dates and date-shifting observations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="questionnaires.html"
+                        title="previous chapter">Creating questionnaires</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="replies.html"
+                        title="next chapter">Collecting data from participants</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/memberships.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="replies.html" title="Collecting data from participants"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="questionnaires.html" title="Creating questionnaires"
+             >previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Ben Whalley.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

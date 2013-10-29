@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Signalbox 2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Signalbox 2 documentation" href="index.html" />
+    <link rel="next" title="Settings and customisation" href="custom.html" />
+    <link rel="prev" title="SignalBox" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="custom.html" title="Settings and customisation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="SignalBox"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>To run Signalbox you will need some kind of Unix with python 2.7 available. Ubuntu 12.04 LTS is currently recommended, but OS X is fine too for development.</p>
+<p>To get up and running quickly, the easiest way is currently to use <a class="reference external" href="http://heroku.com">Heroku</a> . Heroku have a free plan which is capable enough for even quite large studies, although self-hosting is also straightforward.</p>
+<div class="section" id="using-vagrant">
+<h2>Using Vagrant<a class="headerlink" href="#using-vagrant" title="Permalink to this headline">¶</a></h2>
+<p>In future we might think about using... <a class="reference external" href="https://github.com/torchbox/vagrant-django-base">https://github.com/torchbox/vagrant-django-base</a></p>
+</div>
+<div class="section" id="to-create-a-local-development-environment">
+<h2>To create a local development environment<a class="headerlink" href="#to-create-a-local-development-environment" title="Permalink to this headline">¶</a></h2>
+<p>Install the following packages (e.g. using <tt class="docutils literal"><span class="pre">apt-get</span></tt> or <tt class="docutils literal"><span class="pre">brew</span></tt> on OS X):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">virtualenvwrapper</span>
+<span class="n">libmagic</span>
+</pre></div>
+</div>
+<p>Make a virtual environment, activate it and install python dependencies:</p>
+<div class="highlight-python"><pre>mkvirtualenv sbox
+workon sbox
+pip install -r requirements.txt</pre>
+</div>
+<p>..note:: For more or pip and virtualenv see <a class="reference external" href="http://www.saltycrane.com/blog/2009/05/notes-using-pip-and-virtualenv-django/">http://www.saltycrane.com/blog/2009/05/notes-using-pip-and-virtualenv-django/</a></p>
+<p>Add some variables to your shell (e.g. via <cite>.bash_profile</cite>):</p>
+<div class="highlight-python"><pre>export SECRET_KEY=djangosecretkey
+export DEBUG=1</pre>
+</div>
+<p>Now create a database. If using postgres (strongly recommended; <a class="reference external" href="http://www.postgresql.org">http://www.postgresql.org</a>) create a database named <tt class="docutils literal"><span class="pre">sbox</span></tt>, or check change the <tt class="docutils literal"><span class="pre">DB_URL</span></tt> env var from it&#8217;s default, which is <tt class="docutils literal"><span class="pre">postgres://localhost/sbox</span></tt>.</p>
+</div>
+<div class="section" id="to-deploy-on-heroku">
+<h2>To deploy on heroku<a class="headerlink" href="#to-deploy-on-heroku" title="Permalink to this headline">¶</a></h2>
+<p>Deploying on <a class="reference external" href="http://heroku.com">Heroku</a> is a good way of getting up an running quickly. To install you&#8217;ll need the heroku command line tools and an account already setup.Then, from the base directory of the Signalbox project, run:</p>
+<div class="highlight-python"><pre>heroku apps:create YOURAPPNAME
+heroku addons:add heroku-postgresql:dev
+heroku addons:add pgbackups
+heroku addons:add scheduler:standard</pre>
+</div>
+<p>And also set the same env variables as above on heroku:</p>
+<div class="highlight-python"><pre>heroku config:set SECRET_KEY=djangosecretkey</pre>
+</div>
+</div>
+<div class="section" id="to-deploy-on-your-own-server-using-apache">
+<h2>To deploy on your own server using Apache<a class="headerlink" href="#to-deploy-on-your-own-server-using-apache" title="Permalink to this headline">¶</a></h2>
+<p>See <cite>sbox.wsgi</cite> and <cite>sbox_vhost.conf</cite> to get things working with Apache.</p>
+</div>
+<div class="section" id="configuring-the-site">
+<h2>Configuring the site<a class="headerlink" href="#configuring-the-site" title="Permalink to this headline">¶</a></h2>
+<p>Make sure you have setup the django <tt class="docutils literal"><span class="pre">Site</span></tt>  object correctly though the admin interface here <tt class="docutils literal"><span class="pre">/admin/sites/site/1/</span></tt>. The url for the <tt class="docutils literal"><span class="pre">Site</span></tt> is used in multiple places, including when generating the callback links sent to participants.</p>
+<p>Having already created a database, create the necessary tables by running:</p>
+<div class="highlight-python"><pre>app/manage.py syncdb --all --noinput</pre>
+</div>
+<p>..note:: To make things work on heroku, prefix with <tt class="docutils literal"><span class="pre">heroku</span> <span class="pre">run</span></tt></p>
+<p>To load some configuration and an example study, run:</p>
+<div class="highlight-python"><pre>app/manage.py loaddata sbox/signalbox/fixtures/initial_data_dontload.json</pre>
+</div>
+<p>Note, if this file were called <tt class="docutils literal"><span class="pre">initial_data.json</span></tt> it would have been loaded on <cite>syncdb</cite>, but this isn&#8217;t always desireable.</p>
+<p>To create an administrator:</p>
+<div class="highlight-python"><pre>app/manage.py createsuperuser</pre>
+</div>
+<p>To create test users of each of the different roles for demonstration purposes:</p>
+<div class="highlight-python"><pre>app/manage.py make_dummy_users</pre>
+</div>
+</div>
+<div class="section" id="email-and-sms-settings">
+<h2>Email and SMS settings<a class="headerlink" href="#email-and-sms-settings" title="Permalink to this headline">¶</a></h2>
+<p>API keys and passwords are stored in environment variables (see <a class="reference external" href="http://www.12factor.net/config">http://www.12factor.net/config</a>).</p>
+<p>It&#8217;s recommended to use Amazon S3 (<a class="reference external" href="http://aws.amazon.com/s3/">http://aws.amazon.com/s3/</a>) to serve static assets (this is done automatically via django_compressor and the <tt class="docutils literal"><span class="pre">collectstatic</span></tt> command).:</p>
+<div class="highlight-python"><pre>export AWS_STORAGE_BUCKET_NAME=bucket
+export AWS_ACCESS_KEY_ID=key
+export AWS_ACCESS_KEY_TOKEN=token</pre>
+</div>
+<p>You can set your email relay with the follwing settings::</p>
+<div class="highlight-python"><pre>export EMAIL_HOST=YOUR_EMAIL_HOST
+export EMAIL_PORT=YOUR_EMAIL_PORT
+export EMAIL_HOST_USER=YOUR_EMAIL_HOST_USER
+export EMAIL_HOST_PASSWORD=YOUR_EMAIL_HOST_PASSWORD</pre>
+</div>
+<p>..note:: The default is to require SSL and use port 465. We recommend using AWS SES (<a class="reference external" href="http://aws.amazon.com/ses/">http://aws.amazon.com/ses/</a>) or SendGrid because these services can ensure much higher rates of delivery and avoid mail being classified as spam.</p>
+<p>A <a class="reference external" href="http://twilio.com">Twilio</a> API key is required to send SMS messages or make telephone calls - these should be added to a TwilioAccount object, within the TwilioBox application.</p>
+</div>
+<div class="section" id="scheduled-tasks-and-sending-observations">
+<h2>Scheduled tasks and sending observations<a class="headerlink" href="#scheduled-tasks-and-sending-observations" title="Permalink to this headline">¶</a></h2>
+<p>We use django-kronos to create management tasks which run at regular intervals; see <a class="reference external" href="https://github.com/jgorset/django-kronos">https://github.com/jgorset/django-kronos</a> .</p>
+<p>At the shell, you can send observations or reminders:</p>
+<div class="highlight-python"><pre>app/manage.py runtask send
+app/manage.py runtask remind</pre>
+</div>
+<p>For herkoku, open the scheduler interface and add the following commands:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd><p class="first">heroku addons:open scheduler</p>
+<p class="last">app/manage.py runtask send
+app/manage.py runtask remind</p>
+</dd>
+</dl>
+<p>..note:: These can be at any frequency you like, but bear in mind that if these jobs take a long time to run (with larger numbers of participants) then they may incur a (very) small cost from heroku, even using the free plan. You don&#8217;t need to set up an additional worker dyno though.</p>
+<p>On your own machine it&#8217;s even easier, running <cite>app/manage.py installtasks</cite> will add the relevant entries to schedule sending of observations and reminders to the crontab.</p>
+<p>..note:: You can also hit <cite>/admin/signalbox/cron/</cite> whenever you like, this will send all observations which are due.</p>
+</div>
+<div class="section" id="version-control">
+<h2>Version control<a class="headerlink" href="#version-control" title="Permalink to this headline">¶</a></h2>
+<p>Signalbox can use <tt class="docutils literal"><span class="pre">django_reversion</span></tt> to keep track of changes to Answer, Reply and Observation objects to provide an audit trail for a trial. It&#8217;s not enabled by default, but to turn it on you can set an environment variable:</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>export USE_VERSIONING=1</dd>
+</dl>
+</div>
+<div class="section" id="browser-compatibility">
+<h2>Browser compatibility<a class="headerlink" href="#browser-compatibility" title="Permalink to this headline">¶</a></h2>
+<p>The front-end (participant facing pages) should work in almost all browsers, including IE7.</p>
+<p>The admin interface works best in a recent webkit browser (Safari or Chrome) but will largely function in IE7 (although the menus are slightly broken, they are usable). Everything will work properly in IE8 onwards.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">It&#8217;s recommended to use Chrome-Frame if IE7 is the only available browser. See: <a class="reference external" href="https://developers.google.com/chrome/chrome-frame/">https://developers.google.com/chrome/chrome-frame/</a></p>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Check everything works in your target browsers early in the trial setup. The health services and large firms have some weird and wonderful stuff deployed.</p>
+</div>
+</div>
+<div class="section" id="running-the-tests">
+<h2>Running the tests<a class="headerlink" href="#running-the-tests" title="Permalink to this headline">¶</a></h2>
+<p>The tests are not complete, but may nontheless be useful:</p>
+<div class="highlight-python"><pre>app/manage.py test signalbox
+app/manage.py test ask</pre>
+</div>
+</div>
+<div class="section" id="reference-for-all-user-configurable-environment-variables">
+<h2>Reference for all user-configurable environment variables<a class="headerlink" href="#reference-for-all-user-configurable-environment-variables" title="Permalink to this headline">¶</a></h2>
+<p>Each of these is loaded from an environment variable by signalbox.configurable_settings.py, and some are documented there. XXX Add more details here.</p>
+<p>DB_URL default: postgres://localhost/sbox</p>
+<p>LOGIN_FROM_OBSERVATION_TOKEN
+SHOW_USER_CURRENT_STUDIES</p>
+<p>DEBUG
+OFFLINE</p>
+<p>AWS_STORAGE_BUCKET_NAME
+COMPRESS_ENABLED
+AWS_QUERYSTRING_AUTH</p>
+<p>SECRET_KEY
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+TWILIO_ID
+TWILIO_TOKEN</p>
+<p>ALLOWED_HOSTS
+SESSION_COOKIE_HTTPONLY
+SECURE_BROWSER_XSS_FILTER
+SECURE_CONTENT_TYPE_NOSNIFF
+SECURE_SSL_REDIRECT
+SESSION_COOKIE_AGE
+SESSION_SAVE_EVERY_REQUEST
+SESSION_EXPIRE_AT_BROWSER_CLOSE</p>
+<p>ALLOW_IMPERSONATION
+USE_VERSIONING</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#using-vagrant">Using Vagrant</a></li>
+<li><a class="reference internal" href="#to-create-a-local-development-environment">To create a local development environment</a></li>
+<li><a class="reference internal" href="#to-deploy-on-heroku">To deploy on heroku</a></li>
+<li><a class="reference internal" href="#to-deploy-on-your-own-server-using-apache">To deploy on your own server using Apache</a></li>
+<li><a class="reference internal" href="#configuring-the-site">Configuring the site</a></li>
+<li><a class="reference internal" href="#email-and-sms-settings">Email and SMS settings</a></li>
+<li><a class="reference internal" href="#scheduled-tasks-and-sending-observations">Scheduled tasks and sending observations</a></li>
+<li><a class="reference internal" href="#version-control">Version control</a></li>
+<li><a class="reference internal" href="#browser-compatibility">Browser compatibility</a></li>
+<li><a class="reference internal" href="#running-the-tests">Running the tests</a></li>
+<li><a class="reference internal" href="#reference-for-all-user-configurable-environment-variables">Reference for all user-configurable environment variables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">SignalBox</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="custom.html"
+                        title="next chapter">Settings and customisation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/install.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="custom.html" title="Settings and customisation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="SignalBox"
+             >previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Ben Whalley.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

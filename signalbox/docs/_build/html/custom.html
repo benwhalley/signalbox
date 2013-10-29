@@ -1,0 +1,150 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Settings and customisation &mdash; Signalbox 2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Signalbox 2 documentation" href="index.html" />
+    <link rel="next" title="SignalBox’s Roles and Responsibilities" href="roles.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="roles.html" title="SignalBox’s Roles and Responsibilities"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="settings-and-customisation">
+<h1>Settings and customisation<a class="headerlink" href="#settings-and-customisation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="settings">
+<h2>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h2>
+<p>The following settings will be loaded from environment variables, overriding these defaults:</p>
+<div class="highlight-python"><pre>   DB_URL                      'postgres://localhost/sbox'
+   DEBUG                       0 (False)
+   USE_VERSIONING              0
+   FRONTEND                    frontend
+
+   AWS_STORAGE_BUCKET_NAME     thesignalbox
+   AWS_ACCESS_KEY_ID
+   AWS_SECRET_ACCESS_KEY
+
+   TWILIO_ID
+   TWILIO_TOKEN
+
+   EMAIL_HOST                  localhost
+   EMAIL_PORT                  25
+   EMAIL_HOST_USER
+   EMAIL_HOST_PASSWORD
+
+
+Booleans are set using 0/1 in the environment variable.</pre>
+</div>
+</div>
+<div class="section" id="customising-your-installation">
+<h2>Customising your installation<a class="headerlink" href="#customising-your-installation" title="Permalink to this headline">¶</a></h2>
+<p>Signalbox allows customisation of the front-end of a site (and much else besides). The <tt class="docutils literal"><span class="pre">FRONTEND</span></tt> env var determines which django app/module is loaded and used to define per-deployment settings or templates.</p>
+<p>Either edit files within the <tt class="docutils literal"><span class="pre">frontend</span></tt> folder, or duplicate it for editing and set the <tt class="docutils literal"><span class="pre">FRONTEND</span></tt> variable to your new name. Within this app, you must include a <tt class="docutils literal"><span class="pre">settings.py</span></tt> file, which can contain the following settings:</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Settings and customisation</a><ul>
+<li><a class="reference internal" href="#settings">Settings</a></li>
+<li><a class="reference internal" href="#customising-your-installation">Customising your installation</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="install.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="roles.html"
+                        title="next chapter">SignalBox&#8217;s Roles and Responsibilities</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/custom.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="roles.html" title="SignalBox’s Roles and Responsibilities"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">Signalbox 2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Ben Whalley.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

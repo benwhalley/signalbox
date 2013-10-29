@@ -156,8 +156,23 @@ class TestScheduling(TestCase):
         assert len(mail.outbox) == 1  # has been sent now
 
         send_reminders_due_now()
-        assert len(mail.outbox) == 1  # not resent now
-
+        assert len(mail.outbox) == 1  # not resent again
+        
+        # it comes from the right address
+        assert mail.outbox[0].from_email == "jondoe@example.com"
+        
+    def test_reminder_from_emails(self):
+        """"Test the logic that determines the return address for emails."""
+        first, reminder = self.test_reminders_get_added()
+        reminder.due = datetime.now()
+        reminder.reminder.from_address = ""
+        reminder.save()
+        reminder.reminder.save()
+        send_reminders_due_now()
+            
+        # expect it to come from the studyadmin because nothing set for the reminder
+        assert mail.outbox[0].from_email == "studyadmin@example.com"
+        
     def test_sending_observation(self):
         """ -> Observation """
 

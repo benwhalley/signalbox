@@ -1,2 +1,6 @@
-recursive-include signalbox ask twiliobox test example_project docs *
+include *.txt
+recursive-include data *
+recursive-include ask *
+recursive-include signalbox *
+recursive-include twiliobox *
 prune *.pyc

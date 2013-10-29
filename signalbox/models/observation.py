@@ -67,8 +67,10 @@ class ReminderInstance(models.Model):
     def _send_email_reminder(self):
         """Send an email reminder -> (bool_success, str_statusmessage)"""
 
+        
         to_address, from_address = hlp.get_email_address_details(self.observation)
-        from_address = self.reminder.from_address or from_address
+        from_address = self.reminder.from_address or from_address  # override if needed
+        
         subject, message = hlp.format_message_content(self.reminder.subject,
             self.reminder.message, self.observation)
 
