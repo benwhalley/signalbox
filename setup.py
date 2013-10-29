@@ -11,14 +11,14 @@ scripts = []
 
 setup(
     name='signalbox',
-    version='0.1.2',
+    version='0.1.3',
     author='Ben Whalley',
     author_email='benwhalley@gmail.com',
     packages=['signalbox'],
     scripts=scripts,
     url='http://pypi.python.org/pypi/signalbox/',
     license='LICENSE.txt',
-    description='Run longitudinal studies and RCTs over the web and phone.',
+    description='Run longitudinal studies and randomised trials over the web and telephone.',
     long_description=open('README.txt').read(),
     install_requires=install_reqs,
     entry_points = {

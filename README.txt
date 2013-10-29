@@ -9,15 +9,15 @@ Read the docs: http://signalbox.readthedocs.org/en/latest/
 
 To install::
 	
-mkvirtualenv signalbox_virtualenv
-#pip install signalbox
-pip install -e signalbox/
-bootstrap_signalbox # asks for new project name
-newprojectname
-cd newprojectname
-pip install -r requirements.txt
-source local-environment-example.sh
-app/manage.py syncdb
-app/manage.py migrate
-app/manage.py runserver
-open 127.0.0.1:8000
+	mkvirtualenv signalbox_virtualenv
+	pip install signalbox
+	bootstrap_signalbox # asks for new project name
+	newprojectname
+	cd newprojectname
+	pip install -r requirements.txt
+	source local-environment-example.sh
+	app/manage.py syncdb
+	app/manage.py migrate
+	app/manage.py runserver
+	open 127.0.0.1:8000/admin
+

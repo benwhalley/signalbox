@@ -5,7 +5,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-
 ALL_MENU_ITEMS = {
     'add_participant': (('Add partcipant'), reverse('new_participant')),
     'add_staff': (('Add new staff member'), reverse('admin:auth_user_add')),
