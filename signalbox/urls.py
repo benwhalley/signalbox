@@ -16,7 +16,6 @@ from signalbox.views.assessors import observations_outstanding
 from signalbox.views.back import *
 from signalbox.views.data import *
 from signalbox.views.front import join_study, user_homepage, MembershipDetail, update_profile_for_studies, SignalboxRegistrationView
-from signalbox.views.observations import *
 from signalbox.views.participants import *
 from signalbox.views.replies import *
 from signalbox.views.usermessage import send_usermessage
