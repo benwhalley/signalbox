@@ -6,8 +6,8 @@ reqs = parse_requirements("requirements.txt")
 install_reqs = [str(ir.req) for ir in reqs]
 
 scripts = []
-# if 'DYNO' in os.environ:  # assume we are on heroku
-#   scripts = scripts + ['bin/pandoc']  # and use our bespoke pandoc build
+if 'DYNO' in os.environ:  # assume we are on heroku
+  scripts = scripts + ['bin/pandoc']  # and use our bespoke pandoc build
 
 setup(
     name='signalbox',
