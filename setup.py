@@ -11,10 +11,10 @@ if 'DYNO' in os.environ:  # assume we are on heroku
 
 setup(
     name='signalbox',
-    version='0.1.3',
+    version='0.1.7',
     author='Ben Whalley',
     author_email='benwhalley@gmail.com',
-    packages=['signalbox'],
+    packages=['signalbox', 'ask', 'twiliobox'],
     scripts=scripts,
     url='http://pypi.python.org/pypi/signalbox/',
     license='LICENSE.txt',
