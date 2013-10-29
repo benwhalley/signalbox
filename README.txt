@@ -24,8 +24,9 @@ Local install
 
 First create a virtualenv and install signalbox itself using pip. Then use the included setup_signalbox command to make an example project (note, you can do all this manually, just look at settings.py in the example project)::
 	
-	mkvirtualenv signalbox_virtualenv
+	mkvirtualenv sbox_virtualenv
 	pip install signalbox
+	pip install -U -e git+https://github.com/bigfudge/signalbox.git@HEAD#egg=signalbox
 	setup_signalbox.sh
 	
 
