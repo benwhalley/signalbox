@@ -1,11 +1,3 @@
-from utilities.get_env_variable import get_env_variable
-
-
-TIME_ZONE = 'Europe/London'
-LANGUAGE_CODE = 'en-uk'
-USE_I18N = False
-USE_L10N = False
-
 
 DATE_INPUT_FORMATS = ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%b %d %Y',
                       '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
@@ -14,12 +6,6 @@ DATE_INPUT_FORMATS = ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%b %d %Y',
 DATETIME_INPUT_FORMATS = ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M', '%Y-%m-%d',
                           '%d/%m/%Y %H:%M:%S', '%d/%m/%Y %H:%M', '%d/%m/%Y',
                           '%d/%m/%y %H:%M:%S', '%d/%m/%y %H:%M', '%d/%m/%y')
-
-
-# TWILIO #
-# XXX todo move this to environment variable
-TTS_VOICE = 'female'
-TTS_LANGUAGE = 'en-gb'
 
 
 # SIGNALBOX

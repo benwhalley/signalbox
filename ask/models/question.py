@@ -1,6 +1,5 @@
 """Questions and related models to place them in questionnaire pages and instruments."""
 import ast
-from storages.backends.s3boto import S3BotoStorage
 from django.forms.models import model_to_dict
 from django.template.loader import get_template
 import json
@@ -14,7 +13,7 @@ import ask.validators as valid
 from signalbox.utilities.djangobits import supergetattr, flatten, safe_help, int_or_string
 from signalbox.utilities.linkedinline import admin_edit_url
 from signalbox.exceptions import DataProtectionException
-
+from django.conf import settings
 truncatelabel = lambda x, y: (x[:int(y) / 2] + '...' + x[- int(y) / 2:]) if len(x) > y else x
 
 
@@ -155,7 +154,7 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
     help_text = models.TextField(blank=True, null=True)
 
     # we use S3 because otherwise there's a real lag on the call from twilio
-    audio = models.FileField(storage=S3BotoStorage(), upload_to="audio", blank=True, null=True,
+    audio = models.FileField(storage=settings.MAIN_STORAGE, upload_to="audio", blank=True, null=True,
         help_text="""Audio file for use in automated telephone calls.""")
 
     def showme(self, reply):

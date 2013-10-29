@@ -62,7 +62,7 @@ SECURE_FRAME_DENY = False
 
 
 
-# see the impersonation middleware for details of what this allow
+# see the sonation middleware for details of what this allow
 ALLOW_IMPERSONATION = get_env_variable('ALLOW_IMPERSONATION', default=False, int_to_bool=True)
 
 # Turn on and off versioning
@@ -72,6 +72,10 @@ ALLOW_IMPERSONATION = get_env_variable('ALLOW_IMPERSONATION', default=False, int
 # funded studies.
 USE_VERSIONING = get_env_variable('USE_VERSIONING', default=False, int_to_bool=True)
 
+
+# TWILIO #
+TTS_VOICE = get_env_variable('TTS_VOICE', default='female')
+TTS_LANGUAGE = get_env_variable('TTS_LANGUAGE', default='en-gb')
 
 
 
@@ -104,3 +108,11 @@ if bool('test' in sys.argv):
     print "Turning on versioning because we are testing"
     USE_VERSIONING = True
 
+
+
+ALLOWED_UPLOAD_MIME_TYPES = [
+    'application/pdf',
+    'image/png',
+    'image/jpeg',
+    'image/gif',
+]
