@@ -11,7 +11,7 @@ if 'DYNO' in os.environ:  # assume we are on heroku
     
 setup(
     name='signalbox',
-    version='0.1.1',
+    version='0.1.2',
     author='Ben Whalley',
     author_email='benwhalley@gmail.com',
     packages=['signalbox'],
