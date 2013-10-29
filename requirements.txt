@@ -29,4 +29,4 @@ django-selectable==0.2
 django_extensions
 cmsmenu_redirect
 django-absolute>=0.3
-Pillow==1.7.8
+Pillow==1.7.8prii

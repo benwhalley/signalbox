@@ -5,10 +5,11 @@ from distutils.core import setup
 reqs = parse_requirements("requirements.txt")
 install_reqs = [str(ir.req) for ir in reqs]
 
-scripts = []
+scripts = ['bin/new_signalbox',]
 if 'DYNO' in os.environ:  # assume we are on heroku
   scripts = scripts + ['bin/pandoc']  # and use our bespoke pandoc build
-    
+
+print scripts
 setup(
     name='signalbox',
     version='0.1.2',

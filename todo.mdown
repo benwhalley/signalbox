@@ -63,6 +63,72 @@ Create managers to encapsulate logic about which groups are allowed to see which
 
 
 
+# Todo
+
+- previewing of questions and choicesets inline
+
+
+-- better serialisation with wadofstuff?
+http://code.google.com/p/wadofstuff/wiki/DjangoFullSerializers
+
+import itertools
+asker = Asker.objects.select_related().get(slug="LINQ")
+qs = Question.objects.select_related().filter(page__asker=asker)
+obs = itertools.chain(*[[asker],qs] )
+serializers.serialize( "json", obs, indent = 2, relations = ('choiceset',))
+
+
+
+Sometime
+- todo... use a study as an answerphone instead of an asker so that someone can be randomised to conditions over the phone... need to mark a script as an AnswerPhone type and attach to a number
+Would have a study attached to a number... each condition within the study would then need an AnswerPhone script which could in turn create more observations  ???? - todo... create a user and membership via an anonymous asker and add data to a userprofile via a Question in that asker.
+
+
+
+
+- add tests for alerts...
+- check response for twilio and repeat if not in approved list
+- perhps use django forms for twilio?
+- test reminder sending logic
+- test study period logic
+
+- create installer script for heroku
+    - scheduler optional
+    - provision postgres
+    - syncdb
+    - install fixtures
+    - set env vars
+    - create site/domain automatically
+
+- documentaton of file upload and webcam fields.. e.g. browser specs
+- docs for ad hoc script use
+
+
+
+# need to check these would actually work...
+# 'aiff',
+# 'wav',
+# vnd.openxmlformats-officedocument.spreadsheetml.sheet
+# vnd.openxmlformats-officedocument.spreadsheetml.template
+# vnd.openxmlformats-officedocument.presentationml.template
+# vnd.openxmlformats-officedocument.presentationml.slideshow
+# vnd.openxmlformats-officedocument.presentationml.presentation
+# vnd.openxmlformats-officedocument.presentationml.slide
+# vnd.openxmlformats-officedocument.wordprocessingml.document
+# vnd.openxmlformats-officedocument.wordprocessingml.template
+
+
+# show row counts in all tables
+SELECT schemaname,relname,n_live_tup 
+  FROM pg_stat_user_tables 
+  ORDER BY n_live_tup DESC;
+
+
+
+
+BUG: the system won't check if you try to make more than one Choice the default value for a choiceset. Remember how this might interact with markdown editing when fixing.
+
+
 
 
 
