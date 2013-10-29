@@ -1,0 +1,3 @@
+web: newrelic-admin run-program python app/manage.py run_gunicorn  --workers 2 -t 120 -b 0.0.0.0:$PORT
+
+
