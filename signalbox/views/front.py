@@ -115,8 +115,7 @@ def user_homepage(request):
         return HttpResponseRedirect(reverse('update_profile_for_studies'))
 
     return render_to_response('signalbox/user_home.html',
-                              {'installation_manager_email':
-                                  settings.MANAGERS[0][1]},
+                              {},
                               context_instance=RequestContext(request))
 
 

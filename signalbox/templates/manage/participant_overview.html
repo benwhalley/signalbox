@@ -1,0 +1,74 @@
+{% extends "admin/base_site.html" %}
+{% block title %}{{participant}} ({{participant.username}}){% endblock %}
+{% load signalbox_tags %}
+{% load markup humanize %}
+
+
+{% block content_title %}
+<a class="brand">Overview of: {{participant.display_name}} {{participant.username}}</a>
+<a class="btn pull-right" href="{% url "edit_participant" participant.id %}"> Edit user details</a>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="row">
+
+    <div class="tabbable span12"> <!-- Only required for left/right tabs -->
+      <ul class="nav nav-tabs" id="usertabs">
+        <li class="active"><a href="#tabtasks" data-toggle="tab">Tasks to do
+            {% with participant.tasklist_observations|length as l %}
+            <span class="
+            badge {% if l %}badge-warning{%else%}badge-info{% endif %}
+            badge {% if participant.has_observation_expiring_today %}badge-important{% endif %}
+            ">{{participant.tasklist_observations|length}}</span> </a>
+            {% endwith %}
+        </li>
+        <li><a href="#tabmemberships" data-toggle="tab">Study Memberships</a></li>
+
+        {% if participant.get_profile.ad_hoc_scripts_available %}
+            <li><a href="#tabextradata" data-toggle="tab">Add extra data</a></li>
+        {% endif %}
+
+        <li><a href="#tabmessages" data-toggle="tab">Messages</a></li>
+        <li><a href="#tabcontactlog" data-toggle="tab">Contact Log</a></li>
+        <li><a href="#tabreplies" data-toggle="tab">Observations & Replies</a></li>
+      </ul>
+
+      <div class="tab-content">
+       <div class="tab-pane active" id="tabtasks">
+         {% if participant.tasklist_observations|length > 0%}
+         <h4>Tasks outstanding for user: {{participant}}</h4>
+         {% include "manage/participant_observations_fragment.html" %}
+         {% else %}
+            <h4>You're up to date with everything.</h4>
+         {% endif %}
+       </div>
+        <div class="tab-pane" id="tabmemberships">
+          {% include "manage/participant_memberships_fragment.html" %}
+        </div>
+
+
+        <div class="tab-pane" id="tabextradata">
+            {% include "admin/signalbox/_fragments/_ad_hoc_scripts.html" %}
+        </div>
+
+        <div class="tab-pane" id="tabmessages">
+                {% include "manage/participant_messages_fragment.html" %}
+        </div>
+
+        <div class="tab-pane" id="tabcontactlog">
+                {% include "manage/add_contact_note_fragment.html" %}
+        </div>
+
+        <div class="tab-pane" id="tabreplies">
+            {% replies participant %}
+        </div>
+
+      </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
