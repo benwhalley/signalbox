@@ -29,4 +29,8 @@ django-selectable==0.2
 django_extensions
 cmsmenu_redirect
 django-absolute>=0.3
-Pillow==1.7.8prii
+Pillow==1.7.8
+django-admin-bootstrapped==0.3.2
+django-bootstrap-pagination==0.1.10
+django-data-exports==0.2
+django-localflavor

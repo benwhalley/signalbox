@@ -5,11 +5,10 @@ from distutils.core import setup
 reqs = parse_requirements("requirements.txt")
 install_reqs = [str(ir.req) for ir in reqs]
 
-scripts = ['bin/new_signalbox',]
-if 'DYNO' in os.environ:  # assume we are on heroku
-  scripts = scripts + ['bin/pandoc']  # and use our bespoke pandoc build
+scripts = []
+# if 'DYNO' in os.environ:  # assume we are on heroku
+#   scripts = scripts + ['bin/pandoc']  # and use our bespoke pandoc build
 
-print scripts
 setup(
     name='signalbox',
     version='0.1.2',
@@ -21,5 +20,10 @@ setup(
     license='LICENSE.txt',
     description='Run longitudinal studies and RCTs over the web and phone.',
     long_description=open('README.txt').read(),
-    install_requires=install_reqs
+    install_requires=install_reqs,
+    entry_points = {
+            'console_scripts': [
+                'bootstrap_signalbox = signalbox.utilities.bootstrap:bootstrap_signalbox',
+            ]
+    }
 )

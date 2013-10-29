@@ -85,8 +85,7 @@ class UserMessage(models.Model):
                          (self.message_to.email,), fail_silently=False)
         return mess
 
-    @transition(source='pending', target='sent', save=True)
+    @transition(field=state, source='pending', target='sent', save=True)
     def send(self):
-        f = getattr(self, "_send_" + self.message_type.lower())
-                    # e.g. gets _send_sms()
+        f = getattr(self, "_send_" + self.message_type.lower())  # e.g. gets _send_sms()
         return f()

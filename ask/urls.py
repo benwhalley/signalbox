@@ -2,7 +2,7 @@ from ask.models import Asker
 from ask.views import preview_asker, show_page, start_anonymous_survey
 from ask.views import print_asker, show_codebook, preview_questions, bulk_add_questions
 from ask.views.pandoc import edit_markdown_survey
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import DetailView
 from signalbox.decorators import group_required

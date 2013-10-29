@@ -1,8 +1,4 @@
--e git+git://github.com/bigfudge/signalbox.git@HEAD#egg=signalbox
-django-admin-bootstrapped==0.3.2
-django-bootstrap-pagination==0.1.10
-django-data-exports==0.2
--e git://github.com/Soaa-/django-nested-inlines.git@e68a758a2551f4eb739d9f0d901dff6f21230f71#egg=django_nested_inlines-dev
+-e git+https://github.com/Soaa-/django-nested-inlines.git@e68a758a2551f4eb739d9f0d901dff6f21230f71#egg=django_nested_inlines-dev
 django-secure==0.1.2
 django-smtp-ssl==1.0
 -e hg+https://bitbucket.org/david/django-storages@02afdf3d27871a3588ede24b00e4fdb9e99cd807#egg=django_storages-dev

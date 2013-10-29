@@ -127,6 +127,7 @@ INSTALLED_APPS = [
     'django_admin_bootstrapped',
     'admin_tools.dashboard',
     'django.contrib.admin',
+    'localflavour',
     'cms',
     'cmsmenu_redirect',
     'registration',

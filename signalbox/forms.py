@@ -6,7 +6,7 @@ from django import forms
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
-from django.contrib.localflavor.uk.forms import UKCountySelect, UKPostcodeField
+from localflavor.gb.forms import GBCountySelect, GBPostcodeField
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -202,8 +202,8 @@ class CreateParticipantForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
-    postcode = UKPostcodeField(required=False)
-    county = UKCountySelect()
+    postcode = GBPostcodeField(required=False)
+    county = GBCountySelect()
 
     def __init__(self, *args, **kwargs):
 

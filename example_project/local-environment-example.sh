@@ -1,8 +1,8 @@
 export DEVELOPMENT=1
 export DEBUG=1
 export OFFLINE=1
-export DATABASE_URL="postgres://localhost/sbox"
-export AWS_STORAGE_BUCKET_NAME="sbox"
+export DATABASE_URL="postgres://localhost/sbox_example_project"
+export AWS_STORAGE_BUCKET_NAME="thesignalbox"
 export EMAIL_PORT=25
 export EMAIL_HOST="localhost"
 export SECRET_KEY="1234"
