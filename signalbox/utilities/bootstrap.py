@@ -13,7 +13,7 @@ def example_project_dir():
     
 
 
-def signalbox_heroku_quickstart():
+def setup_signalbox_heroku():
     from signalbox import configurable_settings
     from boto.s3.connection import S3Connection
     import heroku

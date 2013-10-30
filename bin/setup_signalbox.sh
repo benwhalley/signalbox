@@ -1,3 +1,5 @@
+#!/bin/bash
+
 mkvirtualenv sbox_virtualenv
 # pip install signalbox
 pip install -U -e git+https://github.com/bigfudge/signalbox.git@HEAD#egg=signalbox

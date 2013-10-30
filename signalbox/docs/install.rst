@@ -10,91 +10,78 @@ To get up and running quickly, the easiest way is currently to use Heroku_ . Her
 
 
 
-Using Vagrant
-~~~~~~~~~~~~~~~~
-In future we might think about using... https://github.com/torchbox/vagrant-django-base
+
+OS Dependencies
+----------------
+
+On Ubuntu 12.04, you can install everything you need for a development machine like this::
+
+	sudo apt-get install -y python-dev postgresql-server-dev-9.1 libjpeg-dev virtualenvwrapper libmagic-dev git mercurial zlib1g-dev libfreetype6 libfreetype6-dev
+	export WORKON_HOME=~/Envs
+	mkdir -p $WORKON_HOME
+	source /usr/local/bin/virtualenvwrapper.sh
 
 
-To create a local development environment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Local install
+---------------
 
-
-Install the following packages (e.g. using ``apt-get`` or ``brew`` on OS X)::
-
-    virtualenvwrapper
-    libmagic
-
-
-Make a virtual environment, activate it and install python dependencies::
-
-    mkvirtualenv sbox
-    workon sbox
-    pip install -r requirements.txt
-
-
-..note:: For more or pip and virtualenv see http://www.saltycrane.com/blog/2009/05/notes-using-pip-and-virtualenv-django/
-
-
-
-Add some variables to your shell (e.g. via `.bash_profile`)::
-
-    export SECRET_KEY=djangosecretkey
-    export DEBUG=1
-
-Now create a database. If using postgres (strongly recommended; http://www.postgresql.org) create a database named ``sbox``, or check change the ``DB_URL`` env var from it's default, which is ``postgres://localhost/sbox``.
+First make a database with postgres (for development, allow the local user permissions). Then use the included setup_signalbox command to make an example project (note, you can do all this manually, just look at the script and at settings.py in the example project)::
+	
+	createdb sbox
+	setup_signalbox
+	
+If everything works, open http://127.0.0.1:8000/admin  to view the admin site on your development machine.
 
 
 
-To deploy on heroku
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hosted installation
+--------------------
 
-Deploying on Heroku_ is a good way of getting up an running quickly. To install you'll need the heroku command line tools and an account already setup.Then, from the base directory of the Signalbox project, run:
-::
+To get it running on Heroku's free plan (which is ideal for normal sized studies), you first need to:
 
-    heroku apps:create YOURAPPNAME
-    heroku addons:add heroku-postgresql:dev
-    heroku addons:add pgbackups
-    heroku addons:add scheduler:standard
+1. Sign up for an account with Heroky (https://devcenter.heroku.com/articles/quickstart) and install their command line tool.
+ 
+2. Sign up with Amazon for an S3 storage account (this to host the static image files which cannot be kept on heroku). See http://aws.amazon.com. During the setup process you will need to enter your secret AWS ID and key, but this is not saved on the local machine.
 
-.. _Heroku: http://heroku.com
+3. Obtain the details  (host, username, password) for an SMTP email server you will use. Amazon's 'simple email service', SES, is good: http://aws.amazon.com/ses/
 
-And also set the same env variables as above on heroku:
-::
-    heroku config:set SECRET_KEY=djangosecretkey
+4. If you plan on using interactive telephone calls, sign up with Twilio and make a note of your secret ID and key: https://www.twilio.com.
 
 
+Then inside the new directory created above run these commands::
+	
+	wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+	ssh-keygen
+	heroku keys:add
+	
+	cd YOURPROJECT
+	git init; git add -A; git commit -a -m "initial commit"
+	setup_signalbox_heroku
+	
+	git push heroku master
+	heroku run app/manage.py syncdb --all --noinput; heroku run app/manage.py collectstatic --noinput
+	heroku apps:open	
 
 
+Remember to add a scheduled task to send observations via the heroku control panel. The frequency is up to you - polling more often can cost more in dyno time if it overruns the free quota (but not much), but you'll want to add scheduled tasks for these scripts::
 
-To deploy on your own server using Apache
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	app/manage.py runtask send
+	app/manage.py runtask remind
+	app/manage.py cleanup
+	
 
-See `sbox.wsgi` and `sbox_vhost.conf` to get things working with Apache.
+	
+Finally, when you are happy things are working, be sure to turn DEBUG mode off to avoid security problems:
 
-
-
-Configuring the site
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Make sure you have setup the django ``Site``  object correctly though the admin interface here ``/admin/sites/site/1/``. The url for the ``Site`` is used in multiple places, including when generating the callback links sent to participants.
-
-Having already created a database, create the necessary tables by running:
-::
-    app/manage.py syncdb --all --noinput
+	heroku config:set DEBUG=0
+	
 
 
-..note:: To make things work on heroku, prefix with ``heroku run``
-
-To load some configuration and an example study, run::
-
-    app/manage.py loaddata sbox/signalbox/fixtures/initial_data_dontload.json
-
-Note, if this file were called ``initial_data.json`` it would have been loaded on `syncdb`, but this isn't always desireable.
-
-
-To create an administrator::
-
-    app/manage.py createsuperuser
+.. Load some configuration data::
+.. 
+..     app/manage.py loaddata sbox/signalbox/fixtures/initial_data_dontload.json
+.. 
+.. Note, if this file were called ``initial_data.json`` it would have been loaded on `syncdb`, but this isn't always desireable.
 
 
 To create test users of each of the different roles for demonstration purposes::
@@ -105,62 +92,9 @@ To create test users of each of the different roles for demonstration purposes::
 
 
 
-Email and SMS settings
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-API keys and passwords are stored in environment variables (see http://www.12factor.net/config).
-
-It's recommended to use Amazon S3 (http://aws.amazon.com/s3/) to serve static assets (this is done automatically via django_compressor and the ``collectstatic`` command).::
-
-    export AWS_STORAGE_BUCKET_NAME=bucket
-    export AWS_ACCESS_KEY_ID=key
-    export AWS_ACCESS_KEY_TOKEN=token
+.. API keys and passwords are stored in environment variables (see http://www.12factor.net/config).
 
 
-You can set your email relay with the follwing settings:::
-
-    export EMAIL_HOST=YOUR_EMAIL_HOST
-    export EMAIL_PORT=YOUR_EMAIL_PORT
-    export EMAIL_HOST_USER=YOUR_EMAIL_HOST_USER
-    export EMAIL_HOST_PASSWORD=YOUR_EMAIL_HOST_PASSWORD
-
-
-..note:: The default is to require SSL and use port 465. We recommend using AWS SES (http://aws.amazon.com/ses/) or SendGrid because these services can ensure much higher rates of delivery and avoid mail being classified as spam.
-
-
-A Twilio_ API key is required to send SMS messages or make telephone calls - these should be added to a TwilioAccount object, within the TwilioBox application.
-
-
-
-
-
-Scheduled tasks and sending observations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-We use django-kronos to create management tasks which run at regular intervals; see https://github.com/jgorset/django-kronos .
-
-
-At the shell, you can send observations or reminders::
-
-    app/manage.py runtask send
-    app/manage.py runtask remind
-
-
-For herkoku, open the scheduler interface and add the following commands:
-
-::
-    heroku addons:open scheduler
-
-    app/manage.py runtask send
-    app/manage.py runtask remind
-
-..note:: These can be at any frequency you like, but bear in mind that if these jobs take a long time to run (with larger numbers of participants) then they may incur a (very) small cost from heroku, even using the free plan. You don't need to set up an additional worker dyno though.
-
-
-On your own machine it's even easier, running `app/manage.py installtasks` will add the relevant entries to schedule sending of observations and reminders to the crontab.
-
-
-..note:: You can also hit `/admin/signalbox/cron/` whenever you like, this will send all observations which are due.
 
 
 
@@ -186,17 +120,6 @@ The admin interface works best in a recent webkit browser (Safari or Chrome) but
 
 .. warning:: Check everything works in your target browsers early in the trial setup. The health services and large firms have some weird and wonderful stuff deployed.
 
-
-
-
-
-Running the tests
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The tests are not complete, but may nontheless be useful:
-::
-    app/manage.py test signalbox
-    app/manage.py test ask
 
 
 

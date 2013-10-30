@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 reqs = parse_requirements("requirements.txt")
 install_reqs = [str(ir.req) for ir in reqs]
 
-scripts = ['bin/setup_signalbox.sh']
+scripts = ['bin/setup_signalbox']
 if 'DYNO' in os.environ:  # assume we are on heroku
   scripts = scripts + ['bin/pandoc']  # and use our bespoke pandoc build
 
@@ -26,7 +26,7 @@ setup(
     entry_points = {
             'console_scripts': [
                 'signalbox_example_project_dir = signalbox.utilities.bootstrap:example_project_dir',
-                'signalbox_heroku_quickstart = signalbox.utilities.bootstrap:signalbox_heroku_quickstart',
+                'setup_signalbox_heroku = signalbox.utilities.bootstrap:setup_signalbox_heroku',
             ]
     }
 )
