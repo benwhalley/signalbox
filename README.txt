@@ -13,7 +13,7 @@ OS Dependencies
 
 On Ubuntu 12.04, you can install everything you need for a development machine like this::
 
-	sudo apt-get install -y python-dev postgresql libjpeg-dev virtualenvwrapper libmagic-dev git  zlib1g-dev libfreetype6 libfreetype6-dev
+	sudo apt-get install -y python-dev postgresql-server-dev-9.1 libjpeg-dev virtualenvwrapper libmagic-dev git mercurial zlib1g-dev libfreetype6 libfreetype6-dev
 	export WORKON_HOME=~/Envs
 	mkdir -p $WORKON_HOME
 	source /usr/local/bin/virtualenvwrapper.sh
@@ -22,14 +22,11 @@ On Ubuntu 12.04, you can install everything you need for a development machine l
 Local install
 ---------------
 
-First create a virtualenv and install signalbox itself using pip. Then use the included setup_signalbox command to make an example project (note, you can do all this manually, just look at settings.py in the example project)::
+First make a database with postgres (for development, allow the local user permissions). Then use the included setup_signalbox command to make an example project (note, you can do all this manually, just look at the script and at settings.py in the example project)::
 	
-	mkvirtualenv sbox_virtualenv
-	pip install signalbox
-	pip install -U -e git+https://github.com/bigfudge/signalbox.git@HEAD#egg=signalbox
+	createdb sbox
 	setup_signalbox.sh
 	
-
 If everything works, open http://127.0.0.1:8000/admin  to view the admin site on your development machine.
 
 
@@ -49,7 +46,12 @@ To get it running on Heroku's free plan (which is ideal for normal sized studies
 
 
 Then inside the new directory created above run these commands::
-
+	
+	wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
+	ssh-keygen
+	heroku keys:add
+	
+	cd YOURPROJECT
 	git init; git add -A
 	git commit -a -m "initial commit"
 	

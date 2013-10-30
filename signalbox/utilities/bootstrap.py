@@ -18,9 +18,9 @@ def signalbox_heroku_quickstart():
     from boto.s3.connection import S3Connection
     import heroku
     
-    
-    cloud = heroku.from_pass(raw_input("What is your heroku username (this might be an email address)? "), 
-        getpass.getpass("What is your heroku password? "))
+    huser = raw_input("What is your heroku username (this might be an email address)? ")
+    hpass = getpass.getpass("What is your heroku password? ")
+    cloud = heroku.from_pass(huser, hpass )
     
     while 1:
         try:
