@@ -48,13 +48,12 @@ To get it running on Heroku's free plan (which is ideal for normal sized studies
 4. If you plan on using interactive telephone calls, sign up with Twilio and make a note of your secret ID and key: https://www.twilio.com.
 
 
-Then inside the new directory created above run these commands::
+Then cd INSIDE the NEW directory created above run these commands::
 	
 	wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
 	ssh-keygen
 	heroku keys:add
 	
-	cd YOURPROJECT
 	git init; git add -A; git commit -a -m "initial commit"
 	setup_signalbox_heroku
 	
@@ -75,6 +74,7 @@ Finally, when you are happy things are working, be sure to turn DEBUG mode off t
 
 	heroku config:set DEBUG=0
 	
+
 
 
 .. Load some configuration data::
