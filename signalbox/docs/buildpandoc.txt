@@ -12,3 +12,4 @@ cabal install cabal-install
 cabal --version
 cabal install pandoc -fembed_data_files
 /home/vagrant/.cabal/bin/pandoc --version
+cp /home/vagrant/.cabal/bin/pandoc /vagrant/pandoc
