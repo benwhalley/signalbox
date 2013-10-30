@@ -4,7 +4,7 @@ mkvirtualenv sbox_virtualenv
 # pip install signalbox
 pip install -U -e git+https://github.com/bigfudge/signalbox.git@HEAD#egg=signalbox
 
-echo "What do you want to call your new project? [ENTER]:"
+echo "Name of the folder to create the new project in? [ENTER]:"
 read newname
 cp -r `signalbox_example_project_dir` $newname
 echo  $newname

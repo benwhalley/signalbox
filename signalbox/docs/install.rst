@@ -22,6 +22,15 @@ On Ubuntu 12.04, you can install everything you need for a development machine l
 	source /usr/local/bin/virtualenvwrapper.sh
 
 
+
+Environment variables
+-----------------------
+
+Settings, API keys and passwords are stored in environment variables (see http://www.12factor.net/config).
+There are setup scripts (see below) to help store this. You need to edit the CONFIG_REQUIRD.json and CONFIG_OPTIONAL.json files to get started.
+
+
+
 Local install
 ---------------
 
@@ -39,26 +48,32 @@ Hosted installation
 
 To get it running on Heroku's free plan (which is ideal for normal sized studies), you first need to:
 
-1. Sign up for an account with Heroky (https://devcenter.heroku.com/articles/quickstart) and install their command line tool.
+1. Sign up for an account with Heroku (https://devcenter.heroku.com/articles/quickstart) and install their command line tool.
  
 2. Sign up with Amazon for an S3 storage account (this to host the static image files which cannot be kept on heroku). See http://aws.amazon.com. During the setup process you will need to enter your secret AWS ID and key, but this is not saved on the local machine.
+
+
+You need to add this information to the CONFIG_REQUIRD.json. Optionally, you may also want to:
 
 3. Obtain the details  (host, username, password) for an SMTP email server you will use. Amazon's 'simple email service', SES, is good: http://aws.amazon.com/ses/
 
 4. If you plan on using interactive telephone calls, sign up with Twilio and make a note of your secret ID and key: https://www.twilio.com.
 
 
-Then cd INSIDE the NEW directory created above run these commands::
+Then add these settings to CONFIG_OPTIONAL.json. Once done, cd INSIDE the NEW directory created above run these commands::
 	
 	wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
 	ssh-keygen
 	heroku keys:add
 	
 	git init; git add -A; git commit -a -m "initial commit"
-	setup_signalbox_heroku
+	signalbox_make_heroku_app
+	signalbox_make_s3_bucket
+	signalbox_configure_heroku
 	
 	git push heroku master
-	heroku run app/manage.py syncdb --all --noinput; heroku run app/manage.py collectstatic --noinput
+	heroku run app/manage.py syncdb --all --noinput
+	heroku run app/manage.py collectstatic --noinput
 	heroku apps:open	
 
 
@@ -76,23 +91,10 @@ Finally, when you are happy things are working, be sure to turn DEBUG mode off t
 	
 
 
-
-.. Load some configuration data::
-.. 
-..     app/manage.py loaddata sbox/signalbox/fixtures/initial_data_dontload.json
-.. 
-.. Note, if this file were called ``initial_data.json`` it would have been loaded on `syncdb`, but this isn't always desireable.
-
-
 To create test users of each of the different roles for demonstration purposes::
 
     app/manage.py make_dummy_users
 
-
-
-
-
-.. API keys and passwords are stored in environment variables (see http://www.12factor.net/config).
 
 
 
@@ -106,7 +108,11 @@ Signalbox can use ``django_reversion`` to keep track of changes to Answer, Reply
 ::
     export USE_VERSIONING=1
 
-
+or::
+	
+	heroku config:set USE_VERSIONING=1
+	
+	
 
 
 Browser compatibility

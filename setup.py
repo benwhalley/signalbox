@@ -26,7 +26,9 @@ setup(
     entry_points = {
             'console_scripts': [
                 'signalbox_example_project_dir = signalbox.utilities.bootstrap:example_project_dir',
-                'setup_signalbox_heroku = signalbox.utilities.bootstrap:setup_signalbox_heroku',
+                'signalbox_make_s3_bucket = signalbox.utilities.bootstrap:signalbox_make_s3_bucket',
+                'signalbox_make_heroku_app = signalbox.utilities.bootstrap:signalbox_make_heroku_app',
+                'signalbox_configure_heroku = signalbox.utilities.bootstrap:signalbox_configure_heroku',
             ]
     }
 )
