@@ -1,4 +1,6 @@
 {	
+		"HEROKU_USERNAME": "benwhalley@gmail.com",
+		"HEROKU_PASSWORD": "luch-to-lu-lom",
 		"HEROKU_APP_NAME": "thesignalbox",
 		"AWS_STORAGE_BUCKET_NAME": "thesignalbox",
 		"AWS_ACCESS_KEY_ID": "AKIAIGXVT3FZD4VHFBQQ",

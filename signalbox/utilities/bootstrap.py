@@ -23,18 +23,15 @@ def signalbox_make_heroku_app():
     import heroku
     print "Creating a new app on Heroku and creating DB and Scheduler"
     required, optional = _get_settings()
-    huser = raw_input("Heroku username (this might be an email address)? ")
-    hpass = getpass.getpass("Heroku password: ")
-    cloud = heroku.from_pass(huser, hpass )
-    try:
-        newname = raw_input("What name do you want to give you your new app on Heroku? ")
-        app = cloud.apps.add(required['HEROKU_APP_NAME'])
-        print "Trying to link app to local repo..."
-        # could check results of  git remote -v to see if already linked
-        print envoy.run("git remote add heroku git@heroku.com:{}.git".format(newname)).std_out
-        print "New app created on heroku and linked to the current working directory."
-    except Exception as e:
-        raise e
+    cloud = heroku.from_pass(required['HEROKU_USERNAME'], required['HEROKU_PASSWORD'])
+    import pdb
+    pdb.set_trace()
+    
+    app = cloud.apps.add(required['HEROKU_APP_NAME'])
+    print "Trying to link app to local repo..."
+    # could check results of  git remote -v to see if already linked
+    print envoy.run("git remote add heroku git@heroku.com:{}.git".format(required['HEROKU_APP_NAME'])).std_out
+    print "New app created on heroku and linked to the current working directory."
     
     app.addons.add('heroku-postgresql:dev')
     print "Added postgres database (free dev version) to app"
@@ -45,20 +42,21 @@ def signalbox_make_heroku_app():
     print "Adding scheduler..."
     app.addons.add('scheduler:standard')
     print "Scheduler service added, but you need to add the scheduled items manually (type 'heroku addons:open scheduler' when this has finished)"
-    
+
+    _signalbox_configure_heroku(app)
 
     
 def signalbox_make_s3_bucket():
     from boto.s3.connection import S3Connection
     print "Creating a new amazon bucket to save static files to"
     required, optional = _get_settings()
-    s3conn = S3Connection(d['AWS_ACCESS_KEY_ID'], d['AWS_SECRET_ACCESS_KEY'])
+    s3conn = S3Connection(required['AWS_ACCESS_KEY_ID'], required['AWS_SECRET_ACCESS_KEY'])
     bucket = s3conn.create_bucket(required['AWS_STORAGE_BUCKET_NAME'])
     print "New bucket created."
     bucket.set_acl('public-read')
         
         
-def signalbox_configure_heroku():
+def _signalbox_configure_heroku(app):
 
     print "Setting environment variables on Heroku..."
     # CONFIGURING

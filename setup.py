@@ -6,13 +6,13 @@ from setuptools import setup, find_packages
 reqs = parse_requirements("requirements.txt")
 install_reqs = [str(ir.req) for ir in reqs]
 
-scripts = ['bin/setup_signalbox']
+scripts = ['bin/setup_signalbox', ]
 if 'DYNO' in os.environ:  # assume we are on heroku
   scripts = scripts + ['bin/pandoc']  # and use our bespoke pandoc build
 
 setup(
     name='signalbox',
-    version='0.1.10',
+    version='0.1.11',
     author='Ben Whalley',
     author_email='benwhalley@gmail.com',
     packages=find_packages(),
@@ -28,7 +28,6 @@ setup(
                 'signalbox_example_project_dir = signalbox.utilities.bootstrap:example_project_dir',
                 'signalbox_make_s3_bucket = signalbox.utilities.bootstrap:signalbox_make_s3_bucket',
                 'signalbox_make_heroku_app = signalbox.utilities.bootstrap:signalbox_make_heroku_app',
-                'signalbox_configure_heroku = signalbox.utilities.bootstrap:signalbox_configure_heroku',
             ]
     }
 )
