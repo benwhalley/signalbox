@@ -93,6 +93,11 @@ def signalbox_heroku_quickstart():
     for k, v in d.items():
         app.config[k] = v
         
+
+    print "Adding buildpack support for pandoc binaries..."
+    app.config['BUILDPACK_URL']  = "https://github.com/ddollar/heroku-buildpack-multi.git"
+    app.config['PATH'] = "bin:/usr/local/bin:/usr/bin:/bin"
+    
     print "Config completed."
     print "Remember to turn DEBUG mode off before you launch."
     
