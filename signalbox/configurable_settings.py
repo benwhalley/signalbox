@@ -43,7 +43,7 @@ TWILIO_TOKEN = get_env_variable('TWILIO_TOKEN', required=False)
 
 # security-related settings
 # see https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS', required=True).split(";")
+ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS', default=".herokuapp.com").split(";")
 SESSION_COOKIE_HTTPONLY = get_env_variable('SESSION_COOKIE_HTTPONLY', default=True, int_to_bool=True)
 SECURE_BROWSER_XSS_FILTER = get_env_variable('SECURE_BROWSER_XSS_FILTER', default=True, int_to_bool=True)
 SECURE_CONTENT_TYPE_NOSNIFF = get_env_variable('SECURE_CONTENT_TYPE_NOSNIFF', default=True, int_to_bool=True)
