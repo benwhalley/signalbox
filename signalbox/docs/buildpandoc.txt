@@ -7,10 +7,36 @@ cd vagrant-haskell-heroku
 vagrant up
 vagrant ssh
 
-sudo apt-get install cabal
+
+apt-get install cabal
 cabal update
-cabal install cabal-install
+cabal install cabal cabal-install
 cabal --version
+cabal install hsb2hs
 cabal install pandoc -fembed_data_files
 /home/vagrant/.cabal/bin/pandoc --version
 cp /home/vagrant/.cabal/bin/pandoc /vagrant/pandoc
+
+# other flags?
+--enable-executable-stripping
+
+
+#on 12.04
+apt-get update
+apt-get install haskell-platform
+apt-get install cabal
+cabal update
+cabal install cabal cabal-install
+git clone https://github.com/jgm/pandoc.git
+cd pandoc/
+git submodule update --init
+cabal install --flags="embed_data_files" citeproc-hs hsb2hs
+cabal install --only-dependencies
+cabal configure --flags=embed_data_files
+cabal build
+cp dist/build/pandoc /vagrant/pandoc
+
+
+cabal copy --destdir=/vagrant/
+cabal register
+

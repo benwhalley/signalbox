@@ -14,6 +14,43 @@ import collections
 
 safe_help = lambda x: mark_safe(markdown.markdown(x))
 
+dict_map = lambda f, d: {k: f(v) for k, v in d.items()}
+
+
+
+
+def walk(x, action, format, meta):
+  """Walk a tree, applying an action to every object.
+  Returns a modified tree.
+  """
+  if isinstance(x, list):
+    array = []
+    for item in x:
+      if isinstance(item, dict):
+        if item == {}:
+          array.append(walk(item, action, format, meta))
+        else:
+          for k in item:
+            res = action(k, item[k], format, meta)
+            if res is None:
+              array.append(walk(item, action, format, meta))
+            elif isinstance(res, list):
+              for z in res:
+                array.append(walk(z, action, format, meta))
+            else:
+              array.append(walk(res, action, format, meta))
+      else:
+        array.append(walk(item, action, format, meta))
+    return array
+  elif isinstance(x, dict):
+    obj = {}
+    for k in x:
+      obj[k] = walk(x[k], action, format, meta)
+    return obj
+  else:
+    return x
+
+
 
 def int_or_string(string):
     try:

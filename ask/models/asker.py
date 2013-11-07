@@ -1,19 +1,38 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from ask.models import Choice, Instrument
 from datetime import datetime
-import json
-import re
 from django.core import serializers
-from functools import partial
-import itertools
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
-from django.core.urlresolvers import reverse
-from signalbox.utilities.linkedinline import admin_edit_url
+from functools import partial
 from page import AskPage
-from ask.models import Choice, Instrument
-from signalbox.utilities.djangobits import supergetattr, flatten
+from signalbox.utilities.djangobits import supergetattr, flatten, dict_map
+from signalbox.utilities.linkedinline import admin_edit_url
+import functools
+import itertools
+import json
+import re
+from ask.yamlextras import yaml, MyDumper
+from collections import OrderedDict
+
+
+def filtered_model_to_dict(instance, fields=None, exclude=None):
+    fields = fields or []
+    exclude = exclude or []
+
+    d = model_to_dict(instance)
+
+    if exclude:
+        return {k: v for k, v in d.items() if k not in exclude}
+
+    if not fields:
+        fields = d.keys()
+
+    return {k:v for k, v in d.items() if k in set(fields)}
+
 
 
 class AskerManager(models.Manager):
@@ -83,6 +102,29 @@ class Asker(models.Model):
         n_questions = len(self.questions())
         mins = (n_questions * .5) * .9
         return max([5, baseround(mins, 5)])
+
+    def as_yaml(self):
+
+        asker = filtered_model_to_dict(self, exclude="id scoresheets redirect_url hide_menu".split())
+
+        questionsbypage = [{i.step_name: [q.dict_for_yaml() for q in i.get_questions()]} for i in self.askpage_set.all()]
+
+        choicesets = {}
+        [choicesets.update(i.choiceset.dict_for_yaml()) for i in self.questions() if i.choiceset]
+
+        d = [{"asker":asker}] + questionsbypage + [{"choicesets":choicesets}]
+
+        return yaml.dump_all(d, Dumper=MyDumper,
+            allow_unicode=True,
+            default_flow_style = False,
+            width=80, indent=2
+            ).replace("---", "---\n\n") #.replace("\n-", "\n\n-")
+
+
+
+
+
+
 
     def as_markdown(self):
         modeldict = model_to_dict(self)

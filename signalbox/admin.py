@@ -366,7 +366,7 @@ class ReplyAdmin(ConditionalVersionAdmin):
                     'last_submit', 'started']
     list_display = ['token', 'entry_method', 'user', 'complete',
                     'last_submit', 'observation', 'collector']
-    list_filter = ['observation__dyad__study', 'entry_method', 'collector']
+    list_filter = ['asker', 'complete', 'observation__dyad__study', 'entry_method', 'collector']
     search_fields = ['token', 'observation__token']
     inlines = [AnswerInline, ]
     fieldsets = (

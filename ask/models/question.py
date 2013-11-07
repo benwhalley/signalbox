@@ -15,6 +15,7 @@ from signalbox.utilities.linkedinline import admin_edit_url
 from signalbox.exceptions import DataProtectionException
 from django.conf import settings
 truncatelabel = lambda x, y: (x[:int(y) / 2] + '...' + x[- int(y) / 2:]) if len(x) > y else x
+from ask.yamlextras import yaml
 
 
 def get_custom_attr(name, default, module_list):
@@ -78,7 +79,7 @@ class Question(models.Model):
 
     def delete(self, *args, **kwargs):
         # we delete preview answers to this questions to avoid ProtectedErrors
-        # when deleting questions through the admin or in the markdown interface
+        # when deleting questions through the admin or in the yaml interface
         self.answer_set.filter(reply__entry_method="preview").delete()
         self.check_if_protected()
         super(Question, self).delete(*args, **kwargs)
@@ -89,6 +90,15 @@ class Question(models.Model):
 
     def index(self):
         return self.page.asker.questions().index(self)
+
+    def dict_for_yaml(self):
+        d =  {
+                "text": self.text,
+                "q_type": self.q_type,
+                "choiceset": supergetattr(self, "choiceset.name", None),
+                "required": self.required,
+                }
+        return {self.variable_name: {k:v for k, v in d.items() if v}}
 
     page = models.ForeignKey('ask.AskPage', null=True, blank=True)
 
@@ -209,7 +219,7 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         return templ.render(Context(context))
 
     q_type = models.CharField(choices=[(i, i) for i in FIELD_NAMES],
-        blank=False, max_length=100)
+        blank=False, max_length=100, default="instruction")
 
     def field_class(self):
         """Return the relevant form field Class"""
@@ -409,6 +419,22 @@ class ChoiceSet(models.Model):
 
     objects = ChoiceSetManager()
 
+    def add_choices_from_list_of_dicts(self, listofdicts):
+        choices = [self.add_choice_from_dict(d, i) for i, d in enumerate(listofdicts)]
+        return self, choices
+
+
+    def add_choice_from_dict(self, d, order):
+        score, label = d.items()[0]  # the dict only ever has one key because they are in a list
+        label = str(label)
+        default = bool("***" in label)
+        label = label.replace("***", "")
+        c, _ = Choice.objects.get_or_create(
+            choiceset=self, order=order, score=score, label=label)
+        c.is_default_value = default
+        c.save()
+        return c
+
     def natural_key(self):
         return (self.name, )
 
@@ -416,6 +442,9 @@ class ChoiceSet(models.Model):
 
     def __unicode__(self):
         return self.natural_key()
+
+    def dict_for_yaml(self):
+        return {self.name: [{i.score: i.label} for i in self.get_choices()]}
 
     def as_markdown(self):
         return """

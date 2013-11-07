@@ -1,7 +1,7 @@
 from ask.models import Asker
 from ask.views import preview_asker, show_page, start_anonymous_survey
 from ask.views import print_asker, show_codebook, preview_questions, bulk_add_questions
-from ask.views.pandoc import edit_markdown_survey
+from ask.views.asker_text_editing import edit_yaml_asker
 from django.conf.urls import patterns, url
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import DetailView
@@ -12,8 +12,10 @@ from signalbox.views.replies import *
 # ADMIN PATTERNS
 
 urlpatterns = patterns('',
-    url(r'^asker/edit/markdown/(?P<asker_id>\d+)/$', edit_markdown_survey,
-        name="edit_markdown_survey"),
+
+    url(r'^asker/edit/yaml/(?P<asker_id>\d+)/$', edit_yaml_asker,
+        name="edit_yaml_asker"),
+
     url(r'^question/add/multiple/$', bulk_add_questions, name="bulk_add_questions"),
     url(r'^asker/(?P<asker_id>\d+)/codebook/$', show_codebook,
         name="show_codebook",),

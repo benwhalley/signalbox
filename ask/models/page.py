@@ -140,4 +140,4 @@ class AskPage(models.Model, Step):
         return admin_edit_url(self)
 
     def __unicode__(self):
-        return u"{} page {:7.2g}".format(self.asker, self.page_number())
+        return u"{}: {} (p {})".format(self.asker, self.step_name, self.order)
