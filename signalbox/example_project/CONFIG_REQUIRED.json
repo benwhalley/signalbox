@@ -1,9 +1,9 @@
-{	
-		"HEROKU_USERNAME": "benwhalley@gmail.com",
-		"HEROKU_PASSWORD": "luch-to-lu-lom",
-		"HEROKU_APP_NAME": "thesignalbox",
-		"AWS_STORAGE_BUCKET_NAME": "thesignalbox",
-		"AWS_ACCESS_KEY_ID": "AKIAIGXVT3FZD4VHFBQQ",
-		"AWS_SECRET_ACCESS_KEY": "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",
-		"ALLOWED_HOSTS": ".thesignalbox.net;.herokuapp.com"
+{
+		"HEROKU_USERNAME": "USERNAME",
+		"HEROKU_PASSWORD": "XXX",
+		"HEROKU_APP_NAME": "YOURNAME",
+		"AWS_STORAGE_BUCKET_NAME": "YOURNAME",
+		"AWS_ACCESS_KEY_ID": "XXX",
+		"AWS_SECRET_ACCESS_KEY": "XXX",
+		"ALLOWED_HOSTS": ".example.com;.herokuapp.com"
 }
