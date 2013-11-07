@@ -35,10 +35,10 @@ Local install
 ---------------
 
 First make a database with postgres (for development, allow the local user permissions). Then use the included setup_signalbox command to make an example project (note, you can do all this manually, just look at the script and at settings.py in the example project)::
-	
+
 	createdb sbox
 	setup_signalbox
-	
+
 If everything works, open http://127.0.0.1:8000/admin  to view the admin site on your development machine.
 
 
@@ -49,7 +49,7 @@ Hosted installation
 To get it running on Heroku's free plan (which is ideal for normal sized studies), you first need to:
 
 1. Sign up for an account with Heroku (https://devcenter.heroku.com/articles/quickstart) and install their command line tool.
- 
+
 2. Sign up with Amazon for an S3 storage account (this to host the static image files which cannot be kept on heroku). See http://aws.amazon.com. During the setup process you will need to enter your secret AWS ID and key, but this is not saved on the local machine.
 
 
@@ -61,20 +61,20 @@ You need to add this information to the CONFIG_REQUIRD.json. Optionally, you may
 
 
 Then add these settings to CONFIG_OPTIONAL.json. Once done, cd INSIDE the NEW directory created above run these commands::
-	
+
 	wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
 	ssh-keygen
 	heroku keys:add
-	
+
 	git init; git add -A; git commit -a -m "initial commit"
 	signalbox_make_heroku_app
 	signalbox_make_s3_bucket
-	signalbox_configure_heroku
-	
+
+
 	git push heroku master
 	heroku run app/manage.py syncdb --all --noinput
 	heroku run app/manage.py collectstatic --noinput
-	heroku apps:open	
+	heroku apps:open
 
 
 Remember to add a scheduled task to send observations via the heroku control panel. The frequency is up to you - polling more often can cost more in dyno time if it overruns the free quota (but not much), but you'll want to add scheduled tasks for these scripts::
@@ -82,13 +82,13 @@ Remember to add a scheduled task to send observations via the heroku control pan
 	app/manage.py runtask send
 	app/manage.py runtask remind
 	app/manage.py cleanup
-	
 
-	
+
+
 Finally, when you are happy things are working, be sure to turn DEBUG mode off to avoid security problems:
 
 	heroku config:set DEBUG=0
-	
+
 
 
 To create test users of each of the different roles for demonstration purposes::
@@ -109,10 +109,10 @@ Signalbox can use ``django_reversion`` to keep track of changes to Answer, Reply
     export USE_VERSIONING=1
 
 or::
-	
+
 	heroku config:set USE_VERSIONING=1
-	
-	
+
+
 
 
 Browser compatibility
@@ -165,7 +165,7 @@ SECURE_SSL_REDIRECT
 SESSION_COOKIE_AGE
 SESSION_SAVE_EVERY_REQUEST
 SESSION_EXPIRE_AT_BROWSER_CLOSE
- 
+
 ALLOW_IMPERSONATION
 USE_VERSIONING
 
