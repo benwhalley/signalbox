@@ -37,46 +37,34 @@ $(document).ready(function() {
 
         {% csrf_token %}
 
-<div class="span8">
+<div class="span5">
 
 
     <h4>Text input </h4>
+    {% if form.errors %}
+        {% for e in form.non_field_errors %}
+            <div class="alert warning">{{e}}</div>
+        {% endfor %}
+    {% endif %}
     {{form.yaml}}
 
 </div>
 
 </form>
-<div class="span4">
+<div class="span7">
     <h4>Questionnaire preview</h4>
 {% for i in asker.askpage_set.all %}
 
-{% if not forloop.first %}
-<div class="control-group">&nbsp;</div>
-<p class="muted pull-right">page {{i.page_number}}</p><hr>
-<div class="control-group">&nbsp;</div>
-{% endif %}
+<div class="control-group alert">{{i.step_name}}</div>
 
-    {% for j in i.get_questions %}
-    <div class="well">
-
-            <code>{{j.variable_name}}</code>
-            <span class="muted pull-right">{{j.q_type}}, required: {{j.required}}{% if j.showif %}; show if <code>{{j.showif.as_markdown}}</code><br>{% endif %}</span>
-
-            <hr>
-            {{j.text|markdown}}
-            {% if j.choices.count > 0 %}
-                <a class="btn btn-mini pull-right" href="{% url "admin:ask_choiceset_change" j.choiceset.id %}">Edit choices</a>
-
-            {% endif %}
-
-            {% if j.score_mapping %}
-                Scores on this question will be remapped as follows when computing summaries: <pre>{{j.score_mapping}}</pre>
-            {% endif %}
-
-        </div>
-
-
-        {% endfor %}
+{% for j in i.get_questions %}
+<div class="well">
+    <form>
+    {% form j.preview_html using "floppyforms/questionnaire.html" %}
+    </form>
+    <hr/>
+</div>
+{% endfor %}
 {% endfor %}
 </div>
 

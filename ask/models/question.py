@@ -1,33 +1,39 @@
 """Questions and related models to place them in questionnaire pages and instruments."""
-import ast
-from django.forms.models import model_to_dict
-from django.template.loader import get_template
-import json
-from django.db import models
-from django.template import Context, Template
 from django.core.exceptions import ValidationError
-import fields
-from jsonfield import JSONField
 from ask.models.fields import FIELD_NAMES
-import ask.validators as valid
+from ask.yamlextras import yaml
+from django.conf import settings
+from django import http
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.forms.models import model_to_dict
+from django.template import Context, Template
+from django.template.loader import get_template
+from jsonfield import JSONField
+from signalbox.exceptions import DataProtectionException
 from signalbox.utilities.djangobits import supergetattr, flatten, safe_help, int_or_string
 from signalbox.utilities.linkedinline import admin_edit_url
-from signalbox.exceptions import DataProtectionException
-from django.conf import settings
+from yamlfield.fields import YAMLField
+import ask.validators as valid
+from django.db.models.loading import get_model
+import ast
+import fields
+import json
 truncatelabel = lambda x, y: (x[:int(y) / 2] + '...' + x[- int(y) / 2:]) if len(x) > y else x
-from ask.yamlextras import yaml
 
 
-def get_custom_attr(name, default, module_list):
-    """Like getattr, but searches a list of modules retuning the first one found, or implicit None."""
-
-    name = name or default
-    for i in module_list:
-        try:
-            return getattr(i, name)
-        except AttributeError:
-            pass
-
+DEFAULTYAMLCHOICESET = """
+1:
+  label: 'One'
+  score: 1
+2:
+  is_default_value: true
+  label: 'Two'
+  score: 2
+3:
+  label: 'More than two'
+  score: 2
+    """
 
 ASSET_TEMPLATE_CHOICES = (
     ('image.html', 'image'),
@@ -225,6 +231,15 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         """Return the relevant form field Class"""
         return getattr(fields, fields.class_name(self.q_type))
 
+    def preview_html(self):
+        """Return a form with a single question which can be used to preview questions -> PageForm"""
+        from ask.forms import PageForm
+        request = http.HttpRequest()
+        form = PageForm(None, None,
+                        page=None, questions=[self], reply=None, request=request)
+        return form
+
+
     def label_variable(self):
         return self.field_class().label_variable(self)
 
@@ -418,44 +433,27 @@ class ChoiceSet(models.Model):
     """The set of options attached to Questions."""
 
     objects = ChoiceSetManager()
-
-    def add_choices_from_list_of_dicts(self, listofdicts):
-        choices = [self.add_choice_from_dict(d, i) for i, d in enumerate(listofdicts)]
-        return self, choices
-
-
-    def add_choice_from_dict(self, d, order):
-        score, label = d.items()[0]  # the dict only ever has one key because they are in a list
-        label = str(label)
-        default = bool("***" in label)
-        label = label.replace("***", "")
-        c, _ = Choice.objects.get_or_create(
-            choiceset=self, order=order, score=score, label=label)
-        c.is_default_value = default
-        c.save()
-        return c
+    name = models.SlugField(max_length=64, unique=True)
+    yaml = YAMLField(blank=True, validators=[valid.checkyamlchoiceset], default=DEFAULTYAMLCHOICESET)
 
     def natural_key(self):
         return (self.name, )
-
-    name = models.SlugField(max_length=64, unique=True)
 
     def __unicode__(self):
         return self.natural_key()
 
     def dict_for_yaml(self):
-        return {self.name: [{i.score: i.label} for i in self.get_choices()]}
-
-    def as_markdown(self):
-        return """
-~~~{#%s .choiceset}
-%s
-~~~
-""" % (self.name, "\n".join(["%s%s=%s" % (i.is_default_value and "*" or "", i.score, i.label) for i in self.get_choices()]))
+        sd = {i.order:
+            {'score': i.score,  'label': i.label, 'is_default_value': i.is_default_value}
+                for i in self.get_choices()}
+        # comprehension to filter out null values to make things clearer to edit by hand
+        sd = {k: {a:b for a, b in v.items() if b} for k, v in sd.items()}
+        return {self.name: sd}
 
     def default_value(self):
         """Return the default value (the score itself) for this ChoiceSet"""
-        choices = self.choice_set.filter(is_default_value=True)
+
+        choices = filter(lambda x: x.is_default_value, self.get_choices())
         assert len(choices) < 2
         return choices and getattr(choices[0], 'score', None)
 
@@ -464,13 +462,23 @@ class ChoiceSet(models.Model):
         return json.dumps(choices, indent=4, sort_keys=True)
 
     def get_choices(self):
-        cset = Choice.objects.filter(choiceset=self)
-        return cset
+
+        # this is transitional... choicesets are nor specified as Yaml rather than via
+        # db-saved Choice objects, but we recreate them by hand to avoid editing code elsewhere
+        if self.yaml:
+            return [Choice(choiceset=self, score=choice.get('score'), is_default_value=choice.get('is_default_value', ''), label=choice.get('label', ''), order=i)
+                for i, choice in self.yaml.items()]
+        else:
+            # or if no yaml set, do it the old way
+            cset = Choice.objects.filter(choiceset=self)
+            return cset
 
     def allowed_responses(self):
+        # list of valid options, e.g. used to validate user input
         return [i.score for i in self.get_choices()]
 
     def choices_as_string(self):
+        """Used in admin and elsewhere to display options succinctly."""
         return "; ".join(["%s [%s]" % (i.label, i.score) for i in self.get_choices()])
 
     def __unicode__(self):

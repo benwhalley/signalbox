@@ -121,20 +121,6 @@ class Asker(models.Model):
             ).replace("---", "---\n\n") #.replace("\n-", "\n\n-")
 
 
-
-
-
-
-
-    def as_markdown(self):
-        modeldict = model_to_dict(self)
-        [modeldict.pop(k) for k in "id scoresheets hide_menu".split()] # get rid of unwanted fields in markdown
-        meta = """---\n{}\n---""".format("\n".join(["{}: {}".format(k, json.dumps(v)) for k, v in sorted(modeldict.items())]))
-        questionsbypage = map(lambda i: i.get_questions(),  self.askpage_set.all())
-        questions = "\n\n------------------------------\n\n".join(["\n".join([i.as_markdown() for i in page]) for page in questionsbypage])
-        choicesets = "\n".join(set([i.choiceset.as_markdown() for i in self.questions() if i.choiceset]))
-        return meta + "\n\n" + questions + "\n\n\n" + choicesets
-
     def questions(self):
         questionsbypage = map(lambda i: i.get_questions(),  self.askpage_set.all())
 

@@ -33,7 +33,12 @@ class PageForm(forms.Form):
         reply = kwargs.pop('reply')
         page = kwargs.pop('page')
         request = kwargs.pop('request')
-        self.questions_to_show = page.questions_to_show(reply)
+
+        if page:
+            self.questions_to_show = page.questions_to_show(reply)
+        else:
+            self.questions_to_show = kwargs.pop('questions')
+
         super(PageForm, self).__init__(*args, **kwargs)
 
         for question in self.questions_to_show:
@@ -43,12 +48,16 @@ class PageForm(forms.Form):
                 request=request
             )
 
-        self.conditional_questions = [{'question': question, 'showif': question.showif}
-            for question in page.questions_to_show()]
-        self.page = page
+        if page:
+            self.conditional_questions = [{'question': question, 'showif': question.showif}
+                for question in page.questions_to_show()]
+            self.page = page
+            initialpage = page.index()
+        else:
+            initialpage = 0
 
         self.fields['page_id'] = forms.IntegerField(required=True,
-            widget=forms.HiddenInput, initial=page.index())
+            widget=forms.HiddenInput, initial=initialpage)
 
 
 @revision.create_on_success

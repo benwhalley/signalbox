@@ -105,8 +105,15 @@ class YamlEditForm(forms.Form):
         kwargs['initial'] = initial
         super(YamlEditForm, self).__init__(*args, **kwargs)
 
+
+
     def clean(self):
-        documents = filter(bool, list(yaml.load_all(self.cleaned_data.get("yaml"))))
+        try:
+            documents = filter(bool, list(yaml.load_all(self.cleaned_data.get("yaml"))))
+        except Exception as e:
+            raise forms.ValidationError(
+                "There was a problem parsing the yaml:\n\n {}".format(e))
+
         try:
             askerdict = documents[0]['asker']
         except KeyError:
@@ -149,21 +156,12 @@ class YamlEditForm(forms.Form):
         askpages = [AskPage(asker=asker, order=i, step_name=p.keys()[0]) for i, p in enumerate(pages)]
         [i.save() for i in askpages]
 
-        def _addchoices(choiceset, listofdicts):
-            choices = []
-            for i, kv in enumerate(listofdicts):
-                k, v = kv.items()[0]
-                cs = Choice(choiceset=choiceset, order=i, score=k, label=v)
-                choices.append(cs)
 
-            return choiceset
-
-
-        choicesetsanditems = [(ChoiceSet.objects.get_or_create(name=k)[0], v)
+        choicesets = [get_or_modify(ChoiceSet, {'name': k}, {'yaml':v})
             for k, v in choicesets.items()]
+        [i.save() for i, j in choicesets]
+        print [i.yaml for i , j in choicesets]
 
-        x = [cs.add_choices_from_list_of_dicts(listofchoices)
-            for cs, listofchoices in choicesetsanditems]
 
 
         for page, qs in zip(askpages, pages):

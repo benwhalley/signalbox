@@ -4,6 +4,23 @@ import magic
 from django.conf import settings
 
 
+def checkyamlchoiceset(yaml):
+    if not isinstance(yaml, dict):
+        raise ValidationError("Choicesets must be dictionaries of items.")
+
+    if not len(yaml.keys()) == sum([isinstance(i, int) for i in yaml.keys()]):
+        raise ValidationError("All orders need to be integers.")
+
+    if sum([not isinstance(v.get('is_default_value', False), bool) for k, v in yaml.items()]):
+        raise ValidationError("All is_default_value items must be boolean")
+
+    if sum([v.get('is_default_value', False) for k, v in yaml.items()]) > 1:
+        raise ValidationError("No more than one default allowed.")
+
+    if sum([not isinstance(v.get('score'), int) for k, v in yaml.items()]):
+        raise ValidationError("All scores must be integers")
+
+
 def is_allowed_upload_file_type(value):
     try:
         ftype = magic.from_buffer(

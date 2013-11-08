@@ -171,7 +171,7 @@ class ChoiceInline(admin.TabularInline):
 class ChoiceSetAdmin(admin.ModelAdmin):
     save_on_top = True
     search_fields = ['name', 'choice__label']
-    inlines = [ChoiceInline]
+    # inlines = [ChoiceInline]
     list_display = ['name', 'choices_as_string']
 
 
