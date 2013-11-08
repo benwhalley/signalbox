@@ -60,7 +60,8 @@ $(document).ready(function() {
 {% for j in i.get_questions %}
 <div class="well">
     <form>
-    {% form j.preview_html using "floppyforms/questionnaire.html" %}
+        {{j.preview_html.as_p}}
+
     </form>
     <hr/>
 </div>

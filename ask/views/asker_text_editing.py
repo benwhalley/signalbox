@@ -127,6 +127,7 @@ class YamlEditForm(forms.Form):
         except KeyError:
             choicesetsdictlist = []
 
+
         # what is left are pages of questions
         pages = documents[1:]
 
@@ -150,48 +151,84 @@ class YamlEditForm(forms.Form):
         choicesets = self.cleaned_data['choicesets']
         pages = self.cleaned_data['pages']
 
-        asker.askpage_set.all().delete()
+        try:
+            # add choicesets
+            choicesets = [get_or_modify(ChoiceSet, {'name': k}, {'yaml':v})
+                for k, v in choicesets.items()]
+            [i.save() for i, j in choicesets]
+            print [i.yaml for i , j in choicesets]
+        except Exception as e:
+            raise forms.ValidationError("Something went wrong with the choicesets: {}".format(e))
+
+        try:
+            # create right number of pages, re-using existing pages as far as possible
+            # (just deleting the existing pages deleted all the questions too with a cascade)
+            n_pages_now = len(pages)
+            oldpages = asker.askpage_set.all().order_by('order')
+            n_pages_then = oldpages.count()
+            existing_pages = list(oldpages[:n_pages_now])
+            extra_pages = []
+            if n_pages_then < n_pages_now:
+                existing_pages = list(oldpages)
+                extra_pages = [AskPage(asker=asker) for i in range(n_pages_now - n_pages_then)]
+            newpages = existing_pages + extra_pages
+            unwanted_pages = oldpages[n_pages_now:]
+        except Exception as e:
+            raise forms.ValidationError("Something went wrong with the pages of questions: {}".format(e))
+
+
+        # helpers to manipulate the dicts from yaml
+        def _liftqdict(qdict):
+            variable_name, d = qdict.items()[0]
+            d.update({'variable_name': variable_name})
+            return d
+
+        def _find_choiceset(d):
+            if d.get('choiceset'):
+                cs, _ = ChoiceSet.objects.get_or_create(name=d.get('choiceset'))
+            else:
+                cs = None
+            d.update({'choiceset': cs})
+            return d
+
+        # find and add questions to the pages
+        try:
+            for newpage, yamlpage, order in zip(newpages, pages, range(len(pages))):
+
+                # we disassociate all the existing questions from the page, but
+                # provided they were not deleted from the yaml they will
+                # get reassociated below. Note this means questions deleted from the
+                # yaml are left orphaned. Is this a problem?
+                for q in newpage.question_set.all():
+                    q.page = None
+                    q.save()
+
+                # now start to rebuild the page from the yaml
+                newpage.step_name = yamlpage.keys()[0]
+                newpage.order = order
+
+                # a page is a single mapping in a yaml document, where the list of questions is the first item
+                question_dicts = yamlpage.values()[0]
+                for question, order in zip(question_dicts, range(len(question_dicts))):
+                    question = _find_choiceset(_liftqdict(question))
+                    qob, _ = get_or_modify(Question,
+                        {'variable_name': question['variable_name']},
+                        question
+                    )
+                    qob.page = newpage
+                    qob.order = order
+                    qob.save()
+                    print qob
+                newpage.save()
+        except Exception as e:
+            raise forms.ValidationError("Something went wrong with editing the questions: {}".format(e))
+
+        [i.delete() for i in unwanted_pages]
         asker.save()
 
-        askpages = [AskPage(asker=asker, order=i, step_name=p.keys()[0]) for i, p in enumerate(pages)]
-        [i.save() for i in askpages]
-
-
-        choicesets = [get_or_modify(ChoiceSet, {'name': k}, {'yaml':v})
-            for k, v in choicesets.items()]
-        [i.save() for i, j in choicesets]
-        print [i.yaml for i , j in choicesets]
-
-
-
-        for page, qs in zip(askpages, pages):
-            pageqs = qs[page.step_name] # get the questions from the dict which is keyed by the step name
-
-            def _liftqdict(qdict):
-                variable_name, d = qdict.items()[0]
-                d.update({'variable_name': variable_name})
-                return d
-            pageqs = map(_liftqdict, pageqs)
-            [d.update({'order': i}) for i, d in enumerate(pageqs)]
-            [d.update({'page': page}) for d in pageqs]
-
-            def _lift_choiceset(d):
-                if d.get('choiceset'):
-                    cs, _ = ChoiceSet.objects.get_or_create(name=d.get('choiceset'))
-                else:
-                    cs = None
-                d.update({'choiceset': cs})
-                return d
-
-            pageqs = [_lift_choiceset(d) for d in pageqs]
-
-            ques_objs, _ = zip(*[get_or_modify(Question,
-                {'variable_name': d['variable_name']}, d)
-                for d in pageqs])
-
-            [i.save() for i in ques_objs]
-
         return asker
+
+
 
 
 
