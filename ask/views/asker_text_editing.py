@@ -13,7 +13,6 @@ from pyparsing import *
 from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LOOKUP
 from ask.models import Asker, ChoiceSet, Question, AskPage, Choice, ShowIf
 from ask.models import question
-from ask.views.pandochelpers import stringify, get_meta_tuple
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
