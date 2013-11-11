@@ -1,4 +1,5 @@
 """Questions and related models to place them in questionnaire pages and instruments."""
+from contracts import contract, new_contract
 from django.core.exceptions import ValidationError
 from ask.models.fields import FIELD_NAMES
 from ask.yamlextras import yaml
@@ -187,8 +188,17 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         return False
 
     def display_text(self, reply=None, request=None):
-        """:: Question -> Maybe Reply -> Maybe Request -> String"""
-        templ = Template(self.text)
+        """
+        :type self: a
+        :type reply: b|None
+        :type request: c|None
+
+        :return: The html formatted string displaying the question
+        :rtype reply: basestring
+        """
+
+        templ_header = r"""{% load humanize %}"""  # include these templatetags in render context
+        templ = Template(templ_header+self.text)
         context = {
             'reply': reply,
             'user': supergetattr(reply, 'observation.dyad.user', default=None),
@@ -266,17 +276,13 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         """Question -> String"""
         return self.choiceset and self.choiceset.values_as_json() or ""
 
+    @contract
     def choices(self):
         """
-        :: Question -> [(score, label)] | None
-        Returns in format for Django ChoiceField, or None.
+        :rtype: None|list(tuple)
         """
-        cset = self.choiceset
-        if cset:
-            choices = cset.get_choices()
-            choicelist = [(i.score, i.label) for i in choices]
-            return choicelist
-        return None
+        return (self.choiceset and self.choiceset.choice_tuples()) or None
+
 
     def response_possible(self):
         """:: Question -> Bool
@@ -447,39 +453,70 @@ class ChoiceSet(models.Model):
             {'score': i.score,  'label': i.label, 'is_default_value': i.is_default_value}
                 for i in self.get_choices()}
         # comprehension to filter out null values to make things clearer to edit by hand
-        sd = {k: {a:b for a, b in v.items() if b} for k, v in sd.items()}
+        sd = {k: {a:b for a, b in v.items() if b != None} for k, v in sd.items()}
         return {self.name: sd}
 
+    @contract
     def default_value(self):
-        """Return the default value (the score itself) for this ChoiceSet"""
+        """
+        :returns: The default value of the choiceset
+        :rtype: int|None
+        """
 
         choices = filter(lambda x: x.is_default_value, self.get_choices())
-        assert len(choices) < 2
-        return choices and getattr(choices[0], 'score', None)
+        if choices:
+            return int(getattr(choices[0]))
 
     def values_as_json(self):
         choices = dict([(unicode(i.score), unicode(i.label)) for i in self.get_choices()])
         return json.dumps(choices, indent=4, sort_keys=True)
 
+    @contract
+    def choice_tuples(self):
+        """
+        :returns: A list of tuples containing scores and labels.
+        :rtype: list(tuple(int, str))
+        """
+        return [(int(i.score), i.label) for i in self.get_choices()]
+
+    @contract
+    def choices_as_string(self):
+        """
+        :returns: succinct display of options as text.
+        :rtype: str
+        """
+        return "; ".join(["%s (%s)" % (i.label, i.score) for i in self.get_choices()])
+
+
+    @contract
     def get_choices(self):
+        """
+        "returns: A sorted list of Choice objects
+        :rtype: list(a)
 
         # this is transitional... choicesets are nor specified as Yaml rather than via
         # db-saved Choice objects, but we recreate them by hand to avoid editing code elsewhere
+        """
+
         if self.yaml:
-            return [Choice(choiceset=self, score=choice.get('score'), is_default_value=choice.get('is_default_value', ''), label=choice.get('label', ''), order=i)
-                for i, choice in self.yaml.items()]
+            try:
+                return sorted([Choice(choiceset=self, score=choice.get('score'), is_default_value=choice.get('is_default_value', ''), label=choice.get('label', ''), order=i)
+                    for i, choice in self.yaml.items()], key=lambda x: x.order)
+            except:
+                return []
         else:
             # or if no yaml set, do it the old way
-            cset = Choice.objects.filter(choiceset=self)
+            cset = list(Choice.objects.filter(choiceset=self).order_by("order"))
             return cset
 
+    @contract
     def allowed_responses(self):
-        # list of valid options, e.g. used to validate user input
+        """
+        :returns: A list of valid options, e.g. used to validate user input
+        :rtype: list(int)
+        """
         return [i.score for i in self.get_choices()]
 
-    def choices_as_string(self):
-        """Used in admin and elsewhere to display options succinctly."""
-        return "; ".join(["%s [%s]" % (i.label, i.score) for i in self.get_choices()])
 
     def __unicode__(self):
         return u'%s' % (self.name, )

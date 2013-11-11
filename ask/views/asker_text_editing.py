@@ -7,6 +7,10 @@ This is somewhat a work in progress, and is for expert users only just now.
 
 """
 
+import itertools
+from contracts import contract
+from pyparsing import *
+from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LOOKUP
 from ask.models import Asker, ChoiceSet, Question, AskPage, Choice, ShowIf
 from ask.models import question
 from ask.views.pandochelpers import stringify, get_meta_tuple
@@ -17,7 +21,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from hashlib import sha1
 from itertools import groupby, chain
-from signalbox.models import Reply
+from signalbox.models import Reply, ScoreSheet
 from signalbox.decorators import group_required
 from signalbox.utilities.djangobits import dict_map
 import ast
@@ -26,16 +30,19 @@ import os
 import re
 from ask.yamlextras import yaml
 
-
+@contract
 def get_or_modify(klass, lookups, params):
-    """:: Klass -> Dict -> Dict -> (KlassInstance, Bool)
-    Takes
-        - Class of the object
-        - (id_field_name, id_value)
-        - other params in a dictionary
+    """
+    :param klass: The django Class to use for lookup
+    :type klass: a
+    :param lookups: Key value pairs in a dictionary to use to lookup object
+    :type lookups: dict
+    :param params: Key value pairs in a dictionary to use to modify found object
+    :type params: dict
+    :rtype: tuple(b, bool)
 
     Returns
-        - a new or modified object matching class + id, and with params set.
+        - a new or modified instance of klass, with params set as specified.
         - boolean indicating whether object was modified
           (modified objects are automatically saved)
     """
@@ -52,44 +59,26 @@ def get_or_modify(klass, lookups, params):
     return ob, modified
 
 
+# parsing functions for the showif commands
+CL = CaselessLiteral
+_getvars = lambda s, l, toks: itertools.chain(*[Question.objects.filter(variable_name__istartswith=i) for i in toks])
+_fun = oneOf(" ".join(SCORESHEET_FUNCTION_NAMES))('fun')
+showif_components = _fun + CL("(") + OneOrMore(Word(alphanums + "_-")).setParseAction(_getvars)('questions') + CL(")")
 
+@contract
+def process_scoresheet_string(name, s):
+    """
+    :param s: "functioname(list of variables)"
+    :type s: str
+    :returns: A saved ScoreSheet instance
+    :rtype: a
+    """
 
-
-def fix_showif_values(s):
-    """Mainly used to identify lists in showif conditions"""
-    try:
-        return ast.literal_eval(s.strip())
-    except:
-        return s.strip()
-
-# process textual showif conditions: use regex to split and
-# make a dict containing variable_name, operator and value(s)
-# note parens around operator split means the delimiter is retained
-# in the result list
-showif_to_dict = lambda s: dict_map(
-    fix_showif_values,
-    dict(zip("variable_name operator value".split(), re.split('(<|>|=|\sin\s)', s)))
-)
-
-
-def process_question_showif(question):
-    if not question.get('showif', None):
-        # do this to make sure the existing showif will get delinked
-        question.update({'showif': None})
-    else:
-        showifdict = showif_to_dict(question['showif'])
-        _fix_value = lambda v: isinstance(v, list) and ",".join(map(str, v)) or v and int(v) or None
-        field_mapping = {
-            '<': {'less_than': _fix_value(showifdict.get('value', None))},
-            '>': {'more_than': _fix_value(showifdict.get('value', None))},
-            '=': {'values': _fix_value(showifdict.get('value', None))},
-            'in': {'values': _fix_value(showifdict.get('value', None))},
-        }
-        showifvalues = field_mapping[showifdict['operator']]
-        showifvalues.update({'previous_question':
-                get_or_modify(Question, {'variable_name': showifdict['variable_name']}, {})[0]})
-        question.update({'showif': get_or_modify(ShowIf, showifvalues, {})[0]})
-
+    components = showif_components.parseString(s) # use pyparsing to get bits
+    ss =  ScoreSheet(name=name, function=components.fun)
+    ss.save()
+    [ss.variables.add(i) for i in components.questions]
+    return ss
 
 
 class YamlEditForm(forms.Form):
@@ -127,12 +116,12 @@ class YamlEditForm(forms.Form):
         except KeyError:
             choicesetsdictlist = []
 
-
         # what is left are pages of questions
         pages = documents[1:]
 
         self.cleaned_data.update({
                 "asker": asker,
+                "scoresheets": askerdict.get('scoresheets', {}),
                 "choicesets": choicesetsdictlist,
                 "pages": pages
             })
@@ -143,9 +132,16 @@ class YamlEditForm(forms.Form):
     def save(self):
 
         asker = self.cleaned_data['asker']
+        scoresheets = self.cleaned_data['scoresheets']
+
+        if scoresheets:
+            [i.delete() for i in asker.scoresheets.all()]
+            sses = [process_scoresheet_string(k, v) for k, v in scoresheets.items()]
+            [asker.scoresheets.add(i) for i in sses]
+            asker.save()
 
         # delete preview replies to allow editing if we've been testing
-        # otherwise db integrity errors
+        # otherwise db integrity errors occur
         Reply.objects.filter(asker=asker, entry_method="preview").delete()
 
         choicesets = self.cleaned_data['choicesets']
@@ -156,7 +152,6 @@ class YamlEditForm(forms.Form):
             choicesets = [get_or_modify(ChoiceSet, {'name': k}, {'yaml':v})
                 for k, v in choicesets.items()]
             [i.save() for i, j in choicesets]
-            print [i.yaml for i , j in choicesets]
         except Exception as e:
             raise forms.ValidationError("Something went wrong with the choicesets: {}".format(e))
 
@@ -174,7 +169,8 @@ class YamlEditForm(forms.Form):
             newpages = existing_pages + extra_pages
             unwanted_pages = oldpages[n_pages_now:]
         except Exception as e:
-            raise forms.ValidationError("Something went wrong with the pages of questions: {}".format(e))
+            raise forms.ValidationError(
+                "Something went wrong with the pages of questions: {}".format(e))
 
 
         # helpers to manipulate the dicts from yaml

@@ -35,3 +35,4 @@ django-bootstrap-pagination==0.1.10
 django-data-exports==0.2
 django-localflavor
 pyyaml
+pycontracts

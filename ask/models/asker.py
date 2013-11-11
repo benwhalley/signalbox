@@ -104,9 +104,9 @@ class Asker(models.Model):
         return max([5, baseround(mins, 5)])
 
     def as_yaml(self):
-
         asker = filtered_model_to_dict(self, exclude="id scoresheets redirect_url hide_menu".split())
-
+        scoresheets = {i.name: i.as_str_for_yaml() for i in self.scoresheets.all()}
+        asker.update({'scoresheets': scoresheets})
         questionsbypage = [{i.step_name: [q.dict_for_yaml() for q in i.get_questions()]} for i in self.askpage_set.all()]
 
         choicesets = {}

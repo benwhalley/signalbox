@@ -2,8 +2,7 @@ from __future__ import division
 
 from django.db import models
 from collections import defaultdict
-from statlib import stats
-
+from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LOOKUP
 
 def float_or_none(string):
     """Try to turn a string into a float, but return None if this fails."""
@@ -20,8 +19,10 @@ class ScoreSheet(models.Model):
     minimum_number_of_responses_required = models.IntegerField(null=True, blank=True)
     variables = models.ManyToManyField(
         'ask.Question', related_name="varsinscoresheet")
-    FUNCTIONS = [(i, i) for i in "sum mean min max stdev median".split(" ")]
-    function = models.CharField(max_length=200, choices=FUNCTIONS)
+    function = models.CharField(max_length=200, choices=[(i, i) for i in SCORESHEET_FUNCTION_NAMES])
+
+    def as_str_for_yaml(self):
+        return "{}({})".format(self.function, " ".join([i.variable_name for i in self.variables.all()]))
 
     def as_simplified_dict(self):
         return {
@@ -35,15 +36,7 @@ class ScoreSheet(models.Model):
         return self.minimum_number_of_responses_required or self.variables.all().count()
 
     def score_function(self):
-
-        FUNCTION_LOOKUP = {'min': lambda x: round(min(x),0),
-                           'max': lambda x: round(max(x),0),
-                           'sum': sum,
-                           'mean': stats.mean,
-                           'stdev': stats.stdev,
-                           'median': lambda x: round(stats.lmedian(x), 0),
-                           }
-        return FUNCTION_LOOKUP[self.function]
+        return SCORESHEET_FUNCTION_LOOKUP[self.function]
 
     def compute(self, answers):
         """Returns a dictionary containing score, scoresheet and a message.
@@ -58,7 +51,8 @@ class ScoreSheet(models.Model):
 
         try:
             scores = [float_or_none(a.mapped_score()) for a in answers_to_use]
-            scores = [a for a in scores if a]
+            scores = [a for a in scores if a != None]
+
             if len(scores) < self.min_number_variables():
                 return {'scoresheet':self, 'score':None, 'message': "Only %s variables submitted" % len(scores)}
             else:

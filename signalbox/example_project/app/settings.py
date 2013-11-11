@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import contracts
 from django.core.files.storage import FileSystemStorage
 from signalbox.configurable_settings import *
 from signalbox.utilities.get_env_variable import get_env_variable
@@ -166,6 +167,12 @@ TEMPLATE_LOADERS = (
 TEMPLATE_DEBUG = DEBUG
 if DEBUG:
     TEMPLATE_LOADERS = TEMPLATE_LOADERS[0][1]
+
+# turn of contracts checking in production
+if not DEBUG:
+    contracts.disable_all()
+
+
 
 # REGISTRATION #
 AUTH_PROFILE_MODULE = 'signalbox.UserProfile'

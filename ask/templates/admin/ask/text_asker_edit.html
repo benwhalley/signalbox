@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load markup %}
+{% load humanize %}
 {% load floppyforms %}
 
 {% block body %}
@@ -55,15 +56,14 @@ $(document).ready(function() {
     <h4>Questionnaire preview</h4>
 {% for i in asker.askpage_set.all %}
 
-<div class="control-group alert">{{i.step_name}}</div>
+<div class="control-group alert alert-info">{{i.step_name}}
+<span class="pull-right">Page: {{i.order}}</span></div>
 
 {% for j in i.get_questions %}
 <div class="well">
-    <form>
-        {{j.preview_html.as_p}}
-
-    </form>
-    <hr/>
+    <code>{{j.variable_name}}</code>
+    {{j.text|markdown}}
+    {{j.choiceset.choices_as_string}}
 </div>
 {% endfor %}
 {% endfor %}
