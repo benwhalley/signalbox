@@ -36,3 +36,4 @@ django-data-exports==0.2
 django-localflavor
 pyyaml
 pycontracts
+django-yamlfield
