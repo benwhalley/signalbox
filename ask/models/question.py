@@ -533,7 +533,6 @@ class ShowIf(models.Model):
         - trigger an alert
     """
 
-
     class Meta:
         app_label = 'ask'
 
@@ -556,9 +555,12 @@ class ShowIf(models.Model):
     less_than = models.IntegerField(blank=True, null=True, help_text="""Previous question response
         or summary score must be less than this value.""")
 
-
+    @contract
     def evaluate(self, reply):
-        """Check whether a suitable previous answer exists and return Boolean."""
+        """Check whether a suitable previous answer exists and return Boolean.
+
+        :rtype: bool
+        """
 
         if self.summary_score:
             vals_to_be_tested = set([self.summary_score.compute(reply.answer_set.all())['score']])
