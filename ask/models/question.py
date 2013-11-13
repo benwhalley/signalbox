@@ -479,16 +479,14 @@ class ChoiceSet(models.Model):
         """
         return [(int(i.score), i.label) for i in self.get_choices()]
 
-    @contract
     def choices_as_string(self):
         """
         :returns: succinct display of options as text.
-        :rtype: str
         """
         return "; ".join(["%s (%s)" % (i.label, i.score) for i in self.get_choices()])
 
 
-    @contract
+    # @contract
     def get_choices(self):
         """
         "returns: A sorted list of Choice objects

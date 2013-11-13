@@ -5,13 +5,13 @@
 
 {% block body %}
 <style>
-#id_yaml {width:98%; font-family:"inconsolata", "menlo", monospace;}
+#id_source {width:98%; font-family:"inconsolata", "menlo", monospace;}
 
 
 </style>
 <script>
 $(document).ready(function() {
-    var $abc = $("#id_yaml");
+    var $abc = $("#id_source");
     $abc.css("height", $abc.attr("scrollHeight"));
 })
 </script>
@@ -38,7 +38,7 @@ $(document).ready(function() {
 
         {% csrf_token %}
 
-<div class="span5">
+<div class="span6">
 
 
     <h4>Text input </h4>
@@ -47,16 +47,16 @@ $(document).ready(function() {
             <div class="alert warning">{{e}}</div>
         {% endfor %}
     {% endif %}
-    {{form.yaml}}
+    {{form.source}}
 
 </div>
 
 </form>
-<div class="span7">
+<div class="span6">
     <h4>Questionnaire preview</h4>
 {% for i in asker.askpage_set.all %}
 
-<div class="control-group alert alert-info">{{i.step_name}}
+<div class="control-group alert alert-info">{{i.name}}
 <span class="pull-right">Page: {{i.order}}</span></div>
 
 {% for j in i.get_questions %}

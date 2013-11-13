@@ -140,7 +140,6 @@ Some examples:
 
 """
 
-import pdb
 from datetime import date, datetime, timedelta, time
 import dateutil
 from dateutil.relativedelta import *

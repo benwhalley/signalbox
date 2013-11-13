@@ -24,8 +24,6 @@ def signalbox_make_heroku_app():
     print "Creating a new app on Heroku and creating DB and Scheduler"
     required, optional = _get_settings()
     cloud = heroku.from_pass(required['HEROKU_USERNAME'], required['HEROKU_PASSWORD'])
-    # import pdb
-    # pdb.set_trace()
 
     app = cloud.apps.add(required['HEROKU_APP_NAME'])
     print "Trying to link app to local repo..."

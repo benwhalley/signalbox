@@ -59,10 +59,7 @@ class AskPage(models.Model, Step):
     order = models.FloatField(default=0)
 
     submit_button_text = models.CharField(max_length=255, default="""Continue""")
-    step_name = models.CharField(max_length=255, null=True, blank=True)
-
-    def name(self):
-        return self.step_name or "Page {}".format(self.index() + 1)
+    name = models.CharField(max_length=255)
 
     def get_absolute_url(self):
         return reverse('preview_asker',
@@ -140,4 +137,5 @@ class AskPage(models.Model, Step):
         return admin_edit_url(self)
 
     def __unicode__(self):
-        return u"{}: {} (p {})".format(self.asker, self.step_name, self.order)
+        return str(self.id)
+        return u"{}: {} (p {})".format(self.asker, self.name, self.order)

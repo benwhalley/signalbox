@@ -235,8 +235,6 @@ def preview_timings(request, klass="Study", pk=None):
     datelist = itertools.chain(
         *[[(i, j['script']) for i in j['times']] for j in datelist])
 
-    # import pdb
-    # pdb.set_trace()
     datelist = filter(lambda x: bool(x[0]['datetime']), datelist)
     datelist = sorted(list(datelist), key=operator.itemgetter(0))
     extra = {'dl': datelist, 'object': obj, 'object_type': obj.__class__.__name__}

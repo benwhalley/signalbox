@@ -1,12 +1,58 @@
 """
 Module which handles importing questionnaires in special markdown dialect
-using pandoc to process the input. Also see to_markdown functions on Question,
+using yaml and pyparsing to process the input. Also see to_markdown functions on Question,
 Asker etc for the reverse of this process.
 
 This is somewhat a work in progress, and is for expert users only just now.
 
+
+### could use lxml instead of yaml...
+from ask.views.asker_text_editing import *
+
+doc = etree.parse(open('/Users/ben/Desktop/dose.html'))
+
+pages = doc.xpath("/questionnaire/page")
+choicesets = doc.xpath("/questionnaire/page/choiceset")
+scoresheets = doc.xpath("/questionnaire/scoresheet")
+questions = doc.xpath("/questionnaire/page/question")
+
+# check there are no repeat questions
+assert max(zip(*Counter([i.get('variable_name')
+    for i in questions]).most_common())[1]) == 1, "Question names are repeated"
+
+
+asker = Asker.objects.get(slug="dose")
+asker.askpage_set.all().delete()
+pages_o = [AskPage(asker=asker, name=i.get('name', None)) for i in pages]
+
+
+# XXX add updating or creating of choicesets here
+
+
+# add attributes to questions to flatten somewhat
+[i.set('page_number', str(i.getparent().getparent().index(i.getparent()))) for i in questions]
+[i.set('order', str(i.getparent().index(i))) for i in questions]
+questions_d = [dict(i.items()) for i in questions]
+
+[i.update({'page': pages_o[int(i['page_number']) - 1]}) for i in questions_d]
+[i.update({'choiceset': ChoiceSet.objects.get(name=i.get('choiceset'))}) for i in questions_d
+    if i.get('choiceset')]
+
+
+questions_o, _ = zip(*[get_or_modify(Question, {'variable_name': i.get('variable_name')}, i)
+    for i in questions_d])
+
+asker.save()
+# save choicesets here
+[i.save() for i in pages_o]
+[i.save() for i in questions_o]
+
+
 """
 
+
+from lxml import etree
+from collections import Counter
 import itertools
 from contracts import contract
 from pyparsing import *
@@ -27,36 +73,7 @@ import ast
 import floppyforms as forms
 import os
 import re
-from ask.yamlextras import yaml
-
-@contract
-def get_or_modify(klass, lookups, params):
-    """
-    :param klass: The django Class to use for lookup
-    :type klass: a
-    :param lookups: Key value pairs in a dictionary to use to lookup object
-    :type lookups: dict
-    :param params: Key value pairs in a dictionary to use to modify found object
-    :type params: dict
-    :rtype: tuple(b, bool)
-
-    Returns
-        - a new or modified instance of klass, with params set as specified.
-        - boolean indicating whether object was modified
-          (modified objects are automatically saved)
-    """
-    ob, created = klass.objects.get_or_create(**lookups)
-    mods = []
-    klassfields = map(lambda x: getattr(x, "name"), klass.__dict__['_meta'].fields)
-    for k, v in params.iteritems():
-        if k in klassfields:  # ignore extra fields by default
-            mods.append(not getattr(ob, k) == v)
-            setattr(ob, k, v)
-    modified = bool(sum(mods))
-    ob.save()
-
-    return ob, modified
-
+from asker_text_editing_utils import _find_choiceset, get_or_modify
 
 # parsing functions for the showif commands
 CL = CaselessLiteral
@@ -68,7 +85,7 @@ showif_components = _fun + CL("(") + OneOrMore(Word(alphanums + "_-")).setParseA
 def process_scoresheet_string(name, s):
     """
     :param s: "functioname(list of variables)"
-    :type s: str
+    :type s: string
     :returns: A saved ScoreSheet instance
     :rtype: a
     """
@@ -80,64 +97,64 @@ def process_scoresheet_string(name, s):
     return ss
 
 
-class YamlEditForm(forms.Form):
+class TextEditForm(forms.Form):
 
-    yaml = forms.CharField(required=True,
+    source = forms.CharField(required=True,
         widget=forms.widgets.Textarea(attrs={'rows': 15}))
 
     def __init__(self, *args, **kwargs):
         self.asker = kwargs.pop('asker')
         initial = kwargs.get('initial', {})
-        if not initial.get('yaml'):
-            initial['yaml'] = self.asker.as_yaml()
+        if not initial.get('source'):
+            initial['source'] = self.asker.as_editable_text()
         kwargs['initial'] = initial
-        super(YamlEditForm, self).__init__(*args, **kwargs)
-
-
+        super(TextEditForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        try:
-            documents = filter(bool, list(yaml.load_all(self.cleaned_data.get("yaml"))))
-        except Exception as e:
-            raise forms.ValidationError(
-                "There was a problem parsing the yaml:\n\n {}".format(e))
+        doc = etree.fromstring(self.cleaned_data.get("source"))
+        pages = doc.xpath("/questionnaire/page")
+        choicesets = doc.xpath("/questionnaire/choiceset")
+        scoresheets = doc.xpath("/questionnaire/scoresheet")
+        questions = doc.xpath("/questionnaire/page/question")
 
-        try:
-            askerdict = documents[0]['asker']
-        except KeyError:
-            raise forms.ValidationError("No information provided about the Asker")
+        # check there are no repeat questions
+        assert max(zip(*Counter([i.get('variable_name')
+            for i in questions]).most_common())[1]) == 1, "Question names are repeated"
 
-        asker, _ = get_or_modify(Asker, {"id":self.asker.id}, askerdict)
-
-        try:
-            choicesetsdictlist = documents[-1]['choicesets']
-            documents = documents[:-1]
-        except KeyError:
-            choicesetsdictlist = []
-
-        # what is left are pages of questions
-        pages = documents[1:]
+        questionnaire = dict(doc.xpath("/questionnaire")[0].items())
+        asker, _ = get_or_modify(Asker, {"id": self.asker.id}, questionnaire)
 
         self.cleaned_data.update({
-                "asker": asker,
-                "scoresheets": askerdict.get('scoresheets', {}),
-                "choicesets": choicesetsdictlist,
-                "pages": pages
+                'pages': pages,
+                'choicesets': choicesets,
+                'scoresheets': scoresheets,
+                'questions': questions,
+                'asker': asker
             })
-
         return self.cleaned_data
+
+
 
 
     def save(self):
 
         asker = self.cleaned_data['asker']
         scoresheets = self.cleaned_data['scoresheets']
+        choicesets = self.cleaned_data['choicesets']
 
-        if scoresheets:
-            [i.delete() for i in asker.scoresheets.all()]
-            sses = [process_scoresheet_string(k, v) for k, v in scoresheets.items()]
-            [asker.scoresheets.add(i) for i in sses]
-            asker.save()
+        choicesets_dlist = [dict(i.items()) for i in choicesets]
+        [i.update({'yaml': j.text}) for i, j in zip(choicesets_dlist, choicesets)]
+        choicesets_oblist, _ = zip(*[get_or_modify(ChoiceSet, {'name': i.get('name')}, i) for i in choicesets_dlist])
+        [i.save() for i in choicesets_oblist]
+
+
+        # raise Exception(choicesets_dlist)
+
+        # if scoresheets:
+        #     [i.delete() for i in asker.scoresheets.all()]
+        #     sses = [process_scoresheet_string(k, v) for k, v in scoresheets.items()]
+        #     [asker.scoresheets.add(i) for i in sses]
+        #     asker.save()
 
         # delete preview replies to allow editing if we've been testing
         # otherwise db integrity errors occur
@@ -145,80 +162,35 @@ class YamlEditForm(forms.Form):
 
         choicesets = self.cleaned_data['choicesets']
         pages = self.cleaned_data['pages']
+        questions = self.cleaned_data['questions']
 
-        try:
-            # add choicesets
-            choicesets = [get_or_modify(ChoiceSet, {'name': k}, {'yaml':v})
-                for k, v in choicesets.items()]
-            [i.save() for i, j in choicesets]
-        except Exception as e:
-            raise forms.ValidationError("Something went wrong with the choicesets: {}".format(e))
+        # start afresh to make the right number of pages
+        [i.delete() for i in asker.askpage_set.all()]
 
-        try:
-            # create right number of pages, re-using existing pages as far as possible
-            # (just deleting the existing pages deleted all the questions too with a cascade)
-            n_pages_now = len(pages)
-            oldpages = asker.askpage_set.all().order_by('order')
-            n_pages_then = oldpages.count()
-            existing_pages = list(oldpages[:n_pages_now])
-            extra_pages = []
-            if n_pages_then < n_pages_now:
-                existing_pages = list(oldpages)
-                extra_pages = [AskPage(asker=asker) for i in range(n_pages_now - n_pages_then)]
-            newpages = existing_pages + extra_pages
-            unwanted_pages = oldpages[n_pages_now:]
-        except Exception as e:
-            raise forms.ValidationError(
-                "Something went wrong with the pages of questions: {}".format(e))
+        pages_o = [AskPage(asker=asker, name=j.get('name', None), order=i) for i, j in enumerate(pages)]
+        [i.save() for i in pages_o]
+
+        # add page numbers and ordering to questions
+        [i.set('page_number', str(i.getparent().getparent().index(i.getparent()))) for i in questions]
+        [i.set('order', str(i.getparent().index(i))) for i in questions]
+
+        # make questions into dictionaries and update adding the qustion text and askpage objects
+        questions_d = [dict(i.items()) for i in questions]
+        [i.update({'text': j.text}) for i, j in zip(questions_d, questions)]
+        [i.update({'page': pages_o[int(i['page_number'])]}) for i in questions_d]
+        [i.update({'choiceset': ChoiceSet.objects.get(name=i.get('choiceset'))}) for i in questions_d
+            if i.get('choiceset')]
+
+        #update with choiceset objects
+        [_find_choiceset(d) for d in questions_d]
+
+        # get and modify the question objects with the new data.
+        questions_o, _ = zip(*[get_or_modify(Question, {'variable_name': i.get('variable_name')}, i)
+            for i in questions_d])
+
+        [i.save() for i in questions_o]
 
 
-        # helpers to manipulate the dicts from yaml
-        def _liftqdict(qdict):
-            variable_name, d = qdict.items()[0]
-            d.update({'variable_name': variable_name})
-            return d
-
-        def _find_choiceset(d):
-            if d.get('choiceset'):
-                cs, _ = ChoiceSet.objects.get_or_create(name=d.get('choiceset'))
-            else:
-                cs = None
-            d.update({'choiceset': cs})
-            return d
-
-        # find and add questions to the pages
-        try:
-            for newpage, yamlpage, order in zip(newpages, pages, range(len(pages))):
-
-                # we disassociate all the existing questions from the page, but
-                # provided they were not deleted from the yaml they will
-                # get reassociated below. Note this means questions deleted from the
-                # yaml are left orphaned. Is this a problem?
-                for q in newpage.question_set.all():
-                    q.page = None
-                    q.save()
-
-                # now start to rebuild the page from the yaml
-                newpage.step_name = yamlpage.keys()[0]
-                newpage.order = order
-
-                # a page is a single mapping in a yaml document, where the list of questions is the first item
-                question_dicts = yamlpage.values()[0]
-                for question, order in zip(question_dicts, range(len(question_dicts))):
-                    question = _find_choiceset(_liftqdict(question))
-                    qob, _ = get_or_modify(Question,
-                        {'variable_name': question['variable_name']},
-                        question
-                    )
-                    qob.page = newpage
-                    qob.order = order
-                    qob.save()
-                    print qob
-                newpage.save()
-        except Exception as e:
-            raise forms.ValidationError("Something went wrong with editing the questions: {}".format(e))
-
-        [i.delete() for i in unwanted_pages]
         asker.save()
 
         return asker
@@ -230,7 +202,7 @@ class YamlEditForm(forms.Form):
 @group_required(['Researchers', 'Research Assistants'])
 def edit_yaml_asker(request, asker_id):
     asker = Asker.objects.get(id=asker_id)
-    form = YamlEditForm(request.POST or None, asker=asker)
+    form = TextEditForm(request.POST or None, asker=asker)
 
     if form.is_valid():
         form.save()

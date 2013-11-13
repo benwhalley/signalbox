@@ -8,10 +8,10 @@ The ``Ask`` application deals with creating and displaying questionnaires.
 Questionnaires can be spread across multiple pages, and consist of questions. Questions can also be grouped into Instruments, which can be placed in a block into a page. Questions will often refer to ChoiceSets (groups of discreet options), e.g. for likert type responses.
 
 
-Editing via markdown text format
+Editing via yaml text format
 ---------------------------------
 
-To enable rapid editing of questionnaires, a text-based format is available in which titles, questions and choice-sets can be specified, and which are converted into Asker, Question and ChoiceSet objects in the database. This text format is based on [markdown](http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html).
+To enable rapid editing of questionnaires, a text-based format is available in which titles, questions and choice-sets can be specified, and which are converted into Asker, Question and ChoiceSet objects in the database. This text format is based on YAML.
 
 The text to edit questionnaires comes in two blocks: the header, which specifies details of the questionnaire as a whole, and the body which contains individual questions and choicesets.
 
@@ -21,16 +21,16 @@ The questionnaire header
 
 The header is formatted as follows::
 
+    asker:
+      name: DOSE
+      scoresheets:
+        dose: sum(dose_mrc dose_fev1 dose_smokes dose_exacerbations)
+      show_progress: 'true'
+      slug: dose
+      step_navigation: 'true'
+      steps_are_sequential: 'true'
+      success_message: Questionnaire complete.
     ---
-    name: "Name of the questionnaire here"
-    slug: "examplequestionnaire"
-    redirect_url: "http://www.example.com"
-    show_progress: false
-    step_navigation: true
-    steps_are_sequential: true
-    success_message: "Thanks for completing this questionnaire."
-    ---
-
 
 The `name` and `slug` attributes identify the questionnaire — the `slug` being a short identifier which can be used in url links.  The other fields are as follows:
 
