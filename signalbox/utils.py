@@ -9,6 +9,14 @@ from django.shortcuts import get_object_or_404
 from django.http import Http404
 from signalbox.utilities.djangobits import supergetattr
 
+
+def padleft(thing, n, default=None):
+    while len(thing) < n:
+        thing.insert(0, default)
+    return thing
+
+
+
 def get_object_or_none(modelclass, **kwargs):
     try:
         return get_object_or_404(modelclass, **kwargs)
@@ -18,7 +26,7 @@ def get_object_or_none(modelclass, **kwargs):
 
 def current_site_url():
     """Returns fully qualified URL (no trailing slash) for the current site."""
-    
+
     url = 'http://%s' % (Site.objects.get_current().domain, )
     return url
 

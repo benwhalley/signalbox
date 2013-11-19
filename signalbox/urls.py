@@ -32,7 +32,7 @@ v1_api.register(ask.api.AskerResource())
 
 urlpatterns = patterns('',
         (r'^ask/', include('ask.urls')),
-        (r'^admin/', include('ask.urls_admin')),
+        (r'^admin/ask/', include('ask.urls_admin')),
         (r'^twilio/', include('twiliobox.urls')),
         (r'^selectable/', include('selectable.urls')),
         (r'^api/', include(v1_api.urls)),

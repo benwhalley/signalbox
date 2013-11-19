@@ -22,40 +22,13 @@ from hashlib import sha1
 from itertools import groupby, chain
 from signalbox.models import Reply, ScoreSheet
 from signalbox.decorators import group_required
-from signalbox.utilities.djangobits import dict_map
+from signalbox.utilities.djangobits import dict_map, get_or_modify
 import ast
 import floppyforms as forms
 import os
 import re
 from ask.yamlextras import yaml
 
-@contract
-def get_or_modify(klass, lookups, params):
-    """
-    :param klass: The django Class to use for lookup
-    :type klass: a
-    :param lookups: Key value pairs in a dictionary to use to lookup object
-    :type lookups: dict
-    :param params: Key value pairs in a dictionary to use to modify found object
-    :type params: dict
-    :rtype: tuple(b, bool)
-
-    Returns
-        - a new or modified instance of klass, with params set as specified.
-        - boolean indicating whether object was modified
-          (modified objects are automatically saved)
-    """
-    ob, created = klass.objects.get_or_create(**lookups)
-    mods = []
-    klassfields = map(lambda x: getattr(x, "name"), klass.__dict__['_meta'].fields)
-    for k, v in params.iteritems():
-        if k in klassfields:  # ignore extra fields by default
-            mods.append(not getattr(ob, k) == v)
-            setattr(ob, k, v)
-    modified = bool(sum(mods))
-    ob.save()
-
-    return ob, modified
 
 
 # parsing functions for the showif commands
