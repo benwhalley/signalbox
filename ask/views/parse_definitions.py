@@ -67,6 +67,9 @@ _yaml_header_start = Literal("-").suppress()*3 + Optional(ZeroOrMore(Literal("-"
 yaml_header = _yaml_header_start + SkipTo(Literal("---")|Literal("..."))('yaml')
 
 
+ispage = lambda x: bool(x.step_name)
+isnotpage = lambda x: not ispage(x)
+
 ############ END OF PYPARSING DEFINITIONS ############
 
 

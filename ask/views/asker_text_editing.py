@@ -32,7 +32,8 @@ from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LO
 from signalbox.utilities.djangobits import dict_map, get_or_modify, flatten
 from signalbox.utils import padleft
 from ask.views.parse_definitions import block, yaml_header, make_question_dict, \
-    make_page_dict, as_custom_markdown, add_scoresheet_to_question
+    make_page_dict, as_custom_markdown, add_scoresheet_to_question, \
+    ispage, isnotpage
 
 
 
@@ -74,6 +75,13 @@ class TextEditForm(forms.Form):
                         "Not all scoresheet variables (for {}) were matched.".format(
                             i.calculated_score.name))
 
+        # check variable names are not used in other questionnaires
+        variable_names = [i.iden for i in filter(isnotpage, blocks)]
+        naughtyquestions = Question.objects.filter(variable_name__in=variable_names).exclude(page__asker=asker)
+        if naughtyquestions.count():
+            raise forms.ValidationError(
+                "Some variable names are already in use by other questionnaires ({})".format(
+                    ", ".join([i.variable_name for i in naughtyquestions])))
 
         self.cleaned_data.update({
                 "asker": asker,
@@ -88,9 +96,6 @@ class TextEditForm(forms.Form):
 
         asker = self.cleaned_data['asker']
         blocks = self.cleaned_data['blocks']
-
-        ispage = lambda x: bool(x.step_name)
-        isnotpage = lambda x: not ispage(x)
 
         # delete unused pages and questions
         [i.delete() for i in asker.askpage_set.all()]
