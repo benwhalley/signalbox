@@ -65,16 +65,6 @@ class TextEditForm(forms.Form):
 
         asker, _ = get_or_modify(Asker, {"id":self.asker.id}, asker_yaml )
 
-        # check all scoresheet variables match
-        for i in blocks:
-            if i.calculated_score:
-                varlist = i.calculated_score.variables.asList()
-                variables = Question.objects.filter(variable_name__in=varlist)
-                if len(varlist) != variables.count():
-                    raise forms.ValidationError(
-                        "Not all scoresheet variables (for {}) were matched.".format(
-                            i.calculated_score.name))
-
         # check variable names are not used in other questionnaires
         variable_names = [i.iden for i in filter(isnotpage, blocks)]
         naughtyquestions = Question.objects.filter(variable_name__in=variable_names).exclude(page__asker=asker)
@@ -83,6 +73,19 @@ class TextEditForm(forms.Form):
                 "Some variable names are already in use by other questionnaires ({})".format(
                     ", ".join([i.variable_name for i in naughtyquestions])))
 
+
+        # check all variables specified in scoresheets can be found
+        for i in blocks:
+            if i.calculated_score:
+                varset = set(i.calculated_score.variables.asList())
+                questions_set = set(variable_names)
+                if not varset.issubset(questions_set):
+                    raise forms.ValidationError(
+                        "Not all variables for scoresheet '{}' were matched: {}".format(
+                            i.calculated_score.name,
+                            ", ".join(varset.difference(questions_set))))
+
+        # update the form with some parsed data
         self.cleaned_data.update({
                 "asker": asker,
                 "asker_yaml": asker_yaml,
