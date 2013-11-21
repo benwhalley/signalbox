@@ -92,6 +92,9 @@
             <p>There were problems with a number of the questions below:</p>
         </div>
     {% endif %}
+
+    {% if page.step_name %}<h2>{{page.step_name}}</h2>{% endif %}
+
     {% form form using "floppyforms/questionnaire.html" %}
     <hr>
     <p>

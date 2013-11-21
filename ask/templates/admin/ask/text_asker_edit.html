@@ -7,7 +7,18 @@
 <style>
 #id_text {width:98%; font-family:"inconsolata", "menlo", monospace;}
 body {padding-top:120px;}
-
+#topbar{background-color: white;}
+#fader {
+    padding-top:0px; margin-top:-10px;
+    height:40px;
+    background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,0))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#00ffffff',GradientType=0 ); /* IE6-9 */
+}
 </style>
 <script>
 $(document).ready(function() {
@@ -26,8 +37,8 @@ $(document).ready(function() {
 
     <div class="navbar navbar-fixed-top navbar-inverse">
 
-        <div class="container">
-        <div class="navbar-header">
+        <div class="container" >
+        <div class="navbar-header" id="topbar">
 
 
          <a class='btn btn-large btn-primary pull-right' href='{% url "preview_asker" asker.id 0 %}'>Preview</a>
@@ -39,6 +50,8 @@ $(document).ready(function() {
                 <a class='btn btn-large' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details</a>
 
      </div>
+     <div id="fader">
+    </div>
  </div>
      </div>
 
