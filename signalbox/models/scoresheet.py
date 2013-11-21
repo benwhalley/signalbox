@@ -14,7 +14,7 @@ def float_or_none(string):
 
 
 class ScoreSheet(models.Model):
-    name = models.CharField(blank=True, max_length=80)
+    name = models.SlugField(blank=True, max_length=80, unique=True)
     description = models.TextField(blank=True)
     minimum_number_of_responses_required = models.IntegerField(null=True, blank=True)
     variables = models.ManyToManyField(

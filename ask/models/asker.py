@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import io
-from lxml import etree
-from lxml.etree import Element, SubElement
+
 from ask.models import Choice, Instrument
 from datetime import datetime
 from django.core import serializers
@@ -11,15 +9,30 @@ from django.db import models
 from django.forms.models import model_to_dict
 from functools import partial
 from page import AskPage
-import yaml
-from question import DEFAULTYAMLCHOICESET
 from signalbox.utilities.djangobits import supergetattr, flatten, dict_map
 from signalbox.utilities.linkedinline import admin_edit_url
 import functools
 import itertools
 import json
 import re
+from ask.yamlextras import yaml, MyDumper
 from collections import OrderedDict
+
+
+def filtered_model_to_dict(instance, fields=None, exclude=None):
+    fields = fields or []
+    exclude = exclude or []
+
+    d = model_to_dict(instance)
+
+    if exclude:
+        return {k: v for k, v in d.items() if k not in exclude}
+
+    if not fields:
+        fields = d.keys()
+
+    return {k:v for k, v in d.items() if k in set(fields)}
+
 
 
 class AskerManager(models.Manager):
@@ -48,6 +61,10 @@ class Asker(models.Model):
     show_progress = models.BooleanField(default=False, help_text="""Show a
             progress field in the header of each page.""")
 
+    finish_on_last_page = models.BooleanField(default=False, help_text="""Mark the reply as complete
+        when the user gets to the last page. NOTE this implies there should be not questions
+        requiring input on the last page, or these values will never be saved.""")
+
     step_navigation = models.BooleanField(default=True, help_text="""Allow navigation
         to steps.""")
 
@@ -56,12 +73,8 @@ class Asker(models.Model):
         then respondents can skip around within the questionnaire and complete
         the pages 'out of order'.""")
 
-    scoresheets = models.ManyToManyField(
-        'signalbox.ScoreSheet', blank=True, null=True,
-        help_text="""Attach ScoreSheet rules to obtain summary (sum or mean)
-        scores of groups of answers for each Reply made to Observations within
-        this study.""",
-        verbose_name="""Summary scores to compute""")
+    def scoresheets(self):
+        return set(filter(bool, [i.scoresheet for i in self.questions()]))
 
     hide_menu = models.BooleanField(default=True)
 
@@ -89,35 +102,6 @@ class Asker(models.Model):
         n_questions = len(self.questions())
         mins = (n_questions * .5) * .9
         return max([5, baseround(mins, 5)])
-
-    def as_editable_text(self):
-        from ask.views.asker_text_editing_utils import _find_choiceset, super_model_to_dict
-
-        attrs = {k: str(v) for k, v in model_to_dict(self, exclude="id scoresheets redirect_url hide_menu".split()).items()}
-        root = Element('questionnaire', **attrs)
-        for page in self.askpage_set.all().order_by("order"):
-            page_d = model_to_dict(page, fields="name submit_button_text".split())
-            page_el = Element('page', **page_d)
-            for question in page.get_questions():
-                q_d = super_model_to_dict(question,
-                    fields=[('variable_name', 'variable_name'), ('q_type', 'q_type'), ('required', 'required'), ('choiceset', 'choiceset.name')])
-                q_d = {k:v for k, v in q_d.items() if v}
-                q_el = Element('question', **dict_map(str, q_d))
-                q_el.text = question.text
-                page_el.append(q_el)
-
-            root.append(page_el)
-
-        choicesets = filter(bool, flatten([[q.choiceset for q in page.get_questions()] for page in self.askpage_set.all()]))
-        for choiceset in choicesets:
-            cs_d = super_model_to_dict(choiceset, fields="name".split())
-            cs_el = Element('choiceset', **cs_d)
-            cs_el.text = choiceset.yaml and "\n" + yaml.safe_dump(choiceset.yaml, default_flow_style=False) or DEFAULTYAMLCHOICESET
-            root.append(cs_el)
-
-        return etree.tostring(root, pretty_print=True
-            )
-
 
 
     def questions(self):
@@ -179,7 +163,7 @@ class Asker(models.Model):
             'questions': qdicts,
             'choicesets': [_asdict(i, CHOICESET_FIELDS) for i in choicesets],
             'choices': [_asdict(i, CHOICE_FIELDS) for i in choices],
-            'scoresheets': [i.as_simplified_dict() for i in self.scoresheets.all()]
+            'scoresheets': [i.as_simplified_dict() for i in self.scoresheets()]
         }
 
         jsonstring = json.dumps(output, indent=4)
@@ -194,4 +178,4 @@ class Asker(models.Model):
         app_label = "ask"
 
     def __unicode__(self):
-        return "{}".format(self.name or self.slug or self.id)
+        return "{}".format(self.name or self.slug)

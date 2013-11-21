@@ -23,7 +23,7 @@
 	    <a class='btn btn-mini' href='{% url 'show_codebook' object_id %}'>Codebook</a>
 	    <a class='btn btn-mini' href='{% url 'export_asker' object_id %}'>Export JSON</a>
 	    {% if user.is_superuser %}
-	      <a class='btn btn-mini' href='{% url 'edit_yaml_asker' object_id %}'>Edit in text format</a>
+	      <a class='btn btn-mini' href='{% url 'edit_asker_as_text' object_id %}'>Edit in text format</a>
 	    {% endif %}
 
 	{% endif %}

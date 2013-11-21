@@ -116,7 +116,6 @@ class AskerAdmin(admin.ModelAdmin):
     save_on_top = True
     form = AskerAdminForm
     search_fields = ['name', 'slug', ]
-    filter_horizontal = ['scoresheets', ]
     list_display = ['slug', 'name', ]
     prepopulated_fields = {'slug': ('name',)}
     list_editable = ['name', ]
@@ -145,7 +144,6 @@ class AskerAdmin(admin.ModelAdmin):
                 'step_navigation',
                 'show_progress',
                 'hide_menu',
-                'scoresheets'
                 ),
             # 'classes': ('collapse',),
         }),
@@ -201,7 +199,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("Question data", {
-        'fields': ( 'order', 'q_type', 'choiceset', 'text', 'variable_name', 'required',  'score_mapping')
+        'fields': ( 'order', 'q_type', 'choiceset', 'scoresheet', 'text', 'variable_name', 'required',  'score_mapping')
         }),
 
         ("Additional info", {

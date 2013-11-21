@@ -108,7 +108,7 @@ class Question(models.Model):
         return {self.variable_name: {k:v for k, v in d.items() if v}}
 
     page = models.ForeignKey('ask.AskPage', null=True, blank=True)
-
+    scoresheet = models.ForeignKey('signalbox.ScoreSheet',  blank=True, null=True)
     instrument = models.ForeignKey('ask.Instrument', null=True, blank=True)
 
     objects = QuestionManager()
@@ -209,7 +209,10 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         }
 
         if reply and reply.asker and self.field_class().compute_scores:
-            context['scores'] = {i.name: i.compute(reply.answer_set.all()) for i in reply.asker.scoresheets.all()}
+            scores = {i.name: i.compute(reply.answer_set.all()) for i in reply.asker.scoresheets()}
+            context['scores'] = {i.name: i.compute(reply.answer_set.all()) for i in reply.asker.scoresheets()}
+            # put actual values into main namespace too
+            context.update({k: v.get('score', None) for k, v in scores.items()})
 
             def _get_label(variable_name, score):
                 try:
@@ -462,10 +465,9 @@ class ChoiceSet(models.Model):
         :returns: The default value of the choiceset
         :rtype: int|None
         """
-
         choices = filter(lambda x: x.is_default_value, self.get_choices())
         if choices:
-            return int(getattr(choices[0]))
+            return int(getattr(choices[0], 'is_default_value'))
 
     def values_as_json(self):
         choices = dict([(unicode(i.score), unicode(i.label)) for i in self.get_choices()])
@@ -479,11 +481,13 @@ class ChoiceSet(models.Model):
         """
         return [(int(i.score), i.label) for i in self.get_choices()]
 
+    @contract
     def choices_as_string(self):
         """
         :returns: succinct display of options as text.
+        :rtype: string
         """
-        return "; ".join(["%s (%s)" % (i.label, i.score) for i in self.get_choices()])
+        return "; ".join(["%s%s (%s)" % (i.label, i.is_default_value and "*" or "", i.score, ) for i in self.get_choices()])
 
 
     # @contract
@@ -498,7 +502,7 @@ class ChoiceSet(models.Model):
 
         if self.yaml:
             try:
-                return sorted([Choice(choiceset=self, score=choice.get('score'), is_default_value=choice.get('is_default_value', ''), label=choice.get('label', ''), order=i)
+                return sorted([Choice(choiceset=self, score=choice.get('score'), is_default_value=choice.get('isdefault', False), label=choice.get('label', ''), order=i)
                     for i, choice in self.yaml.items()], key=lambda x: x.order)
             except:
                 return []

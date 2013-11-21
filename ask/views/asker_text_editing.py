@@ -1,212 +1,158 @@
 """
 Module which handles importing questionnaires in special markdown dialect
-using yaml and pyparsing to process the input. Also see to_markdown functions on Question,
+using pandoc to process the input. Also see to_markdown functions on Question,
 Asker etc for the reverse of this process.
 
 This is somewhat a work in progress, and is for expert users only just now.
 
-
-### could use lxml instead of yaml...
-from ask.views.asker_text_editing import *
-
-doc = etree.parse(open('/Users/ben/Desktop/dose.html'))
-
-pages = doc.xpath("/questionnaire/page")
-choicesets = doc.xpath("/questionnaire/page/choiceset")
-scoresheets = doc.xpath("/questionnaire/scoresheet")
-questions = doc.xpath("/questionnaire/page/question")
-
-# check there are no repeat questions
-assert max(zip(*Counter([i.get('variable_name')
-    for i in questions]).most_common())[1]) == 1, "Question names are repeated"
-
-
-asker = Asker.objects.get(slug="dose")
-asker.askpage_set.all().delete()
-pages_o = [AskPage(asker=asker, name=i.get('name', None)) for i in pages]
-
-
-# XXX add updating or creating of choicesets here
-
-
-# add attributes to questions to flatten somewhat
-[i.set('page_number', str(i.getparent().getparent().index(i.getparent()))) for i in questions]
-[i.set('order', str(i.getparent().index(i))) for i in questions]
-questions_d = [dict(i.items()) for i in questions]
-
-[i.update({'page': pages_o[int(i['page_number']) - 1]}) for i in questions_d]
-[i.update({'choiceset': ChoiceSet.objects.get(name=i.get('choiceset'))}) for i in questions_d
-    if i.get('choiceset')]
-
-
-questions_o, _ = zip(*[get_or_modify(Question, {'variable_name': i.get('variable_name')}, i)
-    for i in questions_d])
-
-asker.save()
-# save choicesets here
-[i.save() for i in pages_o]
-[i.save() for i in questions_o]
-
-
 """
 
-
-from lxml import etree
-from collections import Counter
+from hashlib import sha1
+from itertools import groupby, chain
 import itertools
-from contracts import contract
-from pyparsing import *
-from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LOOKUP
+import os
+from pprint import pprint
+import re
+from collections import defaultdict
+
 from ask.models import Asker, ChoiceSet, Question, AskPage, Choice, ShowIf
 from ask.models import question
+from ask.yamlextras import yaml
+import ast
+from contracts import contract
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from hashlib import sha1
-from itertools import groupby, chain
-from signalbox.models import Reply, ScoreSheet
-from signalbox.decorators import group_required
-from signalbox.utilities.djangobits import dict_map
-import ast
 import floppyforms as forms
-import os
-import re
-from asker_text_editing_utils import _find_choiceset, get_or_modify
+from signalbox.decorators import group_required
+from signalbox.models import Reply, ScoreSheet, Answer
+from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LOOKUP
+from signalbox.utilities.djangobits import dict_map, get_or_modify, flatten
+from signalbox.utils import padleft
+from ask.views.parse_definitions import block, yaml_header, make_question_dict, \
+    make_page_dict, as_custom_markdown, add_scoresheet_to_question
 
-# parsing functions for the showif commands
-CL = CaselessLiteral
-_getvars = lambda s, l, toks: itertools.chain(*[Question.objects.filter(variable_name__istartswith=i) for i in toks])
-_fun = oneOf(" ".join(SCORESHEET_FUNCTION_NAMES))('fun')
-showif_components = _fun + CL("(") + OneOrMore(Word(alphanums + "_-")).setParseAction(_getvars)('questions') + CL(")")
 
-@contract
-def process_scoresheet_string(name, s):
-    """
-    :param s: "functioname(list of variables)"
-    :type s: string
-    :returns: A saved ScoreSheet instance
-    :rtype: a
-    """
 
-    components = showif_components.parseString(s) # use pyparsing to get bits
-    ss =  ScoreSheet(name=name, function=components.fun)
-    ss.save()
-    [ss.variables.add(i) for i in components.questions]
-    return ss
 
 
 class TextEditForm(forms.Form):
 
-    source = forms.CharField(required=True,
-        widget=forms.widgets.Textarea(attrs={'rows': 15}))
+    text = forms.CharField(required=True,
+        widget=forms.widgets.Textarea(attrs={'rows': 100}))
 
     def __init__(self, *args, **kwargs):
         self.asker = kwargs.pop('asker')
         initial = kwargs.get('initial', {})
-        if not initial.get('source'):
-            initial['source'] = self.asker.as_editable_text()
+        if not initial.get('text'):
+            initial['text'] = as_custom_markdown(self.asker)
         kwargs['initial'] = initial
+        self.base_fields['text'].widget.attrs['rows']=len(initial['text'].split("\n"))+10
         super(TextEditForm, self).__init__(*args, **kwargs)
 
+
     def clean(self):
-        doc = etree.fromstring(self.cleaned_data.get("source"))
-        pages = doc.xpath("/questionnaire/page")
-        choicesets = doc.xpath("/questionnaire/choiceset")
-        scoresheets = doc.xpath("/questionnaire/scoresheet")
-        questions = doc.xpath("/questionnaire/page/question")
+        try:
+            text = self.cleaned_data.get("text")
+            asker_yaml = yaml.safe_load(yaml_header.searchString(text)[0][0])
+            blocks = block.searchString(text)
+        except Exception as e:
+            raise forms.ValidationError(
+                "There was a problem parsing the yaml:\n\n {}".format(e))
 
-        # check there are no repeat questions
-        assert max(zip(*Counter([i.get('variable_name')
-            for i in questions]).most_common())[1]) == 1, "Question names are repeated"
+        asker, _ = get_or_modify(Asker, {"id":self.asker.id}, asker_yaml )
 
-        questionnaire = dict(doc.xpath("/questionnaire")[0].items())
-        asker, _ = get_or_modify(Asker, {"id": self.asker.id}, questionnaire)
+        # check all scoresheet variables match
+        for i in blocks:
+            if i.calculated_score:
+                varlist = i.calculated_score.variables.asList()
+                variables = Question.objects.filter(variable_name__in=varlist)
+                if len(varlist) != variables.count():
+                    raise forms.ValidationError(
+                        "Not all scoresheet variables (for {}) were matched.".format(
+                            i.calculated_score.name))
+
 
         self.cleaned_data.update({
-                'pages': pages,
-                'choicesets': choicesets,
-                'scoresheets': scoresheets,
-                'questions': questions,
-                'asker': asker
+                "asker": asker,
+                "asker_yaml": asker_yaml,
+                "blocks": blocks
             })
+
         return self.cleaned_data
-
-
 
 
     def save(self):
 
         asker = self.cleaned_data['asker']
-        scoresheets = self.cleaned_data['scoresheets']
-        choicesets = self.cleaned_data['choicesets']
+        blocks = self.cleaned_data['blocks']
 
-        choicesets_dlist = [dict(i.items()) for i in choicesets]
-        [i.update({'yaml': j.text}) for i, j in zip(choicesets_dlist, choicesets)]
-        choicesets_oblist, _ = zip(*[get_or_modify(ChoiceSet, {'name': i.get('name')}, i) for i in choicesets_dlist])
-        [i.save() for i in choicesets_oblist]
+        ispage = lambda x: bool(x.step_name)
+        isnotpage = lambda x: not ispage(x)
 
-
-        # raise Exception(choicesets_dlist)
-
-        # if scoresheets:
-        #     [i.delete() for i in asker.scoresheets.all()]
-        #     sses = [process_scoresheet_string(k, v) for k, v in scoresheets.items()]
-        #     [asker.scoresheets.add(i) for i in sses]
-        #     asker.save()
-
-        # delete preview replies to allow editing if we've been testing
-        # otherwise db integrity errors occur
-        Reply.objects.filter(asker=asker, entry_method="preview").delete()
-
-        choicesets = self.cleaned_data['choicesets']
-        pages = self.cleaned_data['pages']
-        questions = self.cleaned_data['questions']
-
-        # start afresh to make the right number of pages
+        # delete unused pages and questions
         [i.delete() for i in asker.askpage_set.all()]
+        [i.delete() for i in asker.questions()]
+        # if i.variable_name not in [i.variable_name for i in itertools.chain(*questionsbypage_obs)]]
+        # raise Exception(blocks)
 
-        pages_o = [AskPage(asker=asker, name=j.get('name', None), order=i) for i, j in enumerate(pages)]
-        [i.save() for i in pages_o]
+        # group by page, using filter(bool) to get rid of empty pages
+        questionsbypage = filter(bool,
+                [filter(isnotpage, (i[1])) for i in groupby(blocks, ispage)])
 
-        # add page numbers and ordering to questions
-        [i.set('page_number', str(i.getparent().getparent().index(i.getparent()))) for i in questions]
-        [i.set('order', str(i.getparent().index(i))) for i in questions]
+        pages = filter(ispage, blocks)
+        pages_d = [make_page_dict(i) for i in pages]
 
-        # make questions into dictionaries and update adding the qustion text and askpage objects
-        questions_d = [dict(i.items()) for i in questions]
-        [i.update({'text': j.text}) for i, j in zip(questions_d, questions)]
-        [i.update({'page': pages_o[int(i['page_number'])]}) for i in questions_d]
-        [i.update({'choiceset': ChoiceSet.objects.get(name=i.get('choiceset'))}) for i in questions_d
-            if i.get('choiceset')]
+        # pad to make sure we have enough pages (e.g. if first questions are specified without a page)
+        pages_d = padleft(pages_d, len(questionsbypage), {})
 
-        #update with choiceset objects
-        [_find_choiceset(d) for d in questions_d]
+        [j.update({'asker':asker, 'order': i}) for i, j in enumerate(pages_d)]
+        pages_obs = [get_or_modify(AskPage, {'asker':asker, 'order':i['order']}, i)[0] for i in pages_d]
 
-        # get and modify the question objects with the new data.
-        questions_o, _ = zip(*[get_or_modify(Question, {'variable_name': i.get('variable_name')}, i)
-            for i in questions_d])
+        questionsbypage_d = [[make_question_dict(i) for i in j]
+            for j in questionsbypage]
 
-        [i.save() for i in questions_o]
+        # add askpages and ordering to questions
+        [[q.update({'page': p, 'order': i}) for i, q in enumerate(plist)]
+            for plist, p in zip(questionsbypage_d, pages_obs)]
 
+        # make question objects
+        questionsbypage_obs = [[get_or_modify(Question, {'variable_name': q['variable_name']}, q)[0] for q in page] for page in questionsbypage_d]
+
+        # save everything
+
+        [[i.clean() for i in p] for p in questionsbypage_obs]
+        [[i.save() for i in p] for p in questionsbypage_obs]
+        [[i.choiceset.save() for i in p if i.choiceset] for p in questionsbypage_obs]
+
+        # add scoresheets back in
+        [[add_scoresheet_to_question(question, parseresult)
+            for question, parseresult in zip(pageq, pagep)] for
+                pageq, pagep in zip(questionsbypage_obs, questionsbypage)]
 
         asker.save()
 
         return asker
 
 
-
-
-
 @group_required(['Researchers', 'Research Assistants'])
-def edit_yaml_asker(request, asker_id):
+def edit_asker_as_text(request, asker_id):
     asker = Asker.objects.get(id=asker_id)
-    form = TextEditForm(request.POST or None, asker=asker)
 
-    if form.is_valid():
-        form.save()
-        return HttpResponseRedirect(reverse('edit_yaml_asker', args=(asker.id,)))
+    asker.reply_set.filter(entry_method="preview").delete()
+    nreplies = asker.reply_set.all().count()
+
+    if nreplies:
+        form = None
+    else:
+
+        form = TextEditForm(request.POST or None, asker=asker)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('edit_asker_as_text', args=(asker.id,)))
 
     return render_to_response(
         'admin/ask/text_asker_edit.html', {'form': form, 'asker': asker},

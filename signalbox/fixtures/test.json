@@ -330,8 +330,7 @@
     "hide_menu": false,
     "redirect_url": "/accounts/profile/",
     "slug": "generic-add-document",
-    "success_message": "Questionnaire complete.",
-    "scoresheets": []
+    "success_message": "Questionnaire complete."
   }
 },
 {
@@ -345,8 +344,7 @@
     "hide_menu": false,
     "redirect_url": "/accounts/profile/",
     "slug": "demonstration_questionnaire",
-    "success_message": "Questionnaire complete.",
-    "scoresheets": []
+    "success_message": "Questionnaire complete."
   }
 },
 {
@@ -360,8 +358,7 @@
     "hide_menu": true,
     "redirect_url": "/accounts/profile/",
     "slug": "Testphonecallasker",
-    "success_message": "Questionnaire complete.",
-    "scoresheets": []
+    "success_message": "Questionnaire complete."
   }
 },
 {
@@ -375,8 +372,7 @@
     "hide_menu": true,
     "redirect_url": "/accounts/profile/",
     "slug": "likeatelephonecall",
-    "success_message": "Questionnaire complete.",
-    "scoresheets": []
+    "success_message": "Questionnaire complete."
   }
 },
 {
@@ -390,15 +386,7 @@
     "hide_menu": false,
     "redirect_url": "/accounts/profile/",
     "slug": "LINQ",
-    "success_message": "Questionnaire complete.",
-    "scoresheets": [
-      3,
-      4,
-      5,
-      6,
-      8,
-      7
-    ]
+    "success_message": "Questionnaire complete."
   }
 },
 {
@@ -961,7 +949,7 @@
     "submit_button_text": "Save answers",
     "asker": 16,
     "order": 0.0,
-    "name": null
+    "step_name": null
   }
 },
 {
@@ -971,7 +959,7 @@
     "submit_button_text": "Save and continue",
     "asker": 17,
     "order": 0.0,
-    "name": "Introductory questions"
+    "step_name": "Introductory questions"
   }
 },
 {
@@ -981,7 +969,7 @@
     "submit_button_text": "Save answers",
     "asker": 18,
     "order": 0.0,
-    "name": ""
+    "step_name": ""
   }
 },
 {
@@ -991,7 +979,7 @@
     "submit_button_text": "Save answers",
     "asker": 19,
     "order": 0.0,
-    "name": ""
+    "step_name": ""
   }
 },
 {
@@ -1001,7 +989,7 @@
     "submit_button_text": "Save and continue",
     "asker": 17,
     "order": 1.0,
-    "name": "Repeated date questions"
+    "step_name": "Repeated date questions"
   }
 },
 {
@@ -1011,7 +999,7 @@
     "submit_button_text": "Save answers",
     "asker": 17,
     "order": 2.0,
-    "name": "Finalise"
+    "step_name": "Finalise"
   }
 },
 {
@@ -1021,7 +1009,7 @@
     "submit_button_text": "Continue",
     "asker": 30,
     "order": 0.0,
-    "name": "Introduction"
+    "step_name": "Introduction"
   }
 },
 {
@@ -1031,7 +1019,7 @@
     "submit_button_text": "Save and continue",
     "asker": 30,
     "order": 2.0,
-    "name": "Information needs"
+    "step_name": "Information needs"
   }
 },
 {
@@ -1041,7 +1029,7 @@
     "submit_button_text": "Save and continue",
     "asker": 30,
     "order": 3.0,
-    "name": "Your score"
+    "step_name": "Your score"
   }
 },
 {

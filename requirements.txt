@@ -37,3 +37,4 @@ django-localflavor
 pyyaml
 pycontracts
 django-yamlfield
+shortuuid

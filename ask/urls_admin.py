@@ -1,7 +1,7 @@
 from ask.models import Asker
 from ask.views import preview_asker, show_page, start_anonymous_survey
 from ask.views import print_asker, show_codebook, preview_questions, bulk_add_questions
-from ask.views.asker_text_editing import edit_yaml_asker
+from ask.views.asker_text_editing import edit_asker_as_text
 from django.conf.urls import patterns, url
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import DetailView
@@ -13,8 +13,8 @@ from signalbox.views.replies import *
 
 urlpatterns = patterns('',
 
-    url(r'^asker/text/(?P<asker_id>\d+)/$', edit_yaml_asker,
-        name="edit_yaml_asker"),
+    url(r'^asker/(?P<asker_id>\d+)/text/$', edit_asker_as_text,
+        name="edit_asker_as_text"),
 
     url(r'^question/add/multiple/$', bulk_add_questions, name="bulk_add_questions"),
     url(r'^asker/(?P<asker_id>\d+)/codebook/$', show_codebook,
