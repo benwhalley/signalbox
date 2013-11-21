@@ -8,7 +8,7 @@ scripts = ['bin/setup_signalbox', ]
 
 setup(
     name='signalbox',
-    version='0.1.13',
+    version='0.1.13.1',
     author='Ben Whalley',
     author_email='benwhalley@gmail.com',
     packages=find_packages(),
