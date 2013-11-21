@@ -1,4 +1,15 @@
 
+# add tests for text editing including scoresheets
+
+# option to mark reply complete before last page...
+
+# factor away question.choices_as_json()
+
+
+# factor away choicesets and choices altogether?
+
+
+
 # For twilio - need to record some standard prompts which get attached to the asker
 
 "I'm sorry, I couldn't hear a response. I'll repeat the question:"
@@ -127,6 +138,7 @@ SELECT schemaname,relname,n_live_tup
 
 
 BUG: the system won't check if you try to make more than one Choice the default value for a choiceset. Remember how this might interact with markdown editing when fixing.
+
 
 
 

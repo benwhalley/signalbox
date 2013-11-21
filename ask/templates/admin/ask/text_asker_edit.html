@@ -5,8 +5,8 @@
 
 {% block body %}
 <style>
-#id_yaml {width:98%; font-family:"inconsolata", "menlo", monospace;}
-
+#id_text {width:98%; font-family:"inconsolata", "menlo", monospace;}
+body {padding-top:120px;}
 
 </style>
 <script>
@@ -16,67 +16,88 @@ $(document).ready(function() {
 })
 </script>
 
+
+
+{%if form %}
 <form action="." method="POST" accept-charset="utf-8">
-<div class="container">
 
 
-    <div class="row">
+    <div class="container">
 
-       <div class="span12">
-        <hr>
-            <a class='btn btn-mini pull-right' href='{% url "admin:ask_asker_change" asker.id %}'>Edit details</a>
-            <a class='btn btn-mini btn-primary pull-right' href='{% url "preview_asker" asker.id 0 %}'>Preview</a>
+    <div class="navbar navbar-fixed-top navbar-inverse">
 
-            <p><input class="btn btn-primary" type="Submit" value="Save changes"></p>
+        <div class="container">
+        <div class="navbar-header">
 
-        <hr>
-        </div>
-    </div>
 
+         <a class='btn btn-large btn-primary pull-right' href='{% url "preview_asker" asker.id 0 %}'>Preview</a>
+
+         <p>
+
+                <input type="submit" class="btn btn-danger btn-large" value="Save changes"/>
+
+                <a class='btn btn-large' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details</a>
+
+     </div>
+ </div>
+     </div>
 
 <div class="row">
 
         {% csrf_token %}
 
-<div class="span5">
-
-
-    <h4>Text input </h4>
+<div class="span7">
     {% if form.errors %}
         {% for e in form.non_field_errors %}
             <div class="alert warning">{{e}}</div>
         {% endfor %}
     {% endif %}
-    {{form.yaml}}
+    {{form.text}}
 
 </div>
 
-</form>
-<div class="span7">
-    <h4>Questionnaire preview</h4>
+<div class="span5">
 {% for i in asker.askpage_set.all %}
 
-<div class="control-group alert alert-info">{{i.step_name}}
-<span class="pull-right">Page: {{i.order}}</span></div>
+<div class="control-group">
+    <span class="pull-right">{{i.order}}</span><h3>{{i.step_name}}</h3>
+
+</div>
 
 {% for j in i.get_questions %}
-<div class="well">
-    <code>{{j.variable_name}}</code>
-    {{j.text|markdown}}
-    {{j.choiceset.choices_as_string}}
+<div >
+
+    <pre><code><a href="{% url "admin:ask_question_change" j.id %}">#{{j.variable_name}}</a></code>{% if j.required %}*{% endif %} <span class="muted">({{j.q_type}})</span>
+{{j.text}}
+{% if j.choiceset %}
+<pre>{{j.choiceset.choices_as_string}}</pre>{% endif %}{% if j.widget_kwargs %}
+<pre>{{j.widget_kwargs}}</pre>{% endif %}{% if j.scoresheet %}
+<pre>Computed score: scores.{{j.scoresheet}}</pre>{% endif %}
+</pre>
 </div>
 {% endfor %}
 {% endfor %}
 </div>
 
 </div>
+</div>
+</form>
 
+{% else %}
 
+<div class="container">
 
-
-
+<div class="alert alert-warning">
+<h3>Cannot edit questionnaire because {{asker.reply_set.all|length}} responses have already been saved.
+</h3>
+<p>
+<a href="{% url "admin:signalbox_reply_changelist" %}?asker__id__exact={{asker.id}}" class="btn btn-primary">View responses</a>
+</div>
 </div>
 
+
+
+{% endif %}
 
 
 {% endblock %}

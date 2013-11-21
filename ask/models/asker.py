@@ -61,6 +61,10 @@ class Asker(models.Model):
     show_progress = models.BooleanField(default=False, help_text="""Show a
             progress field in the header of each page.""")
 
+    finish_on_last_page = models.BooleanField(default=False, help_text="""Mark the reply as complete
+        when the user gets to the last page. NOTE this implies there should be not questions
+        requiring input on the last page, or these values will never be saved.""")
+
     step_navigation = models.BooleanField(default=True, help_text="""Allow navigation
         to steps.""")
 
@@ -69,12 +73,8 @@ class Asker(models.Model):
         then respondents can skip around within the questionnaire and complete
         the pages 'out of order'.""")
 
-    scoresheets = models.ManyToManyField(
-        'signalbox.ScoreSheet', blank=True, null=True,
-        help_text="""Attach ScoreSheet rules to obtain summary (sum or mean)
-        scores of groups of answers for each Reply made to Observations within
-        this study.""",
-        verbose_name="""Summary scores to compute""")
+    def scoresheets(self):
+        return set(filter(bool, [i.scoresheet for i in self.questions()]))
 
     hide_menu = models.BooleanField(default=True)
 
@@ -102,23 +102,6 @@ class Asker(models.Model):
         n_questions = len(self.questions())
         mins = (n_questions * .5) * .9
         return max([5, baseround(mins, 5)])
-
-    def as_yaml(self):
-        asker = filtered_model_to_dict(self, exclude="id scoresheets redirect_url hide_menu".split())
-        scoresheets = {i.name: i.as_str_for_yaml() for i in self.scoresheets.all()}
-        asker.update({'scoresheets': scoresheets})
-        questionsbypage = [{i.step_name: [q.dict_for_yaml() for q in i.get_questions()]} for i in self.askpage_set.all()]
-
-        choicesets = {}
-        [choicesets.update(i.choiceset.dict_for_yaml()) for i in self.questions() if i.choiceset]
-
-        d = [{"asker":asker}] + questionsbypage + [{"choicesets":choicesets}]
-
-        return yaml.dump_all(d, Dumper=MyDumper,
-            allow_unicode=True,
-            default_flow_style = False,
-            width=80, indent=2
-            ).replace("---", "---\n\n") #.replace("\n-", "\n\n-")
 
 
     def questions(self):
@@ -180,7 +163,7 @@ class Asker(models.Model):
             'questions': qdicts,
             'choicesets': [_asdict(i, CHOICESET_FIELDS) for i in choicesets],
             'choices': [_asdict(i, CHOICE_FIELDS) for i in choices],
-            'scoresheets': [i.as_simplified_dict() for i in self.scoresheets.all()]
+            'scoresheets': [i.as_simplified_dict() for i in self.scoresheets()]
         }
 
         jsonstring = json.dumps(output, indent=4)

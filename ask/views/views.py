@@ -96,6 +96,11 @@ def show_page(request, reply_token, preview=False):
     form = PageForm(request.POST or None, request.FILES or None, page=page,
                     reply=reply, request=request)
 
+    if page.is_last() and not page.questions_which_require_answers() and page.asker.finish_on_last_page:
+        # if we want to leave participant on the last page we just capture
+        # and ignore the return value of finish()
+        _ = reply.finish(request)
+
     if form.is_valid():
         form.save(reply=reply, page=page)
 
@@ -107,11 +112,15 @@ def show_page(request, reply_token, preview=False):
             url = url + "?page={}".format(nextpage)
         return HttpResponseRedirect(url)
     else:
+        requires_more_responses = bool(page.questions_which_require_answers())
+        showbutton = bool(page.is_last() or reply.is_complete() or len(list(reply)) == 1)
+        showbutton = showbutton and requires_more_responses
+
         return render_to_response('asker_page.html',
             {
                 'form': form,
                 'page': page,
-                'redbutton': bool(page.is_last() or reply.is_complete() or len(list(reply)) == 1),
+                'redbutton': showbutton,
                 'hidemenu': page.asker.hide_menu,
                 'reply': reply
             }, context_instance=RequestContext(request))

@@ -159,6 +159,7 @@ class SignalboxField(object):
             self.widget.attrs.update(question.widget_kwargs)
 
         # Extra information about the field stored on the Question
+        # XXXTODO check this is still needed and document what uses it if so...
         if question.field_kwargs:
             for k, v in question.field_kwargs.items():
                 setattr(self, k, v)

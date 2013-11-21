@@ -128,7 +128,7 @@ class Reply(models.Model, ProcessManager):
         return True
 
     def relevant_scoresheets(self):
-        return self.asker.scoresheets.all()
+        return self.asker.scoresheets()
 
     def computed_scores(self):
         scoresheets = self.relevant_scoresheets()

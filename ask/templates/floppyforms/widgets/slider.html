@@ -1,5 +1,11 @@
 <div class="row">
+{% if not attrs.min and not attrs.max and not attrs.value %}
+<div class="alert">Please specify a min, max and value for this slider to work</div>
+
+{% else %}
+
 <div class="span9">
+
 
 <div class="span7" id="{{attrs.id}}_slider"></div>
 <div class="span1" id="{{attrs.id}}_label">{{attrs.value}}</div>
@@ -22,4 +28,6 @@
 
 
 </div>
+
+{% endif %}
 </div>

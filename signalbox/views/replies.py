@@ -113,7 +113,7 @@ def preview_reply(request, id):
         raise PermissionDenied(
             "Your account doesn't have access to that page. Login as a different user?")
 
-    scoresheets = reply.asker.scoresheets.all()
+    scoresheets = reply.asker.scoresheets()
     scores = [(i, i.compute(reply.answer_set.all())) for i in scoresheets]
 
     return render_to_response('manage/preview_reply.html',
