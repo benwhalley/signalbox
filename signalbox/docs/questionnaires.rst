@@ -56,31 +56,31 @@ The questionnaire body
 
 Questions themselves are defined in what are called 'fenced code blocks' in Markdown. For example::
 
-    ~~~
+    ~~~{}
     This the simplest type of 'question' - an instruction. No responses will be collected here.
     ~~~
 
 When this is saved, you'll notice that the system adds some attributes to the block to enable it to be identified in the database later for editing. So, the example above would get transformed into::
 
-    ~~~{#ecVhsaj7889ij type="instruction"}
+    ~~~{#ecVhsaj7889ij .instruction}
     This the simplest type of 'question' - an instruction. No responses will be collected here.
     ~~~
 
-Here, a variable name has been added (`ecVhsaj7889ij`) and the `type`specified for clarity. To add other types of questions you will need to manually specify the type, and optionally also the variable name for example::
+Here, a variable name has been added (`ecVhsaj7889ij`) and the `type` of question specified for clarity. To add other types of questions you will need to manually specify the type, and optionally also the variable name for example::
 
-    ~~~{#howoldareyou type="integer"}
+    ~~~{#howoldareyou .integer}
     How old are you, in years?
     ~~~
 
 This would create an html question which requires an integer answer to be entered in a small text box.  Some questions (including integer questions) have optional attributes. For example::
 
-    ~~~{#howoldareyou type="integer" min="12" max="120"}
+    ~~~{#howoldareyou .integer min="12" max="120"}
     How old are you, in years?
     ~~~
 
 In the example above we add a min and max attribute to validate against some typos. The text of questions can itself include markdown formatting to create headings, emphaisis or links within a questionnaire. For example::
 
-    ~~~{#howoldareyou type="integer" min="12" max="120"}
+    ~~~{#howoldareyou .integer min="12" max="120"}
     # Demographic information
 
     How old are you, ***in years***?
@@ -92,34 +92,32 @@ In the example above, a level-1 heading (Demographic information) is inserted, a
 Some questions require users to select from a restrcited range of choices, for example a likert-type scale. To specify the choices, specify a choiceset attribute on the question, and define the choiceset in a second, separate block::
 
 
-    ~~~{#howhappyareyou type="likert" choiceset="range1to4"}
+    ~~~{#howhappyareyou .likert}
     How happy are you?
+    >>>
+    1=Very happy
+    2=Miserable
     ~~~
 
-    ~~~{#range1to4 .choiceset}
-    1=Happy
-    2=2
-    3=3
-    4=Unhappy
-    ~~~
-
-Here the name of the choiceset is marked with a # symbol (as for variable names for questions) and possible options are listed on separate lines, in the form `score=label`. Scores must be integers, and are the values saved when the user provides an answer (although note that answers are saved as strings in the database, and value labels are exported as part of the data-download functions too).
+Here the possible options are listed following ">>>" on separate lines, in the form `score=label`. Scores must be integers, and are the values saved when the user provides an answer.
 
 To mark one option to be selected by default, insert a star in front of the value::
 
-    ~~~{#range1to4 .choiceset}
-    *1=Happy is selected by default
+    ~~~{#range1to4 .choiceset .required}
+    1*=Happy is selected by default
     2=2
     3=3
     4=Unhappy
     ~~~
+
+Note this is also a required question.
 
 
 
 A complete example
 --------------------
 
-
+A complete example can be found in `ask/fixtures/asker_text.md`.
 
 
 
