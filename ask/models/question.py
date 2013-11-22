@@ -477,7 +477,7 @@ class ChoiceSet(models.Model):
     def choice_tuples(self):
         """
         :returns: A list of tuples containing scores and labels.
-        :rtype: list(tuple(int, str))
+        :rtype: list(tuple(int, string))
         """
         return [(int(i.score), i.label) for i in self.get_choices()]
 
