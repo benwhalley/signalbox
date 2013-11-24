@@ -89,6 +89,9 @@ In the example above we add a min and max attribute to validate against some typ
 In the example above, a level-1 heading (Demographic information) is inserted, and the text 'in years' is formatted in bold and italic. For more information on [markdown formatting see the guide here](XXX).
 
 
+Defining a list of choices
+..............................
+
 Some questions require users to select from a restrcited range of choices, for example a likert-type scale. To specify the choices, specify a choiceset attribute on the question, and define the choiceset in a second, separate block::
 
 
@@ -101,16 +104,78 @@ Some questions require users to select from a restrcited range of choices, for e
 
 Here the possible options are listed following ">>>" on separate lines, in the form `score=label`. Scores must be integers, and are the values saved when the user provides an answer.
 
+
+
+Default options
+.................
+
 To mark one option to be selected by default, insert a star in front of the value::
 
-    ~~~{#range1to4 .choiceset .required}
-    1*=Happy is selected by default
+    ~~~{#range1to4 .likert}
+    Question text
+    >>>
+    *1=Happy is selected by default
     2=2
     3=3
     4=Unhappy
     ~~~
 
-Note this is also a required question.
+
+
+
+Calculating and displaying summary scores from participant responses
+.....................
+
+For instruction questions, in place of a list of choices, it is possible to specify a score which will be computed from previous participant responses (a ScoreSheet). For example::
+
+    ~~~{#summaryscoreexample .instruction}
+    Your total score is: {{totalscore}}
+    >>>
+    totalscore <- sum(variablename1 variablename2 variablename3 ...)
+    ~~~
+
+This question will compute the sum of variable1, 2 and 3, and display it where the `{{totalscore}}` marker is, within the question text. Again markdown formatting can be applied to scores.
+
+Note: because answers must be saved in the database before being available for summary scores, be sure to specify this type of question on a page which comes after the variables to be used.
+
+
+
+Remapping of scores
+.....................
+
+As notes, scoresheets allow you to specify summary scores from combinations of questions which the participant has already made. Sometimes, you might like to score responses in such a way that several of the options equate to the same value. You can achieve this by adding `[int]` after the score to be stored in the database::
+
+    ~~~{#remappingexample .likert}
+    Question text
+    >>>
+    *1=Stores 1 in the database, and in scoresheets
+    2=Stores 2 in the database, and in scoresheets
+    3[2]=Stores 3 in the database, but scores 2 as part of scoresheets
+    ~~~
+
+
+
+
+Using the Django templating language
+........................................
+
+Signalbox uses the Django template language to render the text of a question as it is presented to the user. Several variables, including summary scores (see above) are available in the render context, and can be included with the `{{varname}}` syntax. Other more advanced features can also be used, for example to conditionally display text based on previous answers. For example::
+
+    ~~~{#djangoteplateexample .instruction}
+    Your total score was: {{totalscore}}.
+    {% if totalscore > 10 %}Well done!{% endif %}
+    >>>
+    totalscore <- sum(variablename1 variablename2 variablename3)
+    ~~~
+
+This question computes `{{totalscore}}` and then uses it to conditionally display extra text in the question.
+
+Other variables available as the text is rendered are:
+
+- Saved answers, accessed as: `{{answers.variable_name}}`.
+- The Reply object (e.g. `You started this reply at: {{reply.started}}`).
+- The User object (e.g. `Your name is {{user.first_name}}`).
+
 
 
 
@@ -118,8 +183,6 @@ A complete example
 --------------------
 
 A complete example can be found in `ask/fixtures/asker_text.md`.
-
-
 
 
 
@@ -148,7 +211,7 @@ Other types of questions available
 
 
 `checkboxes`
-    As for `likert`, but options are no-mutually exclusive (more than one can be selected).
+    As for `likert`, but options are not mutually exclusive (more than one can be selected).
 
 `integer`
     The user can only enter an integer. Optional attributes are `min` and `max`.
@@ -158,7 +221,6 @@ Other types of questions available
 
 `pulldown`
     As for likert, but uses a pulldown selector instead of radio buttons.
-
 
 `required-checkbox`
     Displays the question text next to a checkbox which the user must check to progress to the next page.

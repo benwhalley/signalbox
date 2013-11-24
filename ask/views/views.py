@@ -69,19 +69,22 @@ def show_page(request, reply_token, preview=False):
     """Handles displaying and saving each page as a form -> HttpResponse or HttpResponseRedirect
 
     Note, there is a separate view for Twilio usage of questionnaires.
+
+    Possible actions:
+    - Increment the reply and show the next page
+    - Close the reply and display last page
+    - Close the reply and redirect to the success_url
+
+    Variables sent to the asker_page template:
+    - Form
+    - page
+    - reply
+    - redbutton
+    - hidemenu
+
     """
 
     reply = get_object_or_404(Reply, token=reply_token)
-
-    if not reply.open():
-        messages.add_message(request, messages.ERROR, "Reply expired for new data entry.")
-        return HttpResponseRedirect(reply.redirect_url())
-
-    # todo replace this with Reply.objects.authorised()
-    can_see_clinical = bool(request.user.groups.filter(
-        name__in=['Researchers', 'Clinicians']).count())
-
-    finishnow = bool(request.GET.get('finish', False))
 
     if request.POST:
         page = reply[int(request.POST.get('page_id'))]
@@ -90,40 +93,57 @@ def show_page(request, reply_token, preview=False):
         pagenum = request.GET.get('page', None)
         page = pagenum and reply[int(pagenum)] or reply.get_next_step(reply)
 
+    if not reply.open() and not (reply.asker.finish_on_last_page and page.is_last()):
+        messages.add_message(request, messages.ERROR, "Reply expired for new data entry.")
+        return HttpResponseRedirect(reply.redirect_url())
+
     if not page:
         page = reply[-1]  # get the last page
 
     form = PageForm(request.POST or None, request.FILES or None, page=page,
-                    reply=reply, request=request)
-
-    if page.is_last() and not page.questions_which_require_answers() and page.asker.finish_on_last_page:
-        # if we want to leave participant on the last page we just capture
-        # and ignore the return value of finish()
-        _ = reply.finish(request)
+        reply=reply, request=request)
 
     if form.is_valid():
-        form.save(reply=reply, page=page)
+        # this means we had user input and we will do a redirect
 
-        if finishnow and reply.is_complete():
-            return reply.finish(request)
+        form.save(reply=reply, page=page)
+        askstofinish = bool(request.GET.get('finish', False))
+
+        if askstofinish and (reply.is_complete() or page.is_last()):
+            reply.finish(request)
+            return HttpResponseRedirect(reply.asker.redirect_url)
 
         url = reverse('show_page', kwargs={'reply_token': reply.token})
+
+        if askstofinish and page.asker.finish_on_last_page and page.next_page() and page.next_page().is_last():
+            # we finish the reply early, but display the last page anyway
+            # i.e. not retuning and drop through to below
+            reply.finish(request)
+
         if nextpage:
             url = url + "?page={}".format(nextpage)
-        return HttpResponseRedirect(url)
-    else:
-        requires_more_responses = bool(page.questions_which_require_answers())
-        showbutton = bool(page.is_last() or reply.is_complete() or len(list(reply)) == 1)
-        showbutton = showbutton and requires_more_responses
 
-        return render_to_response('asker_page.html',
-            {
-                'form': form,
-                'page': page,
-                'redbutton': showbutton,
-                'hidemenu': page.asker.hide_menu,
-                'reply': reply
-            }, context_instance=RequestContext(request))
+        return HttpResponseRedirect(url)
+
+
+    # if we get here we are displaying the form
+
+    # do we need a red 'save and finish' button? Note we might have already set this above...
+    page_needs_reponses = bool(page.questions_which_require_answers())
+    asker_only_has_one_page = len(list(reply)) == 1
+    showredbutton = (not reply.is_complete()) and (page.is_last() or asker_only_has_one_page)
+    if page.asker.finish_on_last_page:
+        if page.next_page() and page.next_page().is_last():
+            showredbutton = True
+
+    return render_to_response('asker_page.html',
+        {
+            'form': form,
+            'page': page,
+            'redbutton': showredbutton,
+            'hidemenu': page.asker.hide_menu,
+            'reply': reply
+        }, context_instance=RequestContext(request))
 
 
 def print_asker(request, asker_id):

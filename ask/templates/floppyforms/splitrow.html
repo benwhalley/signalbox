@@ -1,16 +1,13 @@
 {%load markup %}
 {% load floppyforms  %}
 {% block row %}
-
-
-
 {% for field in fields %}
     {% with classes=field.css_classes label=label|default:field.label help_text=help_text|default:field.help_text %}
         {% block field %}
-        <!-- {{field|id}} -->
+        {{field.css_classes}}
         <div id="row_{{field|id}}" class="form_field_wrapper  {{ classes }} {% if field.errors %} alert alert-warning{% endif %}">
                 {% block errors %}
-                    <div class="">
+                    <div>
                         {% include "floppyforms/errors.html" with errors=field.errors %}
                     </div>
                 {% endblock %}
@@ -39,9 +36,7 @@
                 {% endblock %}
             </div>
             &nbsp;
-
         </div>
-
         {% endblock %}
     {% endwith %}
     {% endfor %}

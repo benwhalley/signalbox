@@ -3,7 +3,6 @@ check what happens with duplicate scores when exporting data to labels
 
 # add tests for text editing including scoresheets
 
-# option to mark reply complete before last page...
 
 # factor away question.choices_as_json()
 

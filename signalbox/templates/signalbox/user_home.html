@@ -5,47 +5,45 @@
 {% block base_content %}
 
     <div class="row">
+        {% with user.get_profile.tasklist_observations|length as l %}
         <div class="tabbable span12"> <!-- Only required for left/right tabs -->
         <ul class="nav nav-tabs" id="usertabs">
-            <li class="active"><a href="#tabtasks" data-toggle="tab">
+
+            <li {% if l > 0 %}class="active"{% endif %}><a href="#tabtasks" data-toggle="tab">
                 Tasks to do
-                {% with user.get_profile.tasklist_observations|length as l %}
+
                 <span class="
                 badge {% if l %}badge-warning{%else%}badge-info{% endif %}
                 badge {% if participant.has_observation_expiring_today %}badge-important{% endif %}
                 ">{{l}}</span> </a>
-                {% endwith %}
+
             </li>
-            <li><a href="#tabextra" data-toggle="tab">Extra questionnaires</a></li>
+            <li {% if l < 1 %}class="active"{% endif %}><a href="#tabextra" data-toggle="tab">Extra questionnaires</a></li>
             <li><a href="#tabreplies" data-toggle="tab">Previous replies</a></li>
             <li><a href="#tabstudies" data-toggle="tab">Studies</a></li>
             <li><a href="#tabdetails" data-toggle="tab">Personal details</a></li>
         </ul>
 
           <div class="tab-content">
-            <div class="tab-pane active" id="tabtasks">
-                     <h1 style="text-transform:capitalize;">
-                        {% if user.first_name %}
-                            {{user.first_name}},
-                        {% else %}
-                            {{user.username}},
-                        {% endif %}
-                    </h1>
-                    {% if user.get_profile.tasklist_observations|length > 0 %}
-                        <h4>You have questionnaires to do:</h4>
-                        {% with user.get_profile.obs_by_study as obs_by_study %}
-                            {% include 'manage/observations_todo_fragment.html' %}
-                        {% endwith %}
-                    {%else%}
-                           <p>You're up to date with everything.</p>
-                    {%endif%}
-
-
-
-
+            <div class="tab-pane {% if l > 0 %}active{% endif %}" id="tabtasks">
+                 <h1 style="text-transform:capitalize;">
+                    {% if user.first_name %}
+                        {{user.first_name}},
+                    {% else %}
+                        {{user.username}},
+                    {% endif %}
+                </h1>
+                {% if user.get_profile.tasklist_observations|length > 0 %}
+                    <h4>You have questionnaires to do:</h4>
+                    {% with user.get_profile.obs_by_study as obs_by_study %}
+                        {% include 'manage/observations_todo_fragment.html' %}
+                    {% endwith %}
+                {%else%}
+                       <p>You're up to date with everything.</p>
+                {%endif%}
             </div>
-
-            <div class="tab-pane" id="tabextra">
+            {% endwith %}
+            <div class="tab-pane {% if l < 1 %}active{% endif %}" id="tabextra">
                 {% with request.user as participant %}
                     {% include "admin/signalbox/_fragments/_ad_hoc_scripts.html" %}
                 {% endwith %}

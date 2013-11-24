@@ -104,7 +104,7 @@
             {% endif %}
 
 
-            {% if not page.is_last %}
+            {% if not page.is_last and not redbutton %}
             <input class="btn btn-primary" type=submit value="{{page.submit_button_text}}" onclick="javascript:$('#questionnaire_form').attr('action', '?page={{page.next_page.index}}');">
             {% endif %}
 

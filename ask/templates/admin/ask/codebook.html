@@ -29,13 +29,6 @@
 {{j.question.choices_as_json}}
                     </pre>
                     {% endif %}
-                    {% if j.question.score_mapping %}
-                    Scores on this question will be remapped as follows when computing summaries:
-                    <pre>
-{{j.question.score_mapping}}
-                    </pre>
-
-                    {% endif %}
                 </td>
                 <td>
                 {%  if j.showif %}

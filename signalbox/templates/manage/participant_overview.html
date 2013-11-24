@@ -13,10 +13,10 @@
 {% block content %}
 
 <div class="row">
-
+    {% with participant.tasklist_observations|length as l %}
     <div class="tabbable span12"> <!-- Only required for left/right tabs -->
       <ul class="nav nav-tabs" id="usertabs">
-        <li class="active"><a href="#tabtasks" data-toggle="tab">Tasks to do
+        <li {%if l%}class="active"{%endif%}><a href="#tabtasks" data-toggle="tab">Tasks to do
             {% with participant.tasklist_observations|length as l %}
             <span class="
             badge {% if l %}badge-warning{%else%}badge-info{% endif %}
@@ -27,7 +27,7 @@
         <li><a href="#tabmemberships" data-toggle="tab">Study Memberships</a></li>
 
         {% if participant.get_profile.ad_hoc_scripts_available %}
-            <li><a href="#tabextradata" data-toggle="tab">Add extra data</a></li>
+            <li {%if not l%}class="active"{%endif%}><a href="#tabextradata" data-toggle="tab">Add extra data</a></li>
         {% endif %}
 
         <li><a href="#tabmessages" data-toggle="tab">Messages</a></li>
@@ -36,7 +36,7 @@
       </ul>
 
       <div class="tab-content">
-       <div class="tab-pane active" id="tabtasks">
+       <div class="tab-pane {%if l%}active{%endif%}" id="tabtasks">
          {% if participant.tasklist_observations|length > 0%}
          <h4>Tasks outstanding for user: {{participant}}</h4>
          {% include "manage/participant_observations_fragment.html" %}
@@ -49,7 +49,7 @@
         </div>
 
 
-        <div class="tab-pane" id="tabextradata">
+        <div class="tab-pane {%if not l%}active{%endif%}" id="tabextradata">
             {% include "admin/signalbox/_fragments/_ad_hoc_scripts.html" %}
         </div>
 
@@ -67,7 +67,7 @@
 
       </div>
     </div>
-
+    {% endwith %}
 </div>
 
 {% endblock %}

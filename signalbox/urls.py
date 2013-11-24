@@ -1,9 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'''
-
-'''
 from django.conf.urls.defaults import patterns, url, include
 from django.conf.urls.defaults import url, patterns
 from django.contrib.auth.views import logout
@@ -12,6 +8,7 @@ from django.views.generic import DetailView, ListView, RedirectView
 from django.views.generic import RedirectView
 from signalbox.forms import CreateParticipantForm, UserProfileForm, ParticipantPasswordForm
 from signalbox.models import Study
+from signalbox.utilities.extra_content_view import ExtraContextView
 from signalbox.views.assessors import observations_outstanding
 from signalbox.views.back import *
 from signalbox.views.data import *
@@ -19,7 +16,6 @@ from signalbox.views.front import join_study, user_homepage, MembershipDetail, u
 from signalbox.views.participants import *
 from signalbox.views.replies import *
 from signalbox.views.usermessage import send_usermessage
-from signalbox.utilities.extra_content_view import ExtraContextView
 
 from tastypie.api import Api
 import ask.api
@@ -139,7 +135,7 @@ urlpatterns = urlpatterns + patterns('',
 
 
     # have a look at replies
-    url(r'^reply/preview/(?P<id>\d+)/$', preview_reply, {}, "preview_reply"),
+    url(r'^admin/signalbox/reply/(?P<id>\d+)/preview/$', preview_reply, {}, "preview_reply"),
 
     # resolving duplicate replies
     url(r'^resolve/duplicate/replies/$', resolve_double_entry_conflicts, {}, 'resolve_double_entry_conflicts'),

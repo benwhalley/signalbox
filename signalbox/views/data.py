@@ -1,23 +1,24 @@
-import os
 import csv
-import itertools
-import zipfile
-import tempfile
 from datetime import timedelta, date, datetime
-from django.utils.encoding import smart_unicode
+import itertools
+import os
+import tempfile
+import zipfile
+
+from ask.models import Question, Instrument
+from ask.models import fields
+from django import forms
 from django.conf import settings
-from django.template import RequestContext, Context
-from django.template.loader import get_template
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
-from django.contrib import messages
-from django import forms
-from ask.models import fields
-from ask.models import Question, Instrument
-from signalbox.models import Answer, Membership, Observation, Reply
+from django.template import RequestContext, Context
+from django.template.loader import get_template
+from django.utils.encoding import smart_unicode
+from reversion import revision
 from signalbox.decorators import group_required
 from signalbox.forms import SelectExportDataForm, DateShiftForm
-from reversion import revision
+from signalbox.models import Answer, Membership, Observation, Reply
 from signalbox.utilities.djangobits import conditional_decorator
 from signalbox.utilities.djangobits import supergetattr
 
@@ -53,7 +54,7 @@ FIELD_MAP = [
 ]
 
 
-def _internal_fields(FIELD_MAP):  # pragma: no cover
+def _internal_fields(FIELD_MAP):
     """Function to split FIELD up because it can get updated by the form.
     """
 
@@ -67,7 +68,7 @@ ANSWER_VALUES = ['question.q_type',
                  ]
 
 
-def fupdate(dic, new):  # pragma: no cover
+def fupdate(dic, new):
     """Updates a dict and returns dict + new vals; useful when building a new list of dicts."""
     dic.update(new)
     return dic
@@ -150,7 +151,7 @@ def _remap_bools(dic):
 def get_answers(studies):
     replies = Reply.objects.filter(observation__dyad__study__in=studies)
     answers = Answer.objects.all(
-    ).select_related('question', 'question__choiceset', 'question__scoresheet'
+        ).select_related('question', 'question__choiceset', 'question__scoresheet'
                      ).filter(reply__in=replies
                               ).exclude(question__variable_name__isnull=True
                                         ).order_by('reply')
@@ -159,7 +160,7 @@ def get_answers(studies):
 
 def values_with_callables(instance, keys):
     """Instead of calling values() on a queryset, call this instead to get access to callables
-    on the instances using dotted access syntax in keys"""
+    on the model instances using dotted access syntax in keys"""
     return {k: supergetattr(instance, k, None, call=True) for k in keys}
 
 
@@ -171,6 +172,9 @@ def build_csv_data_as_string(answers, reference_study):
     # here we check whether the questiontype for each answer has an `export_processor' attached
     # to it, used to format values for export to txt. If it does, apply it in place to the answer
     # in the answer dictionary
+
+    # XXX This should be an answer method called get_value_for_export
+    #
     for i in answer_values:
         if i['question.q_type']:
             qtp = fields.class_name(i['question.q_type'])

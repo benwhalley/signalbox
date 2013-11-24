@@ -23,14 +23,18 @@
                     {% if o.link %}
                             {{o.label}}
                     {% endif %}
+                    <p class="information">
+                    {% if o.reply_set.all.count %}
+                        Started {%for r in o.reply_set.all %}{{r.started|naturalday}}{%endfor%}
+                    {% endif %}
+                    </p>
                 </td>
                 <td>
                     Will take approx {{o.script.asker.approximate_time_to_complete}} minutes
                 </td>
                 <td>
                     <a class="btn  {% if not forloop.first %}disabled{% endif %}
-                     {% if forloop.first %}btn-primary{% endif %}
-                    {% if o.display_time_remaining %}btn-primary{% endif %}" href="
+                            btn-primary" href="
                             {% if perms.ask.can_double_enter %}
                             {% url 'start_data_entry' o.token %}?next={{next}}
                             {% else %}

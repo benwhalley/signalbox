@@ -1,14 +1,18 @@
-from django.core.exceptions import ValidationError
-from signalbox.utilities.djangobits import get_or_modify, flatten
-from statlib import stats
+# -*- coding: utf-8 -*-
+
 from itertools import groupby
+
 from ask.models import ChoiceSet
+from ask.models import Question
+from ask.models.fields import FIELD_NAMES
+from django.core.exceptions import ValidationError
 from pyparsing import *
 import shortuuid
-import yaml
-from ask.models.fields import FIELD_NAMES
-from ask.models import Question
 from signalbox.models import ScoreSheet
+from signalbox.utilities.djangobits import get_or_modify, flatten
+from statlib import stats
+import yaml
+
 
 ########## pyparsing definitions #############
 
@@ -35,9 +39,12 @@ header = Literal("{").suppress() + \
     ZeroOrMore(_keyval)('keyvals').setParseAction(lambda t: {k:v for k, v in t}) + \
     Literal("}").suppress()
 
+hiddenLiteral = lambda x: Literal(x).suppress()
+
 # choices are defined within the question text block on a new line following >>>
-_choice = Word(nums)('score') \
-    + Optional(Literal("*")('isdefault'), default="") \
+_choice = Optional(Literal("*")('isdefault'), default="") \
+    + Word(nums)('score') \
+    + Optional(hiddenLiteral("[") + Word(nums)('mapped_score') + hiddenLiteral("]") ) \
     + Literal("=").suppress() + \
     SkipTo(LineEnd().suppress())('label').setParseAction(lambda t: t[0].strip())
 
@@ -47,7 +54,7 @@ code = SkipTo(Literal(">>>").suppress()|Literal("~~~").suppress())
 
 # choices are converted to yaml strings to save on the choiceset model.
 # in future we might use json instead, but historical and simple for the moment
-_choice.setParseAction(lambda t: {'score': t.score,  'label':t.label, 'isdefault': bool(t.isdefault)})
+_choice.setParseAction(lambda t: {'score': t.score,  'label':t.label, 'isdefault': bool(t.isdefault), 'mapped_score': t.mapped_score or t.score })
 choices = Suppress(Literal(">>>")) + ZeroOrMore(_choice) + Literal("~~~").suppress()
 
 # dose <- dose_smokes + dose_exacerbations
@@ -92,15 +99,20 @@ def make_question_dict(blockParseResult):
     if blockParseResult.choices:
         numbereddict = {k: v for k, v in enumerate(blockParseResult.choices.asList())}
         yamlstring = yaml.safe_dump(numbereddict)
-
         d.update(
-            {'choiceset':
-                get_or_modify(ChoiceSet, {'name':d['variable_name']}, {'yaml':yamlstring})[0],
+            {
+                'choiceset':
+                    get_or_modify(
+                        ChoiceSet,
+                        {'name':d['variable_name']},
+                        {'yaml':yamlstring }
+                    )[0],
             }
         )
     keyvals = blockParseResult.keyvals or {}
     classlist = blockParseResult.classes and blockParseResult.classes.asList()
     d.update({'widget_kwargs': {k: v for k, v in keyvals.items()}})
+    d.update({'field_kwargs': {k: v for k, v in keyvals.items()}})
     d.update({'required': 'required' in classlist})
 
     return d
@@ -153,8 +165,18 @@ def choiceset_as_markdown(choiceset):
     if not choiceset.yaml:
         choiceset.yaml = {i:d for i, d in enumerate([{'score':x.score, 'isdefault': x.is_default_value, 'label':x.label} for x in choiceset.get_choices()])}
 
+    def _formatmappedscore(c):
+        score = c['score']
+        mapped_score = c.get('mapped_score', score)
+        return mapped_score != score and "[{}]".format(mapped_score) or ""
+
     return "\n".join([
-        u"""{}{}={} """.format(c['score'], c.get('isdefault', "") and "*" or "", c['label'])
+        u"""{}{}{}={} """.format(
+                c.get('isdefault', "") and "*" or "",
+                c['score'],
+                _formatmappedscore(c),
+                c['label'],
+            )
             for i, c in choiceset.yaml.items()])
 
 def page_as_markdown(page):
@@ -197,6 +219,7 @@ def as_custom_markdown(asker):
             'finish_on_last_page': asker.finish_on_last_page,
             'show_progress': asker.show_progress,
             'success_message': asker.success_message,
+            'step_navigation': asker.step_navigation,
         }, default_flow_style=False)
 
     allqs = [(i, i.get_questions()) for i in asker.askpage_set.all()]

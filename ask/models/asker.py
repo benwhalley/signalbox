@@ -73,9 +73,6 @@ class Asker(models.Model):
         then respondents can skip around within the questionnaire and complete
         the pages 'out of order'.""")
 
-    def scoresheets(self):
-        return set(filter(bool, [i.scoresheet for i in self.questions()]))
-
     hide_menu = models.BooleanField(default=True)
 
     def used_in_studies(self):

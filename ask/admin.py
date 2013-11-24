@@ -69,7 +69,6 @@ class QuestionInlineForPage(admin.StackedInline):
                     'help_text',
                     'allow_not_applicable',
                     'audio',
-                    'score_mapping',
                     'widget_kwargs'
                     )
             }),
@@ -199,7 +198,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("Question data", {
-        'fields': ( 'order', 'q_type', 'choiceset', 'scoresheet', 'text', 'variable_name', 'required',  'score_mapping')
+        'fields': ( 'order', 'q_type', 'choiceset', 'scoresheet', 'text', 'variable_name', 'required')
         }),
 
         ("Additional info", {

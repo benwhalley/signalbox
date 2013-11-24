@@ -10,4 +10,6 @@
     {% for error in form|hidden_field_errors %}<li>{{ error }}</li>{% endfor %}
 </ul>
 {% endif %}{% endblock %}
-{% block row %}{% formrow field %}{% endblock %}
+{% block row %}
+{% formrow field %}
+{% endblock %}

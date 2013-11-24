@@ -1,7 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from signalbox.utilities.error_views import render_forbidden_response
-from django.db import connection
 
 
 def recursive_check_login_required(page):
@@ -9,7 +8,7 @@ def recursive_check_login_required(page):
 
     If a child descends from a login_required page then it is also considered to
     require a login."""
-    
+
     if page.login_required:
         return True
     if page.parent:
@@ -23,9 +22,9 @@ class CmsPagePermissionsMiddleware(object):
     When this middleware is installed, any page which descends from a page with 'login required'
     will itself require a login.
     """
-    
+
     def process_response(self, request, response):
-        """We ensure that users must be staff members (and not just any logged 
+        """We ensure that users must be staff members (and not just any logged
         in user)  to see login-protected pages."""
 
         page = getattr(request, 'current_page', None)

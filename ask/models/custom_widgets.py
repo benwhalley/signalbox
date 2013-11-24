@@ -8,7 +8,6 @@ class InstructionWidget(floppyforms.widgets.HiddenInput):
     input_type = 'hidden'
     is_hidden = False
 
-
 class InlineRadioSelect(floppyforms.widgets.RadioSelect):
     template_name = 'floppyforms/widgets/radio-list-inline.html'
 

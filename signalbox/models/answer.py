@@ -51,18 +51,20 @@ class Answer(models.Model):
 
     def mapped_score(self):
         """Return mapped score; leave answer unchanged if no map found."""
-        return self.question.score_mapping and \
-            self.question.score_mapping.get(self.answer, self.answer) or self.answer
+        possiblechoices = supergetattr(self, 'question.choiceset.get_choices', ())
+        score_maptos = {i.score: i.mapped_score for i in possiblechoices}
+        return score_maptos.get(self.answer, self.answer)
+
 
     def participant(self):
         """Return the user to whom the answer relates (maybe not the user who entered it)."""
-        return self.reply.observation.dyad.user
+        return supergetattr(self, "reply.observation.dyad.user", None)
 
     @property
     def study(self):
         """Return the study this Answer was made in response to."""
 
-        return self.reply.observation.dyad.study
+        return supergetattr(self, "reply.observation.dyad.study", None)
 
     def variable_name(self):
         if self.question:

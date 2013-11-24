@@ -268,12 +268,12 @@ LOGGING = {
 'loggers': {
     'django': {
         'handlers': ['null'],
-        'level': 'DEBUG',
+        'level': 'ERROR',
         'propagate': True,
     },
     'signalbox': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': 'ERROR',
         'propagate': True,
     }
 }

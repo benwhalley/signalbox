@@ -1,27 +1,30 @@
-"""Questions and related models to place them in questionnaire pages and instruments."""
-from contracts import contract, new_contract
-from django.core.exceptions import ValidationError
+# -*- coding: utf-8 -*-
+
+import json
+import ast
+
 from ask.models.fields import FIELD_NAMES
+import ask.validators as valid
 from ask.yamlextras import yaml
-from django.conf import settings
+from contracts import contract, new_contract
 from django import http
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.loading import get_model
 from django.forms.models import model_to_dict
 from django.template import Context, Template
 from django.template.loader import get_template
+import fields
 from jsonfield import JSONField
 from signalbox.exceptions import DataProtectionException
 from signalbox.utilities.djangobits import supergetattr, flatten, safe_help, int_or_string
 from signalbox.utilities.linkedinline import admin_edit_url
 from yamlfield.fields import YAMLField
-import ask.validators as valid
-from django.db.models.loading import get_model
-import ast
-import fields
-import json
-truncatelabel = lambda x, y: (x[:int(y) / 2] + '...' + x[- int(y) / 2:]) if len(x) > y else x
 
+
+truncatelabel = lambda x, y: (x[:int(y) / 2] + '...' + x[- int(y) / 2:]) if len(x) > y else x
 
 DEFAULTYAMLCHOICESET = """
 1:
@@ -161,13 +164,6 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
     display_instrument = models.ForeignKey('Instrument', null=True, blank=True,
         related_name="display_instrument")
 
-    score_mapping = JSONField(blank=True, null=True, help_text="""How to remap
-        the scored values for use in ScoreSheets and other calculations. See
-        http://www.jsoneditoronline.org for a simple way of creating these
-        mappings. This does NOT affect the data stored in the DB -- this is
-        determined by the choiceset. It only determines how responses are scored.
-        """)
-
     help_text = models.TextField(blank=True, null=True)
 
     # we use S3 because otherwise there's a real lag on the call from twilio
@@ -187,6 +183,7 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
             return True
         return False
 
+    @contract
     def display_text(self, reply=None, request=None):
         """
         :type self: a
@@ -194,7 +191,7 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         :type request: c|None
 
         :return: The html formatted string displaying the question
-        :rtype reply: basestring
+        :rtype: string
         """
 
         templ_header = r"""{% load humanize %}"""  # include these templatetags in render context
@@ -209,25 +206,10 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         }
 
         if reply and reply.asker and self.field_class().compute_scores:
-            scores = {i.name: i.compute(reply.answer_set.all()) for i in reply.asker.scoresheets()}
-            context['scores'] = {i.name: i.compute(reply.answer_set.all()) for i in reply.asker.scoresheets()}
+            scores = {i.name: i.compute(reply.answer_set.all()) for i in self.page.scoresheets()}
+            context['scores'] = scores
             # put actual values into main namespace too
             context.update({k: v.get('score', None) for k, v in scores.items()})
-
-            def _get_label(variable_name, score):
-                try:
-                    question = Question.objects.get(variable_name=variable_name)
-                except:
-                    return score
-                if not question.choiceset:
-                    return score
-                try:
-                    return question.choiceset.choice_set.get(score=score).label
-                except:
-                    return score
-
-            context['answer_as_label'] = {i.variable_name(): _get_label(i.variable_name(), int_or_string(i.answer))
-                for i in reply.answer_set.all()}
 
         if reply and reply.asker:
             context['answers'] = {i.variable_name(): int_or_string(i.answer) for i in reply.answer_set.all()}
@@ -424,8 +406,10 @@ class Choice(models.Model):
 
     score = models.IntegerField(help_text="This is the value saved in the DB")
 
+    mapped_score = models.IntegerField(blank=True, null=True, help_text="The value to be used when computing scoresheets. Does not affect what is stored or exported.")
+
     def __unicode__(self):
-        return u'%s [%s]' % (self.label, self.score)
+        return u'%s (%s)' % (self.label, self.score)
 
     class Meta:
         app_label = 'ask'
@@ -502,7 +486,7 @@ class ChoiceSet(models.Model):
 
         if self.yaml:
             try:
-                return sorted([Choice(choiceset=self, score=choice.get('score'), is_default_value=choice.get('isdefault', False), label=choice.get('label', ''), order=i)
+                return sorted([Choice(choiceset=self, score=choice.get('score'), mapped_score=choice.get('mapped_score', choice.get('score')), is_default_value=choice.get('isdefault', False), label=choice.get('label', ''), order=i)
                     for i, choice in self.yaml.items()], key=lambda x: x.order)
             except:
                 return []

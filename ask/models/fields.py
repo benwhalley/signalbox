@@ -1,18 +1,23 @@
-from datetime import datetime, time
-import ast
-from string import capwords
-from django.utils.translation import ugettext as _
-from django.utils.safestring import mark_safe
-import markdown
-from django.conf import settings
-import custom_widgets
-import floppyforms
-from twiliobox import question_methods as twiliofunctions
-import ask.validators as validators
-from ask.models import stata_functions as stata
+# -*- coding: utf-8 -*-
+
+import sys
 import base64
-import magic
+from datetime import datetime, time
+from string import capwords
+
+from ask.models import stata_functions as stata
+import ask.validators as validators
+import ast
+from contracts import contract
+import custom_widgets
+from django.conf import settings
 from django.core.files.base import ContentFile
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
+import floppyforms
+import magic
+import markdown
+from twiliobox import question_methods as twiliofunctions
 
 
 FIELD_NAMES = [
@@ -82,6 +87,7 @@ class SignalboxField(object):
     choices = None
     input_formats = None
     validators = []
+
 
     @staticmethod
     def save_answer(response, answer):
@@ -187,7 +193,6 @@ class Instruction(SignalboxField, floppyforms.CharField):
 
     def __init__(self, *args, **kwargs):
         """Update method to add a datestamp to the hidden field."""
-
         super(Instruction, self).__init__(*args, **kwargs)
         if not self.initial:
             self.initial = "User pressed submit on page displaying this instruction at {}".format(datetime.now())
@@ -289,11 +294,16 @@ class Checkboxes(SignalboxField, floppyforms.TypedMultipleChoiceField):
         return ast.literal_eval(value)
 
     @staticmethod
+    @contract
     def export_processor(value):
         """Preprocess list __repr__ for export to txt.
 
-        Preprocessor function to process the list repr stored in the
-        DB for use in export txt files."""
+        :param value: A python list serialised as a string using __repr__
+        :type value: string
+
+        :returns: A comma-delimited string.
+        :rtype: string
+        """
         try:
             return ",".join(ast.literal_eval(value))
         except Exception:
@@ -356,9 +366,15 @@ class Time(SignalboxField, floppyforms.TimeField):
         """Returns (stata) syntax to correctly format exported data."""
         return stata.set_format_time(question)
 
+
     @staticmethod
+    @contract
     def export_processor(value):
-        """Add number of milliseconds from 00:00 -> (str, str)"""
+        """Add number of milliseconds from the time 00:00
+
+        :type value: string
+        :rtype: string
+        """
 
         timeparts = [int(i) for i in value.split(":")]
         thetime = time(*timeparts)
@@ -368,8 +384,15 @@ class Time(SignalboxField, floppyforms.TimeField):
         return ",".join((value, unicode(difference.total_seconds())))
 
 
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 class Integer(SignalboxField, floppyforms.IntegerField):
     """Text box to enter any integer."""
+
+    def __init__(self, *args, **kwargs):
+        super(Integer, self).__init__(*args, **kwargs)
+        self.validators+=[MinValueValidator(int(getattr(self, 'min', -sys.maxint - 1))),
+        MaxValueValidator(int(getattr(self, 'max', sys.maxint)))]
 
     has_choices = False
     error_messages = {'invalid': _(
@@ -384,14 +407,17 @@ class Decimal(SignalboxField, floppyforms.DecimalField):
     """Textbox to enter a number to two decimal places."""
 
     has_choices = False
+
+    # xxx set these as a kwarg
     decimal_places = 2
     max_digits = 10
 
 
 
+# Some twilio specific fields
+# (we can use the fields above too if they have a voice_function, but these
+# are twilio-only)
 
-# some twilio specific types (we can use the fields above too if they
-# have a voice_function)
 class Hangup(Instruction):
 
     @staticmethod

@@ -155,7 +155,10 @@ class Reply(models.Model, ProcessManager):
         return self.redirect_to or supergetattr(self, "created_by_script.asker.redirect_url", None) or reverse('user_homepage')
 
     def number_non_empty_answers(self):
-        return len([i for i in self.answer_set.all() if i.answer])
+        return len([i for i in self.answer_set.all().exclude(
+            other_variable_name="page_id").exclude(
+                question__q_type="instruction") if i.answer])
+
 
     def finish(self, request):
         """Questionnaire is complete, so finish up."""
@@ -169,8 +172,6 @@ class Reply(models.Model, ProcessManager):
 
         self.complete = True
         self.save()
-
-        return HttpResponseRedirect(self.redirect_url())
 
     def get_absolute_url(self):
         return reverse('preview_reply', args=(self.id, ))

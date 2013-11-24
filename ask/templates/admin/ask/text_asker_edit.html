@@ -104,7 +104,7 @@ $(document).ready(function() {
 <h3>Cannot edit questionnaire because {{asker.reply_set.all|length}} responses have already been saved.
 </h3>
 <p>
-<a href="{% url "admin:signalbox_reply_changelist" %}?asker__id__exact={{asker.id}}" class="btn btn-primary">View responses</a>
+<a href="{% url "admin:signalbox_reply_changelist" %}?asker__id__exact={{asker.id}}&q=" class="btn btn-primary">View responses</a>
 </div>
 </div>
 

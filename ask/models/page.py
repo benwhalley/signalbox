@@ -1,8 +1,10 @@
-from django.db import models
+# -*- coding: utf-8 -*-
+
 from django.core.urlresolvers import reverse
-from signalbox.utilities.linkedinline import admin_edit_url
+from django.db import models
 from question import Question
 from signalbox.process import Step
+from signalbox.utilities.linkedinline import admin_edit_url
 
 
 def head(iterable):
@@ -28,6 +30,9 @@ class AskPage(models.Model, Step):
         for step, available in reply.step_availability():
             if self == step:
                 return True
+
+    def scoresheets(self):
+        return set(filter(bool, [i.scoresheet for i in self.get_questions()]))
 
     def visible_questions(self, reply):
         return  filter(lambda i: i.showme(reply), self.get_questions())
