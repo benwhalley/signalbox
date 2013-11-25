@@ -113,6 +113,8 @@ def make_question_dict(blockParseResult):
     classlist = blockParseResult.classes and blockParseResult.classes.asList()
     d.update({'widget_kwargs': {k: v for k, v in keyvals.items()}})
     d.update({'field_kwargs': {k: v for k, v in keyvals.items()}})
+
+    d.update({'widget_kwargs': {'classes': {k: True for k in classlist}}})
     d.update({'required': 'required' in classlist})
 
     return d
@@ -193,10 +195,15 @@ def question_as_markdown(question):
 
     # iden = question.q_type != "instruction" and "#"+question.variable_name or ""
     iden = "#"+question.variable_name
-    classesstring = " ".join(["."+i for i in [question.q_type]])
-    classesstring += question.required and " .required" or ""
+    # classesstring = " ".join(["."+i for i in [question.q_type]])
+
+    if question.widget_kwargs:
+        classesstring = " ".join([".{}".format(k) for k, v in question.widget_kwargs.get('classes', {}).items() if v])
+    else:
+        classesstring = ".{}".format(question.q_type)
+
     keyvals = dict(question.widget_kwargs)
-    keyvalsstring = " ".join(["""{}="{}" """.format(k, v) for k, v in keyvals.items()])
+    keyvalsstring = " ".join(["""{}="{}" """.format(k, v) for k, v in keyvals.items() if k!="classes"])
     detailsstring = ""
     if question.choiceset:
         detailsstring = u">>>\n" + choiceset_as_markdown(question.choiceset)

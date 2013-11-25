@@ -1,5 +1,5 @@
 <div class="row">
-<div class="span9">
+<div class="" style="min-width:50%; max-width:90%;">
 <table class="radiotable">
     <tr>
     {% for group_name, choices in optgroups %}{% for choice in choices %}
@@ -12,7 +12,16 @@
     {% for group_name, choices in optgroups %}{% for choice in choices %}
         <td>
             <label class="radio inline" for="{{ attrs.id }}_{{ forloop.counter }}">
-            {{ choice.1 }}
+            {% if attrs.classes.rotate %}
+            <div class="rotate">
+                <div style="position:absolute-within-parent; width:300%;">{{ choice.1 }}
+                </div>
+            </div>
+            {% else %}
+                {{ choice.1 }}
+            {% endif %}
+
+
         </label>
         </td>
     {% endfor %}{% endfor %}

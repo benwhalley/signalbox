@@ -115,7 +115,7 @@ def user_homepage(request):
         return HttpResponseRedirect(reverse('update_profile_for_studies'))
 
     return render_to_response('signalbox/user_home.html',
-                              {},
+                              {'hideprofilebutton': True},
                               context_instance=RequestContext(request))
 
 

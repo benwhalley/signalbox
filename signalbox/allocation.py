@@ -14,7 +14,6 @@ def weighted_choice(items):
     pools = list(chain(*[list(repeat(i, w)) for i, w in items]))
     return random.choice(list(pools))
 
-
 """
 
 >N = 30

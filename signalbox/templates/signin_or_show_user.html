@@ -9,8 +9,17 @@
       <button type="submit" class="btn">Sign in</button>
     </form>
 {% else %}
-    <div class="pull-right navbar-text">
-    Welcome back {{request.user.username|title}}.
-    (Not {{request.user.username|title}}? <a href="{% url 'logout' %}">Logout here </a>)
-    </div>
+    <p class="navbar-text pull-right">
+
+        Welcome back
+        <a href="{% url "user_homepage" %}">{{request.user.username|title}}</a>.
+
+        (Not {{request.user.username|title}}? <a href="{% url 'logout' %}">Logout here </a>)
+
+      {% if not hideprofilebutton%}
+
+          <a class="btn btn-mini btn-primary" style="display:inline;" href="{% url "user_homepage" %}">Check tasks</a>
+
+      {% endif %}
+    </p>
 {% endif %}

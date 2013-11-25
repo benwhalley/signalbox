@@ -73,18 +73,6 @@ When analysing SMS reply data, it's probably better to rely on the sender phone 
 ..warning:: TL;DR: If users reply to SMS messages you will have to do extra work to export this data; it won't automatically appear in the main datafile.
 
 
-Exporting SMS data
-~~~~~~~~~~~~~~~~~~~~
-
-To export SMS data, use the `/admin/data_exports` view to create an export. Docs here: http://django-data-exports.readthedocs.org/en/latest/#export-formats
-
-
-
-
-
-
-
-
 
 
 

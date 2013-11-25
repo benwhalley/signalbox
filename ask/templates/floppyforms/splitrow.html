@@ -15,7 +15,7 @@
                 {% block label %}
                     {% if field|id %}
                         <label class="lead" for="{{ field|id }}">{% endif %}
-                            {{ label }}{% if label|last not in ">.:!?" %}:{% endif %}{% if field|id %}
+                            {{ label|safe }}{% if label|last not in ">.:!?" %}:{% endif %}{% if field|id %}
                         </label>
                     {% endif %}
                 {% endblock %}

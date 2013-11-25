@@ -84,6 +84,11 @@ class Study(models.Model):
 
     twilio_number = models.ForeignKey('twiliobox.TwilioNumber', blank=True, null=True)
 
+    ad_hoc_askers = models.ManyToManyField(
+        'ask.Asker', blank=True, null=True,
+        help_text="""Questionnaires which can be completed ad-hoc.""",
+        verbose_name="Questionnaires available ad-hoc")
+
     ad_hoc_scripts = models.ManyToManyField(
         'signalbox.Script', blank=True, null=True,
         help_text="""Scripts which can be initiated by users on an ad-hoc basis.

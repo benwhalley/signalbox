@@ -115,23 +115,6 @@ def add_jitter(sender, created, instance, **kwargs):
 user_input_received = Signal(providing_args=["reply"])
 
 
-@receiver(user_input_received)
-@disable_for_loaddata
-def update_completion_status(sender, reply, **kwargs):
-    """Denormalises information from the completion_data() function on save.
-
-    TODO: This is useful in the admin, for sorting etc, but it might end up as a
-    bit of a performance problem on the frontend, so keep an eye on it.
-    """
-    if not reply.observation:
-        return False
-
-    n, _, incomple = reply.observation.completion_data()
-    if n is not None:
-        reply.observation.n_questions = n
-        reply.observation.n_questions_incomplete = incomple
-
-
 @receiver(post_save, sender=Observation, dispatch_uid="signalbox.listeners.reminders")
 @disable_for_loaddata
 def add_reminders(sender, created, instance, **kwargs):

@@ -4,11 +4,11 @@ from setuptools import setup, find_packages
 
 reqs = parse_requirements("requirements.txt")
 install_reqs = [str(ir.req) for ir in reqs]
-scripts = ['bin/setup_signalbox', ]
+scripts = ['bin/heroku_install_signalbox', ]
 
 setup(
     name='signalbox',
-    version='0.1.13.1',
+    version='0.2.0',
     author='Ben Whalley',
     author_email='benwhalley@gmail.com',
     packages=find_packages(),
@@ -21,9 +21,8 @@ setup(
     install_requires=install_reqs,
     entry_points={
             'console_scripts': [
-                'signalbox_example_project_dir = signalbox.utilities.bootstrap:example_project_dir',
-                'signalbox_make_s3_bucket = signalbox.utilities.bootstrap:signalbox_make_s3_bucket',
-                'signalbox_make_heroku_app = signalbox.utilities.bootstrap:signalbox_make_heroku_app',
+                'make_s3_bucket = signalbox.utilities.bootstrap:make_s3_bucket',
+                'make_secret_key = signalbox.utilities.bootstrap:make_secret_key',
             ]
     }
 )

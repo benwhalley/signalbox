@@ -34,40 +34,6 @@ urlpatterns = patterns('',
         (r'^api/', include(v1_api.urls)),
 )
 
-# FRONTEND URLS
-
-urlpatterns = urlpatterns + patterns('',
-    url(r'^enter/data/(?P<observation_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})/?$',
-        start_data_entry, {'entry_method': "participant"}, name="start_data_entry"),
-
-    url(r'^double/enter/data/(?P<observation_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})/?$',
-        start_data_entry, {'entry_method': "double_entry"},
-        name="start_double_entry"),
-
-    url(r'^studies/$',
-        ListView.as_view(model=Study, queryset=Study.objects.filter(visible=True, paused=False)),
-        name='study_list'),
-
-    url(r'^studies/(?P<pk>\d+)/$', DetailView.as_view(model=Study,), {}, name='study', ),
-    url(r'^studies/(?P<pk>\d+)/join/$', join_study, name='join_study'),
-    url(r'^studies/(?P<study_id>\d+)?/register/$', SignalboxRegistrationView.as_view(), name='study_registration'),
-
-    url(r'^add/participant/details/(?P<study_pk>\d+)?/?$',
-        update_profile_for_studies, name='update_profile_for_studies'),
-
-    url(r'^accounts/profile/membership/(?P<pk>\d+)$',
-        MembershipDetail.as_view(), {}, name='membership_home', ),
-
-    url(r'^profile/$', RedirectView.as_view(url='accounts/profile/')),
-    url(r'^accounts/profile/?$', user_homepage, name='user_homepage'),
-
-    url(r'^logout/?$', logout, {'next_page': '/'}, name='logout'),
-
-    url(r'^crossdomain.xml$', lambda x: HttpResponseForbidden("Forbidden")),
-)
-
-
-
 
 # ADMIN URLS
 
@@ -75,7 +41,8 @@ class AdminMessageView(ExtraContextView):
     template_name = "admin/message.html"
 
 
-urlpatterns = urlpatterns + patterns('',
+
+adminpatterns = patterns('',
     url(r'^cron/$', do_outstanding_observations, {}, 'cron' ),
 
     url(r'^answer/(?P<pk>\d+)/upload/$', AnswerFileView.as_view(), {}, 'user_uploaded_file' ),
@@ -83,7 +50,7 @@ urlpatterns = urlpatterns + patterns('',
     # assessor views
     url(r'^observations/outstanding/$', observations_outstanding, {}, "observations_outstanding"),
 
-    url(r'^membership/(?P<pk>\d+)/todo/$', ObservationView.as_view(), {}, "membership_observations_todo"),
+    url(r'^admin/signalbox/membership/(?P<pk>\d+)/todo/$', ObservationView.as_view(), {}, "membership_observations_todo"),
     url(r'^reply/(?P<pk>\d+)/check/double/entry/$', ReplyUpdateAfterDoubleEntry.as_view(), {}, "check_double_entry"),
 
     # this overrides adding observations in the admin
@@ -135,7 +102,7 @@ urlpatterns = urlpatterns + patterns('',
 
 
     # have a look at replies
-    url(r'^admin/signalbox/reply/(?P<id>\d+)/preview/$', preview_reply, {}, "preview_reply"),
+    url(r'reply/(?P<id>\d+)/preview/$', preview_reply, {}, "preview_reply"),
 
     # resolving duplicate replies
     url(r'^resolve/duplicate/replies/$', resolve_double_entry_conflicts, {}, 'resolve_double_entry_conflicts'),
@@ -160,6 +127,49 @@ urlpatterns = urlpatterns + patterns('',
     url(r'^user/password/$', 'django.contrib.auth.views.password_change')
 
 )
+
+
+# FRONTEND URLS
+
+urlpatterns = urlpatterns + patterns('',
+    url(r'^enter/data/(?P<observation_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})/?$',
+        start_data_entry, {'entry_method': "participant"}, name="start_data_entry"),
+
+    url(r'^double/enter/data/(?P<observation_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})/?$',
+        start_data_entry, {'entry_method': "double_entry"},
+        name="start_double_entry"),
+
+    url(r'^start/adhoc/(?P<membership_id>\d+)/(?P<asker_id>\d+)/?$', use_adhoc_asker,
+            name="use_adhoc_asker"),
+
+
+    url(r'^studies/$',
+        ListView.as_view(model=Study, queryset=Study.objects.filter(visible=True, paused=False)),
+        name='study_list'),
+
+    url(r'^studies/(?P<pk>\d+)/$', DetailView.as_view(model=Study,), {}, name='study', ),
+    url(r'^studies/(?P<pk>\d+)/join/$', join_study, name='join_study'),
+    url(r'^studies/(?P<study_id>\d+)?/register/$', SignalboxRegistrationView.as_view(), name='study_registration'),
+
+    url(r'^add/participant/details/(?P<study_pk>\d+)?/?$',
+        update_profile_for_studies, name='update_profile_for_studies'),
+
+    url(r'^profile/membership/(?P<pk>\d+)$',
+        MembershipDetail.as_view(), {}, name='membership_home', ),
+
+    url(r'^accounts/profile/$', RedirectView.as_view(url='/profile/')),
+    url(r'^profile/?$', user_homepage, name='user_homepage'),
+
+    url(r'^logout/?$', logout, {'next_page': '/'}, name='logout'),
+
+    url(r'^crossdomain.xml$', lambda x: HttpResponseForbidden("Forbidden")),
+    ('^admin/signalbox/', include(adminpatterns))
+)
+
+
+
+
+
 
 
 if settings.USE_VERSIONING:

@@ -1,17 +1,17 @@
 import os
 import sys
 from django.core.exceptions import ImproperlyConfigured
+import yaml
 
-
-def get_env_variable(var_name, required=True, default=None, int_to_bool=False):
+def get_env_variable(var_name, required=True, default=None, as_yaml=True):
     """ Get the environment variable, process and return, or raise exception."""
     if default != None:
         required = False
 
     try:
         answer = os.environ[var_name]
-        if int_to_bool:
-            answer = bool(int(answer))
+        if as_yaml:
+            answer = yaml.safe_load(answer)
         return answer
 
     except KeyError:
@@ -20,6 +20,4 @@ def get_env_variable(var_name, required=True, default=None, int_to_bool=False):
         if required:
             raise ImproperlyConfigured(error_msg)
         else:
-            # print >> sys.stderr, 'Info: using default setting of {} for {}'.format(
-                # default, var_name)
             return default

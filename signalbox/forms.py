@@ -1,32 +1,47 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from django.views.generic.edit import ProcessFormView
+from ask.models import Asker
 from django import forms
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ValidationError
-from localflavor.gb.forms import GBCountySelect, GBPostcodeField
-
-from django.contrib.auth import get_user_model
-User = get_user_model()
-
-from django.forms.models import modelform_factory
-from django.contrib.formtools.wizard import FormWizard
 from django.conf import settings
-
-import selectable.forms as selectable
+from django.contrib.auth import get_user_model
+from django.contrib.formtools.wizard import FormWizard
+from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
+from django.db.models import Q
+from django.forms.models import modelform_factory
+from django.http import HttpResponseRedirect
+from django.views.generic.edit import ProcessFormView
+from localflavor.gb.forms import GBCountySelect, GBPostcodeField
 from registration.forms import RegistrationForm
-
+import selectable.forms as selectable
+from signalbox.lookups import UserLookup
+from signalbox.models import Membership, Reply, Study, UserProfile, UserMessage, ContactRecord, Answer
+from signalbox.models.validators import date_in_past
+from signalbox.models.validators import is_mobile_number, is_number_from_study_area, could_be_number
+from signalbox.phone_field import PhoneNumberFormField, as_phone_number
 from signalbox.utilities.djangobits import supergetattr
 
-from signalbox.models.validators import is_mobile_number, is_number_from_study_area, could_be_number
-from signalbox.lookups import UserLookup
-from ask.models import Asker
-from signalbox.models import Study, UserProfile, UserMessage, ContactRecord, Answer
-from signalbox.models.validators import date_in_past
 
-from signalbox.phone_field import PhoneNumberFormField, as_phone_number
+User = get_user_model()
+
+
+
+
+
+
+def get_answers(studies):
+
+    mems = set(Membership.objects.filter(study__in=studies))
+    que = Q(observation__dyad__study__in=studies) | Q(membership__in=mems)
+    replies = Reply.objects.filter(que)
+    answers = Answer.objects.all(
+        ).select_related('question', 'question__choiceset', 'question__scoresheet'
+                     ).filter(reply__in=replies
+                              ).exclude(question__variable_name__isnull=True
+                                        ).order_by('reply')
+    return answers
+
 
 
 class DateShiftForm(forms.Form):
@@ -101,7 +116,7 @@ class SelectExportDataForm(forms.Form):
         answers = Answer.objects.all()
 
         if studies:
-            answers = answers.filter(reply__observation__dyad__study__in=studies)
+            answers = get_answers(studies)
 
         if asker:
             answers = answers.filter(reply__asker=asker)

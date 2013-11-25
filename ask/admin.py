@@ -8,7 +8,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 
-from ask.models import AskPage, QuestionAsset, Instrument, Choice, ShowIf, Asker, Question, ChoiceSet
+from ask.models import AskPage, QuestionAsset, Choice, ShowIf, Asker, Question, ChoiceSet
 import ask.models.fields
 
 from signalbox.utilities.linkedinline import LinkedInline
@@ -45,7 +45,7 @@ class QuestionInlineForPage(admin.StackedInline):
     form = QuestionInlineForm
     model = Question
     order_by = ['order']
-    readonly_fields = ['page', 'instrument']
+    readonly_fields = ['page',]
     prepopulated_fields = {
         'variable_name': ('text',),
     }
@@ -64,7 +64,6 @@ class QuestionInlineForPage(admin.StackedInline):
                 'fields': (
                     'order',
                     'required',
-                    'display_instrument',
                     'showif',
                     'help_text',
                     'allow_not_applicable',
@@ -76,10 +75,6 @@ class QuestionInlineForPage(admin.StackedInline):
 
     extra = 1
     admin_model_path = "question"
-
-
-class QuestionInlineForInstrument(QuestionInlineForPage):
-    fk_name = 'instrument'
 
 
 class AskPageAdmin(admin.ModelAdmin):
@@ -149,16 +144,6 @@ class AskerAdmin(admin.ModelAdmin):
     )
 
 
-
-class InstrumentAdmin(admin.ModelAdmin):
-    save_on_top = True
-    search_fields = ['name', 'citation']
-    inlines = [QuestionInlineForInstrument]
-
-    class Media:
-        js = ("js/questions.js",)
-
-
 class ChoiceInline(admin.TabularInline):
     model = Choice
     ordering = ['order']
@@ -219,5 +204,4 @@ admin.site.register(ShowIf, ShowIfAdmin)
 admin.site.register(Asker, AskerAdmin)
 admin.site.register(AskPage, AskPageAdmin)
 admin.site.register(Question, QuestionAdmin)
-admin.site.register(Instrument, InstrumentAdmin)
 admin.site.register(ChoiceSet, ChoiceSetAdmin)

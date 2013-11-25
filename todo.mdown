@@ -1,3 +1,4 @@
+get rid of kronos
 
 check what happens with duplicate scores when exporting data to labels
 
@@ -40,7 +41,7 @@ check what happens with duplicate scores when exporting data to labels
 
 Pickle questions and choicsets for export of data. Version questions on each save and store that?
 
-TIDY data model for questions/instruments... make instruments and questions duplicated, and filter the main lists when adding questions.
+TIDY data model for questions... make  questions duplicated, and filter the main lists when adding questions.
 
 ## Use managers
 

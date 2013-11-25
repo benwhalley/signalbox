@@ -1,11 +1,12 @@
 {% load markup humanize %}
 {% load signalbox_tags %}
-
-
+{% load cache %}
+{% cache 500 prev_replies  request.user.username  %}
 {% regroup participant.get_profile.previous_reply_set by observation.dyad as memberships %}
 
 
 {% for m in memberships %}
+{% with m as m %}
 <h3 class="span12">
             {% if m.grouper %}
                 {{ m.grouper.study.name }}:
@@ -22,19 +23,22 @@
 <tr>
     <th>Last submit</th>
     <th>Script name</th>
-    <th># Datapoints</th>
+    <th>Last saved</th>
 </tr>
 {% for reply in m.list %}
+{% with reply as reply  and reply.observation as ro %}
     <tr>
         <td>{{reply.last_submit}}</td>
-
-        {% if reply.observation %}
-            <td>{{reply.observation.label}}</td>
+        {% if ro %}
+            <td>{{ro.label}}</td>
         {% else %}
             <td>{{reply.asker}}</td>
         {% endif %}
-        <td>{{reply.number_non_empty_answers}}</td>
+        <td>{{reply.last_submit}}</td>
     </tr>
+{% endwith %}
 {% endfor %}
 </table>
+{% endwith %}
 {% endfor %}
+{% endcache %}

@@ -24,7 +24,8 @@ ENTRY_METHOD_LOOKUP = {
     'preview': "Preview",
     'participant': "Participant via the web interface",
     'twilio': "Twilio",
-    'ad_hoc': "Ad-hoc data entry via admin interface",
+    'ad_hoc': "Ad-hoc use of questionnaire",
+    'ad_hoc_script': "Data entered after ad-hoc script use",
     'anonymous': "Anonymous survey response",
     'answerphone': "Answerphone message",
 }
@@ -63,7 +64,7 @@ class Reply(models.Model, ProcessManager):
                 yield i
         else:
             # otherwise split into pages
-            for i in self.asker.askpage_set.all():
+            for i in self.asker.askpage_set.all().iterator():
                 yield i
 
     objects = ReplyManager()
@@ -72,6 +73,9 @@ class Reply(models.Model, ProcessManager):
 
     observation = models.ForeignKey(
         'signalbox.Observation', blank=True, null=True)
+
+    membership = models.ForeignKey(
+        'signalbox.Membership', blank=True, null=True)
 
     user = models.ForeignKey(User, blank=True, null=True,
         related_name="reply_user",

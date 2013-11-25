@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-
 import json
-import ast
 
 from ask.models.fields import FIELD_NAMES
 import ask.validators as valid
 from ask.yamlextras import yaml
+import ast
 from contracts import contract, new_contract
 from django import http
 from django.conf import settings
@@ -16,8 +15,10 @@ from django.db.models.loading import get_model
 from django.forms.models import model_to_dict
 from django.template import Context, Template
 from django.template.loader import get_template
+
 import fields
 from jsonfield import JSONField
+import markdown
 from signalbox.exceptions import DataProtectionException
 from signalbox.utilities.djangobits import supergetattr, flatten, safe_help, int_or_string
 from signalbox.utilities.linkedinline import admin_edit_url
@@ -112,16 +113,15 @@ class Question(models.Model):
 
     page = models.ForeignKey('ask.AskPage', null=True, blank=True)
     scoresheet = models.ForeignKey('signalbox.ScoreSheet',  blank=True, null=True)
-    instrument = models.ForeignKey('ask.Instrument', null=True, blank=True)
 
     objects = QuestionManager()
 
     def natural_key(self):
         return (self.variable_name, )
-    natural_key.dependencies = ['ask.choiceset', 'ask.Instrument', 'ask.AskPage']
+    natural_key.dependencies = ['ask.choiceset','ask.AskPage']
 
     order = models.IntegerField(default=-1, verbose_name="Page order",
-        help_text="""The order in which items will apear in the page (the sequence includes instruments, below).""")
+        help_text="""The order in which items will apear in the page.""")
 
     allow_not_applicable = models.BooleanField(default=False)
 
@@ -161,9 +161,6 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
 
     choiceset = models.ForeignKey('ChoiceSet', null=True, blank=True)
 
-    display_instrument = models.ForeignKey('Instrument', null=True, blank=True,
-        related_name="display_instrument")
-
     help_text = models.TextField(blank=True, null=True)
 
     # we use S3 because otherwise there's a real lag on the call from twilio
@@ -182,6 +179,7 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         if self.q_type == "webcam":
             return True
         return False
+
 
     @contract
     def display_text(self, reply=None, request=None):
@@ -205,19 +203,21 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
             'answers_label': {}
         }
 
-        if reply and reply.asker and self.field_class().compute_scores:
-            scores = {i.name: i.compute(reply.answer_set.all()) for i in self.page.scoresheets()}
+        fc = self.field_class()
+        if reply and reply.asker and fc.compute_scores:
+            answers = reply.answer_set.all()
+            scores = {i.name: i.compute(answers) for i in self.page.scoresheets()}
             context['scores'] = scores
-            # put actual values into main namespace too
-            context.update({k: v.get('score', None) for k, v in scores.items()})
+            context.update({k: v.get('score', None) for k, v in scores.items()}) # put actual values into main namespace too
 
-        if reply and reply.asker:
+        if fc.allow_showing_answers and reply and reply.asker:
             context['answers'] = {i.variable_name(): int_or_string(i.answer) for i in reply.answer_set.all()}
 
         for i in self.questionasset_set.all():
             context[i.slug] = unicode(i)
 
-        return templ.render(Context(context))
+        return markdown.markdown(templ.render(Context(context)))
+
 
     q_type = models.CharField(choices=[(i, i) for i in FIELD_NAMES],
         blank=False, max_length=100, default="instruction")
@@ -244,7 +244,7 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
     def label_choices(self):
         return self.field_class().label_choices(self)
 
-    widget_kwargs = JSONField(blank=True, help_text="""A JSON representation of a python dictionary of
+    widget_kwargs = JSONField(default="{}", help_text="""A JSON representation of a python dictionary of
         attributes which, when deserialised, is passed to the form widget when the questionnaire is
         rendered. See django-floppyforms docs for options.""")
 
@@ -351,9 +351,6 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
 
         if self.order is -1:
             self.order = 1 + self.page.question_set.all().count()
-
-        if "instrument" in self.q_type and not self.display_instrument:
-            errors['display_instrument'] = ["You need to specify which instrument to display."]
 
         if self.q_type in "slider" and not self.widget_kwargs:
             errors['widget_kwargs'] = ["""No default settings for slider added (need min, max, value). E.g. {"value":50,"min":0,"max":100}"""]

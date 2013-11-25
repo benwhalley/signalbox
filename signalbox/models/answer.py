@@ -93,9 +93,6 @@ class Answer(models.Model):
         return smart_text("{} (page {}): {}".format(self.variable_name(), supergetattr(self, "page.id", None), smart_text(self.answer)[:80]))
 
     class Meta:
-        permissions = (
-            ("can_view_screening", "Can see responses made to screening instruments"),
-        )
         verbose_name_plural = "user answers"
         ordering = ['last_modified']
         unique_together = (['other_variable_name', 'reply', 'page'], ['question', 'reply', 'page'])

@@ -24,7 +24,7 @@
     <p>{% blocktrans with escaped_object=object %}Are you sure you want to delete the <strong>{{ object_name }} "{{ escaped_object }}"</strong>?{% endblocktrans %}</p>
 
     <div class="row">
-    <p class="span9 alert alert-danger">{{ deleted_objects|length }} additional objects (e.g. user replies and answers, records of observations made) will be deleted from the database
+    <p class="span9 alert alert-danger">At least 2 {{ deleted_objects|length }} additional objects (e.g. user replies and answers, records of observations made) and possibly many more, will be deleted from the database
 
 
         <button type="button" class="btn btn-mini" data-toggle="collapse" data-target="#demo">

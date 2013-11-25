@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     url(r'^(?P<reply_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})/$', show_page, {'preview': False },
         name="show_page"),
     url(r'^anon/(?P<asker_id>\d+)/(?P<collector>[\w\-\_]+)?/?$', start_anonymous_survey,
-            name="start_anonymous_survey"),
+                name="start_anonymous_survey"),
 )
 
 

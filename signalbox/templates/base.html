@@ -16,8 +16,8 @@
         <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-1.8.21.custom.css" type="text/css" media="screen">
         <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
         <link rel="stylesheet" href="{{STATIC_URL}}css/signalbox.css" type="text/css" media="screen,print">
-        <link rel="stylesheet" href="{{STATIC_URL}}css/custom.css" type="text/css" media="screen,print">
     {% endcompress %}
+    <link rel="stylesheet" href="{{STATIC_URL}}css/custom.css" type="text/css" media="screen,print">
 <!--     <link rel="stylesheet" type="text/css"
        href="http://releases.flowplayer.org/5.2.0/skin/functional.css" />
  -->
@@ -37,9 +37,9 @@
             {% block nav %}
             <div class="container">
 
-            <div class="nav navbar">
+            <div class="nav navbar  navbar-fixed-top">
               <div class="navbar-inner">
-
+                  <div class="container-fluid">
                 {% block brand %}
                 <div class="brand">
                     <a href="/">Signalbox</a>
@@ -51,11 +51,13 @@
                         {% show_menu 0 2  2 2  "menu.html" %}
                       </ul>
                     {% endif %}
+
+                    {% block signin %}
+                          {% include 'signin_or_show_user.html' %}
+                    {% endblock %}
                   </div>
-                  {% block signin %}
-                        {% include 'signin_or_show_user.html' %}
-                  {% endblock %}
                 </div>
+              </div>
             </div>
             </div>
             {% endblock %}

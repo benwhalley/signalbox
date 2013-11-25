@@ -11,7 +11,6 @@ from signalbox.views.front import join_study, user_homepage, MembershipDetail
 from signalbox.models.study import study
 
 
-
 class ProfileApphook(CMSApp):
     name = _("User profile")
     urls = [patterns('',

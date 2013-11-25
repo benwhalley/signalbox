@@ -11,10 +11,12 @@ To get up and running quickly, the easiest way is currently to use Heroku_ . Her
 
 
 
-OS Dependencies
+Prerequisites
 ----------------
 
-On Ubuntu 12.04, you can install everything you need for a development machine like this::
+For hosted installations, you just need python, and pip.
+
+For local development, on Ubuntu 12.04, you can install everything you need for a development machine like this::
 
 	sudo apt-get install -y python-dev postgresql-server-dev-9.1 libjpeg-dev virtualenvwrapper libmagic-dev git mercurial zlib1g-dev libfreetype6 libfreetype6-dev
 	export WORKON_HOME=~/Envs
@@ -23,60 +25,55 @@ On Ubuntu 12.04, you can install everything you need for a development machine l
 
 
 
-Environment variables
------------------------
 
-Settings, API keys and passwords are stored in environment variables (see http://www.12factor.net/config).
-There are setup scripts (see below) to help store this. You need to edit the CONFIG_REQUIRD.json and CONFIG_OPTIONAL.json files to get started.
+Hosted installation on Heroku
+--------------------------------
 
+To get Signalbox running on Heroku's free plan (which is ideal for normal sized studies), you first need to:
 
+1. Sign up for an account with Heroku (https://devcenter.heroku.com/articles/quickstart) and install their command line tool. You should upload your keys to the server to avoid having to repeatedly type your password:
 
-Local install
----------------
+	heroku keys:add
 
-First make a database with postgres (for development, allow the local user permissions). Then use the included setup_signalbox command to make an example project (note, you can do all this manually, just look at the script and at settings.py in the example project)::
+2. Optionally, if you want to upload images or other media for studies or questionnaires, sign up with Amazon for an S3 storage account (uploaded image files cannot be kept on heroku; see http://aws.amazon.com).
 
-	createdb sbox
-	setup_signalbox
+3. Optionally, if you plan to send email, obtain the details  (host, username, password) for an SMTP email server you will use. Amazon's 'simple email service', SES, is good: http://aws.amazon.com/ses/
 
-If everything works, open http://127.0.0.1:8000/admin  to view the admin site on your development machine.
+4. Optionally, if you plan on using interactive telephone calls or SMS, sign up with Twilio and make a note of your secret ID and key: https://www.twilio.com.
 
 
+Installation
+~~~~~~~~~~~~~~~~~
 
-Hosted installation
---------------------
-
-To get it running on Heroku's free plan (which is ideal for normal sized studies), you first need to:
-
-1. Sign up for an account with Heroku (https://devcenter.heroku.com/articles/quickstart) and install their command line tool.
-
-2. Sign up with Amazon for an S3 storage account (this to host the static image files which cannot be kept on heroku). See http://aws.amazon.com. During the setup process you will need to enter your secret AWS ID and key, but this is not saved on the local machine.
-
-
-You need to add this information to the CONFIG_REQUIRD.json. Optionally, you may also want to:
-
-3. Obtain the details  (host, username, password) for an SMTP email server you will use. Amazon's 'simple email service', SES, is good: http://aws.amazon.com/ses/
-
-4. If you plan on using interactive telephone calls, sign up with Twilio and make a note of your secret ID and key: https://www.twilio.com.
-
-
-Then add these settings to CONFIG_OPTIONAL.json. Once done, cd INSIDE the NEW directory created above run these commands::
+Install the heroku command line program and authenticate::
 
 	wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
 	ssh-keygen
 	heroku keys:add
 
-	git init; git add -A; git commit -a -m "initial commit"
-	signalbox_make_heroku_app
-	signalbox_make_s3_bucket
+
+Clone the example project::
+
+	git clone GITHUBREPO newname
+	cd newname
+	pip install -r requirements.txt
 
 
-	git push heroku master
-	heroku run app/manage.py syncdb --all --noinput
-	heroku run app/manage.py collectstatic --noinput
-	heroku apps:open
+The run the install script::
+
+	heroku_install_signalbox
+
+At this point, your installation should be up and running on heroku::
+
+	heroku open
+
+But you need to create the first user to login to the admin site::
+
+	heroku run app/manage.py createsuperuser
 
 
+Scheduled tasks
+~~~~~~~~~~~~~~~~~
 Remember to add a scheduled task to send observations via the heroku control panel. The frequency is up to you - polling more often can cost more in dyno time if it overruns the free quota (but not much), but you'll want to add scheduled tasks for these scripts::
 
 	app/manage.py runtask send
@@ -85,33 +82,60 @@ Remember to add a scheduled task to send observations via the heroku control pan
 
 
 
-Finally, when you are happy things are working, be sure to turn DEBUG mode off to avoid security problems:
 
-	heroku config:set DEBUG=0
+Environment variables
+~~~~~~~~~~~~~~~~~~~~~~
+
+Note that all settings, API keys, and passwords are stored in environment variables (see http://www.12factor.net/config).
+
+Environment variables can be se using::
+
+	heroku config:set VAR=xxx
 
 
-
-To create test users of each of the different roles for demonstration purposes::
-
-    app/manage.py make_dummy_users
+The key ones you will need to set are::
 
 
+	AWS_STORAGE_BUCKET_NAME
+	AWS_ACCESS_KEY_ID
+	AWS_SECRET_ACCESS_KEY
 
+	TWILIO_ID
+	TWILIO_TOKEN
+
+	EMAIL_HOST
+	EMAIL_HOST_USER
+	EMAIL_HOST_PASSWORD
+
+
+Others are listed below for reference.
 
 
 
 Version control
 ~~~~~~~~~~~~~~~~~
 
-Signalbox can use ``django_reversion`` to keep track of changes to Answer, Reply and Observation objects to provide an audit trail for a trial. It's not enabled by default, but to turn it on you can set an environment variable:
-
-::
-    export USE_VERSIONING=1
-
-or::
+Signalbox can use ``django_reversion`` to keep track of changes to Answer, Reply and Observation objects to provide an audit trail for a trial. It's not enabled by default, but to turn it on you can set an environment variable::
 
 	heroku config:set USE_VERSIONING=1
 
+
+
+
+Local install for development
+---------------------------------
+
+Once you have Signalbox installed in a virtualenv and a hosted instance running, it's easy to start hacking on it locally to update templates etc.
+
+First make a database with postgres (for development, allow the local user all permissions).
+
+	createdb sbox
+
+Then update the DATABASE_URL environment variable to match your new database. If everything works, open http://127.0.0.1:8000/admin  to view the admin site on your development machine.
+
+Make changes in the local repo, commit them and then::
+
+	git push heroku master
 
 
 
@@ -145,7 +169,6 @@ LOGIN_FROM_OBSERVATION_TOKEN
 SHOW_USER_CURRENT_STUDIES
 
 DEBUG
-OFFLINE
 
 AWS_STORAGE_BUCKET_NAME
 COMPRESS_ENABLED
@@ -166,7 +189,6 @@ SESSION_COOKIE_AGE
 SESSION_SAVE_EVERY_REQUEST
 SESSION_EXPIRE_AT_BROWSER_CLOSE
 
-ALLOW_IMPERSONATION
 USE_VERSIONING
 
 

@@ -19,7 +19,7 @@
 {% if page.asker.step_navigation %}
     <div class="span12">
 
-        <hr>
+        <!-- <hr> -->
         <a class=" pull-right {% if not redbutton %}disabled {%else%}btn-danger{% endif %} btn" {% if redbutton  %}onclick="javascript:$('#questionnaire_form').attr('action', '?finish=1'); $('#questionnaire_form').submit();"{% endif%} href="#">Save and Finish
         </a>
 
@@ -48,7 +48,7 @@
     {% endif %}
 
 
-    <hr>
+    <!-- <hr> -->
     </div>
 {% endif %}
 
@@ -162,17 +162,7 @@ $(document).ready(function(){
         e.preventDefault();
     });
 });
-
-
-
-
-
-
 </script>
-
-
-
-
 {% endblock %}
 
 

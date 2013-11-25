@@ -1,6 +1,6 @@
 """
 Module which handles importing questionnaires in special markdown dialect
-using pandoc to process the input. Also see to_markdown functions on Question,
+using pyparsing to process the input. Also see to_markdown functions on Question,
 Asker etc for the reverse of this process.
 
 This is somewhat a work in progress, and is for expert users only just now.

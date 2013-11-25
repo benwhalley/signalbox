@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from question import Question
 from signalbox.process import Step
+import itertools
 from signalbox.utilities.linkedinline import admin_edit_url
 
 
@@ -21,7 +22,7 @@ class AskPageManager(models.Manager):
 
 
 class AskPage(models.Model, Step):
-    """A grouping of Questions and Instruments, as part of a Questionnaire."""
+    """A grouping of Questions, as part of a Questionnaire."""
 
     def index(self):
         return self.page_number()
@@ -77,8 +78,8 @@ class AskPage(models.Model, Step):
         return AskPage.objects.filter(asker=self.asker).order_by('order')
 
     def page_number(self):
-        pages = list(self.asker.askpage_set.all())
-        return pages.index(self)
+        pages = list(itertools.chain(*self.asker.askpage_set.all().values_list('id')))
+        return pages.index(self.id)
 
     def is_last(self):
         return self == list(self.asker.askpage_set.all())[-1]
@@ -105,23 +106,10 @@ class AskPage(models.Model, Step):
         '''Returns an ordered list of Questions for the page.
 
         Rather than simply using a queryset, we build and return a list
-        joining together all the questions within included intruments.
+        joining together all the questions within.
         '''
+        return self.question_set.all().order_by('order')
 
-        ordered_questions = []
-        for i in self.question_set.all().order_by('order'):
-            if "instrument" in i.q_type:
-                ins_questions = list(i.display_instrument.question_set.all())
-                for k in ins_questions:
-                    k.required = i.required
-                    k.showif = i.showif
-                    k.page = i.page
-
-                ordered_questions.extend(ins_questions)
-            else:
-                ordered_questions.append(i)
-
-        return ordered_questions
 
     def questions_to_show(self, reply=None):
         """Return Questions in the page, filtered depending on users past answers in this Reply."""

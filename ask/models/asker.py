@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ask.models import Choice, Instrument
+from ask.models import Choice
 from datetime import datetime
 from django.core import serializers
 from django.core.urlresolvers import reverse
@@ -9,6 +9,7 @@ from django.db import models
 from django.forms.models import model_to_dict
 from functools import partial
 from page import AskPage
+from question import Question
 from signalbox.utilities.djangobits import supergetattr, flatten, dict_map
 from signalbox.utilities.linkedinline import admin_edit_url
 import functools
@@ -55,7 +56,7 @@ class Asker(models.Model):
     success_message = models.TextField(default="Questionnaire complete.",
         help_text="""Message which appears in banner on users screen on completion of the  questionnaire.""")
 
-    redirect_url = models.CharField(max_length=128, default="/accounts/profile/",
+    redirect_url = models.CharField(max_length=128, default="/profile/",
         help_text=""""URL to redirect to when Questionnaire is complete.""")
 
     show_progress = models.BooleanField(default=False, help_text="""Show a
@@ -92,14 +93,15 @@ class Asker(models.Model):
 
     def approximate_time_to_complete(self):
         """Returns the approximate number of minutes the asker will take to complete.
-
         Rounded to the nearest 5 minutes (with a minumum of 5 minutes)."""
 
         baseround = lambda x, base=5: int(base * round(float(x) / base))
-        n_questions = len(self.questions())
+        n_questions = Question.objects.filter(page__in=self.askpage_set.all()).count()
         mins = (n_questions * .5) * .9
         return max([5, baseround(mins, 5)])
 
+    def scoresheets(self):
+        return itertools.chain(*[i.scoresheets() for i in self.askpage_set.all()])
 
     def questions(self):
         questionsbypage = map(lambda i: i.get_questions(),  self.askpage_set.all())

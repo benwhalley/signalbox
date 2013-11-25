@@ -1,14 +1,15 @@
-import itertools
-from django.db import models
-
-from django.contrib.auth import get_user_model
-User = get_user_model()
-
 from datetime import datetime
-from signalbox.utils import proportion
-from signalbox.utilities.linkedinline import admin_edit_url
-from observation import Observation
+import itertools
+
 from answer import Answer
+from contracts import contract
+from django.contrib.auth import get_user_model
+from django.db import models
+from observation import Observation
+from signalbox.utilities.linkedinline import admin_edit_url
+from signalbox.utils import proportion
+
+User = get_user_model()
 
 
 class MembershipManager(models.Manager):
@@ -25,7 +26,6 @@ class MembershipManager(models.Manager):
 
 class Membership(models.Model):
     """Users join Studies which is recorded in a Membership object. """
-
 
     objects = MembershipManager()
 
@@ -54,6 +54,14 @@ class Membership(models.Model):
 
     date_randomised = models.DateField(null=True, blank=True)
 
+    @contract
+    def ad_hoc_askers_and_last_replies(self):
+        """
+        :returns: A list of tuples containing the asker and the replies made within this membership.
+        :rtype: list(tuple)
+        """
+        askers = self.study.ad_hoc_askers.all()
+        return [(i, self.reply_set.filter(asker=i)) for i in askers]
 
     def save(self, *args, **kwargs):
         if self.condition:
@@ -64,7 +72,6 @@ class Membership(models.Model):
         """Return True if the user has outstanding observations within a study."""
         obs = self.observation_set.all()
         return bool([o.status != 1 for o in obs]) and self.active
-
 
     def observations(self):
         """Return the observations for this Membership.
@@ -80,7 +87,7 @@ class Membership(models.Model):
 
     # helper functions to calculate obs of various types
     outcomes = lambda self: self.observations(threshold=50)
-    outcomes_due = lambda self:  [i for i in self.outcomes() if i.due < datetime.now()]
+    outcomes_due = lambda self: [i for i in self.outcomes() if i.due < datetime.now()]
     outcomes_complete = lambda self: [i for i in self.outcomes() if i.status == 1]
     outcomes_due_complete = lambda self: [i for i in self.outcomes_due() if i.status == 1]
     prop_outcomes_complete = lambda self: proportion(
@@ -88,23 +95,22 @@ class Membership(models.Model):
     prop_outcomes_due_complete = lambda self: proportion(
         len(self.outcomes_due_complete()), len(self.outcomes_due()))
 
-
     def randomised(self):
         return bool(self.condition)
-
 
     def make_ad_hoc_observation(self):
         """Make an ad hoc Observation, save it, and return it."""
 
         rightnow = datetime.now()
-        newobs = Observation(   status=-1,
-                                dyad=self,
-                                due=rightnow,
-                                due_original=rightnow,
-                                label="Ad hoc observation")
+        newobs = Observation(
+            status=-1,
+            dyad=self,
+            due=rightnow,
+            due_original=rightnow,
+            label="Ad hoc observation"
+        )
         newobs.save()
         return newobs
-
 
     def add_observations(self):
         """Creates and saves Observations -> [Observation]."""
@@ -121,14 +127,12 @@ class Membership(models.Model):
 
         return observations
 
-
     def questions_answered(self):
-        return Answer.objects.filter(reply__observation__in\
-            =self.observation_set.all()).count()
+        return Answer.objects.filter(
+            reply__observation__in=self.observation_set.all()).count()
 
     def admin_edit_url(self):
             return admin_edit_url(self)
-
 
     class Meta:
         permissions = (("can_add_observations", "Can generate observations for a membership"),
@@ -136,7 +140,6 @@ class Membership(models.Model):
         verbose_name = "Study membership"
         app_label = 'signalbox'
         ordering = ['-date_randomised']
-
 
     def __unicode__(self):
         string = getattr(self, 'study', "None")

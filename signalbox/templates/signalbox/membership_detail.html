@@ -5,6 +5,12 @@
 {% block left %}
     <h1>{{object.study.name}}</h1>
 
+    {% if object.study_image %}
+        <img class="img" src="{{object.study_image.url}}">
+    {% endif %}
+
+    {{object.briefing|markdown}}
+
 
 {% endblock %}
 

@@ -179,6 +179,8 @@ Other variables available as the text is rendered are:
 
 
 
+
+
 A complete example
 --------------------
 
@@ -207,7 +209,7 @@ Other types of questions available
 
 
 `likert or likert-list`
-    Discreet options selected via radio-buttons (i.e. options are mutually exclusive). `likert-list` produces a vertical list as opposed to a horizontal scale. A required attribute is `choiceset`, to specify the options available (see above).
+    Discreet options selected via radio-buttons (i.e. options are mutually exclusive). `likert-list` produces a vertical list as opposed to a horizontal scale. Add `.rotate` to rotate the option labels.
 
 
 `checkboxes`

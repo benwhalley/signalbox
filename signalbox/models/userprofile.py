@@ -102,9 +102,9 @@ class UserProfile(models.Model):
         else:
             return self.mobile or self.landline
 
-    def current_studies(self):
-        studies = [s for s in self.user.membership_set.all() if s.is_current()]
-        return studies
+    def current_memberships(self):
+        memberships = [m for m in self.user.membership_set.all() if m.is_current()]
+        return memberships
 
     def previous_reply_set(self):
         """Returns a list of replies to be shown on the user's dashboard.
@@ -122,11 +122,11 @@ class UserProfile(models.Model):
         return Study.objects.all()
 
     def has_observation_expiring_today(self):
-        return sum([i.has_observation_expiring_today for i in self.current_studies()])
+        return sum([i.has_observation_expiring_today for i in self.current_memberships()])
 
-    def other_studies(self):
-        studies = [s for s in self.user.membership_set.all() if not s.is_current()]
-        return studies
+    def other_memberships(self):
+        memberships = [m for m in self.user.membership_set.all() if not m.is_current()]
+        return memberships
 
     def address_components(self):
         """Returns a list of address components."""
@@ -149,8 +149,8 @@ class UserProfile(models.Model):
         obs = [i for i in obs
             if i.ready_to_send()
             and i.show_in_tasklist()
-            and i.can_add_answers()]
-
+            and i.can_add_answers()
+            ]
         return obs
 
     def obs_by_study(self):

@@ -54,6 +54,7 @@ class StudyAdmin(admin.ModelAdmin):
     list_editable = ['visible', 'paused']
     filter_horizontal = [
         'ad_hoc_scripts',
+        'ad_hoc_askers',
         'createifs',
     ]
     prepopulated_fields = {'slug': ('name',)}
@@ -80,6 +81,7 @@ class StudyAdmin(admin.ModelAdmin):
             'fields': (
                 'visible_profile_fields',
                 'required_profile_fields',
+                'ad_hoc_askers',
                 'ad_hoc_scripts',
                 'createifs'
             )
@@ -115,7 +117,6 @@ class ObservationInline(LinkedInline):
     readonly_fields = [
         'n_in_sequence', 'script_type', 'ready_to_send', 'due',
         'due_original', 'last_attempted', 'attempt_count',
-                        'n_questions_incomplete'
     ]
     exclude = ['offset', 'label']
     model = Observation
@@ -150,7 +151,7 @@ class ObservationAdmin(ConditionalVersionAdmin):
     search_fields = ['token', 'dyad__study__slug', 'dyad__user__first_name',
                      'dyad__user__last_name', 'dyad__user__username']
     list_display = ["label", "token", "user", "due", "status",
-                    "script_type", "n_questions", "n_questions_incomplete"]
+                    "script_type", "n_questions",]
     list_filter = ('due_original', 'status', 'attempt_count', 'dyad__study',
                    'dyad__user__userprofile__site', 'created_by_script__script_type', )
     list_display_links = ['label', 'token']
@@ -160,7 +161,7 @@ class ObservationAdmin(ConditionalVersionAdmin):
         'n_in_sequence', 'label', 'status', 'dyad',
         'token', 'last_attempted', 'due_original',
         'attempt_count', 'offset',
-        'n_questions', 'n_questions_incomplete'
+        'n_questions',
     ]
     inlines = [ReplyInline, ObservationDataInline, ReminderInstanceInline]
 

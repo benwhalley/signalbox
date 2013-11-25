@@ -1,23 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import operator
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-from django.template import RequestContext, Context, Template, loader
-from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, get_object_or_404
-from django.contrib.auth.decorators import *
-from django.conf import settings
-from django.core.exceptions import PermissionDenied
-from django.contrib.auth import authenticate, login, backends
 
+from ask.models import Asker
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, backends
+from django.contrib.auth.decorators import *
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext, Context, Template, loader
+from signalbox.decorators import group_required
+from signalbox.models import Script, Membership, Observation, Reply, ScoreSheet
 from signalbox.utilities.djangobits import get_object_from_queryset_or_404
 from signalbox.utilities.error_views import render_forbidden_response
-from signalbox.decorators import group_required
 
-from signalbox.models import Script, Membership, Observation, Reply, ScoreSheet
-from ask.models import Asker
 
 
 def start_data_entry(request, observation_token, success_url=None,
@@ -93,7 +92,18 @@ def use_ad_hoc_script(request, membership_id, script_id):
     return start_data_entry(request,
                             first_ob.token,
                             return_url,
-                            "Ad hoc script")
+                            "ad_hoc_script")
+
+
+@login_required
+def use_adhoc_asker(request, membership_id, asker_id):
+    asker = get_object_or_404(Asker, pk=asker_id)
+    membership = get_object_or_404(Membership, pk=membership_id)
+    reply = Reply(asker=asker, user=request.user, membership=membership,
+        entry_method="ad_hoc",)
+    reply.save()
+    return HttpResponseRedirect(reverse('show_page', args=(reply.token,)))
+
 
 
 @group_required(['Researchers', 'Clinicians', 'Research Assistants', ])

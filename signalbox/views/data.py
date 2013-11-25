@@ -5,7 +5,7 @@ import os
 import tempfile
 import zipfile
 
-from ask.models import Question, Instrument
+from ask.models import Question
 from ask.models import fields
 from django import forms
 from django.conf import settings
@@ -28,6 +28,7 @@ EXPORT_DATEFORMAT = "%Y/%m/%d %H:%M:%S"
 # The internal accessors are listed first in each tuple, and the name we want
 # to export listed second.
 FIELD_MAP = [
+    ('reply.entry_method', 'entry_method'),
     ('reply.observation.n_in_sequence', 'n_in_sequence'),
     ('reply.observation.due', 'due'),
     ('reply.observation.id', 'observation.id'),
@@ -64,7 +65,6 @@ def _internal_fields(FIELD_MAP):
 ANSWER_VALUES = ['question.q_type',
                  'question.variable_name',
                  'answer',
-                 'page.index'
                  ]
 
 
@@ -148,16 +148,6 @@ def _remap_bools(dic):
             dic[k] = BOOLS_MAPPING[val]
 
 
-def get_answers(studies):
-    replies = Reply.objects.filter(observation__dyad__study__in=studies)
-    answers = Answer.objects.all(
-        ).select_related('question', 'question__choiceset', 'question__scoresheet'
-                     ).filter(reply__in=replies
-                              ).exclude(question__variable_name__isnull=True
-                                        ).order_by('reply')
-    return answers
-
-
 def values_with_callables(instance, keys):
     """Instead of calling values() on a queryset, call this instead to get access to callables
     on the model instances using dotted access syntax in keys"""
@@ -174,7 +164,6 @@ def build_csv_data_as_string(answers, reference_study):
     # in the answer dictionary
 
     # XXX This should be an answer method called get_value_for_export
-    #
     for i in answer_values:
         if i['question.q_type']:
             qtp = fields.class_name(i['question.q_type'])
@@ -182,25 +171,18 @@ def build_csv_data_as_string(answers, reference_study):
             processor = qtp and getattr(fields, qtp).export_processor or iden
             i['answer'] = processor(i['answer'])
 
-        # and append the page number to the variable name
-        if i['page.index'] is not None:
-            i['question.variable_name'] = "{}__{}".format(i['question.variable_name'], i['page.index'])
-
         # we don't need this any more --- because the answers will be reshaped to wide format next
         del i['question.q_type']
 
     reply_dicts = _reshape_wide(answer_values, 'reply.id', 'question.variable_name', 'answer')
 
-    [(i.pop('answer'), i.pop('question.variable_name'))
-        for i in reply_dicts]
+    [(i.pop('answer'), i.pop('question.variable_name')) for i in reply_dicts]
     [renamekeys(i, FIELD_MAP) for i in reply_dicts]
-    [reply.update({'is_reference_study': bool(reply['study'] == supergetattr(reference_study, "slug"))})
-        for reply in reply_dicts]
+    [reply.update({'is_reference_study': bool(reply['study'] == supergetattr(reference_study, "slug"))}) for reply in reply_dicts]
     [_remap_bools(d) for d in reply_dicts]
 
-    headings = set(itertools.chain(*[i.keys() for i in reply_dicts]))
+    headings = sorted(set(itertools.chain(*[i.keys() for i in reply_dicts])))
     data = write_dict_to_file(reply_dicts, headings).read()
-
     return data
 
 

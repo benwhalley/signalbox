@@ -1,13 +1,18 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 {% load markup %}
 {% load humanize %}
 {% load floppyforms %}
 
-{% block body %}
+{% block breadcrumbs %}{% endblock %}
+{% block content_title %}<span class="brand">{{asker.name}}</span>{% endblock %}
+{% block content %}
+
+
+
 <style>
 #id_text {width:98%; font-family:"inconsolata", "menlo", monospace;}
 body {padding-top:120px;}
-#topbar{background-color: white;}
+#topbar{background-color: white; margin-top:46px; padding-top:10px;}
 #fader {
     padding-top:0px; margin-top:-10px;
     height:40px;
@@ -26,6 +31,7 @@ $(document).ready(function() {
     $abc.css("height", $abc.attr("scrollHeight"));
 })
 </script>
+
 
 
 
@@ -73,8 +79,7 @@ $(document).ready(function() {
 {% for i in asker.askpage_set.all %}
 
 <div class="control-group">
-    <span class="pull-right">{{i.order}}</span><h3>{{i.step_name}}</h3>
-
+    <span class="pull-right">{{i.order}}</span><h4>{{i.step_name}}</h4>
 </div>
 
 {% for j in i.get_questions %}

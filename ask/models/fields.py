@@ -5,6 +5,7 @@ import base64
 from datetime import datetime, time
 from string import capwords
 
+from django.utils.functional import SimpleLazyObject
 from ask.models import stata_functions as stata
 import ask.validators as validators
 import ast
@@ -18,6 +19,7 @@ import floppyforms
 import magic
 import markdown
 from twiliobox import question_methods as twiliofunctions
+
 
 
 FIELD_NAMES = [
@@ -38,7 +40,6 @@ FIELD_NAMES = [
     'date-time',
     'time',
     'decimal',
-    'instrument',
 
     'uninterruptible-instruction',
     'hangup',
@@ -79,6 +80,7 @@ class SignalboxField(object):
 
     # this should probably be replaced with an attribute on questions themselves
     compute_scores = False
+    allow_showing_answers = False
 
     prepend_null_choice = False
     export_processor = None
@@ -139,9 +141,7 @@ class SignalboxField(object):
         super(SignalboxField, self).__init__(error_messages=self.error_messages,
            validators=self.validators, *args, **kwargs)
 
-        self.label = mark_safe(markdown.markdown(
-            question.display_text(reply=reply, request=request))
-        )
+        self.label = SimpleLazyObject(lambda: question.display_text(reply=reply, request=request))
         self.help_text = question.help_text
 
         # Is the field required?
@@ -205,6 +205,7 @@ class Instruction(SignalboxField, floppyforms.CharField):
     response_possible = False
     required_possible = False
     compute_scores = True
+    allow_showing_answers = True
 
 
 class ShortText(SignalboxField, floppyforms.CharField):
@@ -226,14 +227,6 @@ class LongText(SignalboxField, floppyforms.CharField):
     @staticmethod
     def voice_function(*args, **kwargs):
         return twiliofunctions.listen(*args, **kwargs)
-
-
-class Instrument(SignalboxField):
-    """Placeholder question to insert a group of questions."""
-
-    widget = None
-    validators = None
-    has_choices = False
 
 
 class Likert(SignalboxField, floppyforms.ChoiceField):
