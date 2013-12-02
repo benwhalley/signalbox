@@ -15,6 +15,11 @@ LOGIN_FROM_OBSERVATION_TOKEN = get_env_variable('LOGIN_FROM_OBSERVATION_TOKEN', 
 SHOW_USER_CURRENT_STUDIES = get_env_variable('SHOW_USER_CURRENT_STUDIES', default=False)
 
 
+# comma separated list of fields to be required for all user signups
+# see signalbox.setting for possible values.
+DEFAULT_USER_PROFILE_FIELDS = get_env_variable('DEFAULT_USER_PROFILE_FIELDS', default="").split(",")
+
+
 DEBUG = get_env_variable('DEBUG', required=False, default=False)
 
 
@@ -49,10 +54,12 @@ SESSION_COOKIE_AGE = get_env_variable('SESSION_COOKIE_AGE', default=1.5 * 60 * 6
 SESSION_SAVE_EVERY_REQUEST = get_env_variable('SESSION_SAVE_EVERY_REQUEST', default=True)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = get_env_variable('SESSION_EXPIRE_AT_BROWSER_CLOSE', default=True)
 
-# SECURITY BITS WHICH ARE NOT CUSTOMISABLE FROM ENV VARS AT PRESENT XXX
+# disable secure cookies not a great idea?
+SESSION_COOKIE_SECURE = get_env_variable('SESSION_COOKIE_SECURE', default=False)
+
+# SECURITY BITS WHICH ARE NOT CUSTOMISABLE FROM ENV VARS
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# disable secure cookies for debugging
-SESSION_COOKIE_SECURE = not get_env_variable('DEBUG', False)
+
 # this must be off for django cms content editing to work
 SECURE_FRAME_DENY = False
 
