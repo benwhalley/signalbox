@@ -7,11 +7,11 @@ from ask.models import Question
 from ask.models.fields import FIELD_NAMES
 from django.core.exceptions import ValidationError
 from pyparsing import *
-import shortuuid
 from signalbox.models import ScoreSheet
 from signalbox.utilities.djangobits import get_or_modify, flatten
 from statlib import stats
 import yaml
+from signalbox.utilities.gibberish import random_stata_varname
 
 
 ########## pyparsing definitions #############
@@ -26,7 +26,7 @@ classword = Literal(".").suppress() + attrword
 # an identifier for the block
 DEFIDSTRING = "__ID__REPLACE__ME__"
 iden = Optional( Literal("#").suppress() + attrword, default=DEFIDSTRING)('iden')
-iden.setParseAction(lambda s, loc, toks: toks[0] != DEFIDSTRING and toks[0] or shortuuid.uuid().lower())
+iden.setParseAction(lambda s, loc, toks: toks[0] != DEFIDSTRING and toks[0] or random_stata_varname())
 
 # parse the keyvals
 _keyval = Group(attrword('key') + Literal("=").suppress() + \
