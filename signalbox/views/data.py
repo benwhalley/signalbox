@@ -6,7 +6,6 @@ import tempfile
 import zipfile
 
 from ask.models import Question
-from ask.models import fields
 from django import forms
 from django.conf import settings
 from django.contrib import messages
@@ -21,6 +20,7 @@ from signalbox.forms import SelectExportDataForm, DateShiftForm
 from signalbox.models import Answer, Membership, Observation, Reply
 from signalbox.utilities.djangobits import conditional_decorator
 from signalbox.utilities.djangobits import supergetattr
+from contracts import contract
 
 EXPORT_DATEFORMAT = "%Y/%m/%d %H:%M:%S"
 
@@ -28,35 +28,37 @@ EXPORT_DATEFORMAT = "%Y/%m/%d %H:%M:%S"
 # The internal accessors are listed first in each tuple, and the name we want
 # to export listed second.
 FIELD_MAP = [
+    ('question.q_type', 'qtype'),
+    ('get_value_for_export', 'answer'),
+    ('question.variable_name', 'variable_name'),
     ('reply.entry_method', 'entry_method'),
-    ('reply.observation.n_in_sequence', 'n_in_sequence'),
+    ('reply.observation.n_in_sequence', 'observation_index'),
     ('reply.observation.due', 'due'),
-    ('reply.observation.id', 'observation.id'),
-    ('reply.observation.created_by_script.name', 'script'),
-    ('reply.observation.created_by_script.reference', 'script_reference'),
+    ('reply.observation.id', 'observation'),
+    ('reply.observation.created_by_script.reference', 'script'),
     ('reply.is_canonical_reply', 'is_canonical_reply'),
     ('reply.started', 'started'),
     ('reply.last_submit', 'finished'),
-    ('reply.originally_collected_on', 'originally_collected_on'),
+    ('reply.originally_collected_on', 'collected_on'),
     ('reply.id', 'reply.id'),
 
-    ('reply.observation.dyad.user.username', 'participant.username'),
-    ('reply.observation.dyad.user.id', 'participant.id'),
-    ('reply.observation.dyad.relates_to.user.username',
-     'relates_to_participant.username'),
-    ('reply.observation.dyad.relates_to.user.id',
-     'relates_to_participant.id'),
+    ('reply.observation.dyad.user.username', 'username'),
+    ('reply.observation.dyad.relates_to.user.username', 'relates_to_username'),
 
-    ('reply.observation.dyad.id', 'membership.id'),
+    ('reply.observation.dyad.id', 'membership'),
     ('reply.observation.dyad.condition.tag', 'condition'),
     ('reply.observation.dyad.study.slug', 'study'),
 
-    ('reply.observation.dyad.date_randomised', 'date_randomised')
+    ('reply.observation.dyad.date_randomised', 'randomised')
 ]
 
 
+@contract
 def _internal_fields(FIELD_MAP):
-    """Function to split FIELD up because it can get updated by the form.
+    """
+    Function to split FIELD up because it can get updated by the form.
+    :type FIELD_MAP: seq
+    :rtype: seq
     """
 
     return zip(*FIELD_MAP)[0]
@@ -64,7 +66,7 @@ def _internal_fields(FIELD_MAP):
 
 ANSWER_VALUES = ['question.q_type',
                  'question.variable_name',
-                 'answer',
+                 'get_value_for_export',
                  ]
 
 
@@ -75,8 +77,15 @@ def fupdate(dic, new):
 
 
 def renamekeys(dictionary, oldnew_namepairs):
-    """Renames keys in a dictionary -> dict"""
+    """Renames keys in a dictionary, deleting keys which don't have a new name.
+    :type oldnew_namepairs: list(tuple)
+    :rtype: dict
+    """
+
     for old, new in oldnew_namepairs:
+        if not new:
+            del dictionary[old]
+
         if old != new:
             dictionary[new] = dictionary.get(old, None)
             del dictionary[old]
@@ -133,53 +142,51 @@ def _reshape_wide(answers, grouping, variable, value):
     grouped = [list(cs) for _, cs in itertools.groupby(answers, group_key_fun)]
     combined_rows = [fupdate(reply[0], dict([(i[variable], i[value])
                                              for i in reply])) for reply in grouped]
-
+    # get rid of the original variable names because each dict is now keyed by these
+    [i.pop(variable) for i in combined_rows]
+    [i.pop(value) for i in combined_rows]
     return combined_rows
 
 
 BOOLS_MAPPING = {False: 0, True: 1}
 
-
-def _remap_bools(dic):
+def _map_bools_to_ints(dic):
     """Make booleans 1/0 for export to SPSS/Stata"""
-
     for k, val in dic.iteritems():
         if type(val) == bool:
             dic[k] = BOOLS_MAPPING[val]
 
-
+@contract
 def values_with_callables(instance, keys):
-    """Instead of calling values() on a queryset, call this instead to get access to callables
-    on the model instances using dotted access syntax in keys"""
+    """Instead of calling values() on a queryset, call this instead to get access
+    to callables on the model instances using dotted access syntax in keys
+
+    :type instance: a
+    :type keys: seq
+    :rtype: dict
+    """
     return {k: supergetattr(instance, k, None, call=True) for k in keys}
 
 
+@contract
 def build_csv_data_as_string(answers, reference_study):
+    """
+    :type answers: seq
+    :type reference_study: b
+    :rtype: string
+    """
 
-    answerkeys = list(ANSWER_VALUES) + list(_internal_fields(FIELD_MAP))
-    answer_values = [values_with_callables(i, answerkeys) for i in answers]
+    # grab the answers with values processed for export
+    answer_values = [values_with_callables(i, _internal_fields(FIELD_MAP))
+        for i in answers]
 
-    # here we check whether the questiontype for each answer has an `export_processor' attached
-    # to it, used to format values for export to txt. If it does, apply it in place to the answer
-    # in the answer dictionary
+    # map old names to new ones and reshape wide
+    [renamekeys(i, FIELD_MAP) for i in answer_values]
+    reply_dicts = _reshape_wide(answer_values, 'reply.id', 'variable_name', 'answer')
 
-    # XXX This should be an answer method called get_value_for_export
-    for i in answer_values:
-        if i['question.q_type']:
-            qtp = fields.class_name(i['question.q_type'])
-            iden = lambda x: x
-            processor = qtp and getattr(fields, qtp).export_processor or iden
-            i['answer'] = processor(i['answer'])
-
-        # we don't need this any more --- because the answers will be reshaped to wide format next
-        del i['question.q_type']
-
-    reply_dicts = _reshape_wide(answer_values, 'reply.id', 'question.variable_name', 'answer')
-
-    [(i.pop('answer'), i.pop('question.variable_name')) for i in reply_dicts]
-    [renamekeys(i, FIELD_MAP) for i in reply_dicts]
+    # add some meta-data to each reply
     [reply.update({'is_reference_study': bool(reply['study'] == supergetattr(reference_study, "slug"))}) for reply in reply_dicts]
-    [_remap_bools(d) for d in reply_dicts]
+    [_map_bools_to_ints(d) for d in reply_dicts]
 
     headings = sorted(set(itertools.chain(*[i.keys() for i in reply_dicts])))
     data = write_dict_to_file(reply_dicts, headings).read()
@@ -191,7 +198,7 @@ def build_zipfile(answers, reference_study, zip_path):
 
     answers_with_files = answers.exclude(upload="")
 
-    data = build_csv_data_as_string(answers, reference_study)
+    data = build_csv_data_as_string(tuple(answers), reference_study)
 
     syntax = generate_syntax('admin/ask/stata_syntax.html',
         Question.objects.filter(id__in=answers.values('question__id')),

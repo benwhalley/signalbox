@@ -38,10 +38,6 @@ Sometimes participants won't be able to enter data for themselves, and researche
 
 To enter data for someone else, first find the relevant observation (probably by navigating from the `user_dashboard`), and then click the `Enter data for this observation` link:
 
-XXX TODO replace
-
-.. image:: /images/enter_data_link.png
-
 You will be presented with the questionnaire that the user would have seen.
 
 Once complete, you'll be redirected back to the Observation edit page.

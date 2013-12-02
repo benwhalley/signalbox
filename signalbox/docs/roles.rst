@@ -65,7 +65,7 @@ Assessors can:
 - Enter data for an observation
 
 
-.. warning: Assessors should NOT be able to see any information which might give away a patient as being in a particular condition in a blinded study. We think this is most likely to happen if they see that i) a participant has :class:`TreatmentRecord` objects attached to them or ii) they see an observation created by a script which is only attached to a treatment StudyCondition. We should err on the side of caution (i.e. show as little as possible), but the ``breaks_blind`` field on the :class:`Script` class is intended to flag observations which could break the blind
+.. warning: Assessors should NOT be able to see any information which might give away a patient as being in a particular condition in a blinded study. We think this is most likely to happen if they see that an observation created by a script which is only attached to a treatment StudyCondition. We should err on the side of caution (i.e. show as little as possible), but the ``breaks_blind`` field on the :class:`Script` class is intended to flag observations which could break the blind
 
 
 

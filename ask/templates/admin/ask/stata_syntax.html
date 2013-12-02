@@ -1,47 +1,38 @@
-
 insheet using data.csv, clear
 note: data imported into stata TS
 note: Reference study is {{reference_study}}
 label drop _all
 
+* do this in case all usernames were numeric and this got imported as numeric by accident
+tostring username relates_to_username, replace
 
-
-// Reconcile participants into patients
-tostring participantusername relates_to_participantusername, replace // do this in case all usernames were numeric and this got imported as numeric by accident
-gen patientid = participantid
-replace patientid = relates_to_participantid if relates_to_participantid != .
-gen patientusername = participantusername
-replace patientusername = relates_to_participantusername if relates_to_participantid != .
-
-label variable patientusername "Patient username"
-note patientusername: We create patientusername because not all participants are patients:  some may be professionals participating in a substudy and adding data about multiple patients in another study.
-
-
-// Encode key variables
+* encode key variables
 tostring condition study, replace
 sencode condition, replace
 sencode study, replace
 
-label variable n_in_sequence "Observation # for script"
-note n_in_sequence: Scripts create multiple observations, so this indexes them by date.
+label variable observation_index "Observation # for script"
+note observation_index: Scripts can create multiple observations, so this indexes them by date.
 
 
-// Format study dates
+* Format study dates
 capture: generate double due_date = clock(due,"YMD hms#")
 generate double finished_date = clock(finished, "YMD#hms#")
 generate double started_date = clock(started, "YMD#hms#")
-generate double randomised_date = clock(date_randomised, "YMD#hms#")
-tostring originally_collected_on, replace
-generate double originally_collected_on_date = clock(originally_collected_on,"YMD#hms#")
+generate double randomised_date = clock(randomised, "YMD#hms#")
+tostring collected_on, replace
+generate double collected_on_date = clock(collected_on,"YMD#hms#")
 
-generate double record_date = finished_date
-replace record_date = originally_collected_on_date if originally_collected_on_date != .
+generate double collected = finished_date
+replace collected = collected_on_date if collected_on_date != .
+label variable collected "Date"
+note collected: Definitive date for this datapoint
 
-drop due finished started date_randomised
-format due_date finished_date started_date randomised_date record_date %tc
+drop due finished started randomised collected_on_date
+format due_date started_date randomised_date collected %tc
 
 label variable randomised_date "Randomisation date"
-note randomised_date: "Date user was randomised to THIS study."
+note randomised_date: "Date user was randomised to THIS study (may not be the reference study)."
 
 label variable due_date "Date scheduled"
 note due_date: This is the date the observation was due to occur
@@ -49,27 +40,17 @@ note due_date: This is the date the observation was due to occur
 label variable finished_date "Date captured"
 note finished_date: This is when the data were captured by the system
 
-label variable record_date "Date"
-note record_date: Definitive date for this datapoint
-
 
 // calculate days in study, days in reference study and study periods
-bysort patientid study: egen double _dayzero = min(randomised_date) if is_reference_study == 1
-bysort patientid (_dayzero): gen double dayzero = _dayzero[1]
+bysort username study: egen double _dayzero = min(randomised_date) if is_reference_study == 1
+bysort username (_dayzero): gen double dayzero = _dayzero[1]
 drop _dayzero
 format dayzero %tc
-gen double day_in_study = floor( (record_date - randomised_date)/1000/60/60/24 )
-gen double day_in_trial = floor( (record_date - dayzero) /1000/60/60/24 )
-
-gen period_all = 1
-{% for p in reference_study.studyperiod_set.all %}
-gen period_{{p.tag}} = ({{p.start}} <= day_in_trial & day_in_trial <= {{p.end}})
-label variable period_{{p.tag}} "Datapoint within period: {{p.name}}"
-{% endfor %}
+gen double day_in_study = floor( (collected - randomised_date)/1000/60/60/24 )
+gen double day_in_trial = floor( (collected - dayzero) /1000/60/60/24 )
 
 
-
-label variable dayzero "First entry date"
+label variable dayzero "Date first entry"
 note dayzero: "Date at which user was randomised to the REFERENCE study (as defined when the data was exported)."
 
 label variable day_in_trial "Day"
@@ -86,7 +67,7 @@ label variable is_canonical_reply "The definitive reply for this observation"
 // SETUP VARIABLE AND VALUE LABELS
 
 {% for q in questions %}
-// ------------------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 //{{q.variable_name|safe }}
 {{ q.set_format|safe }}
 {{ q.label_variable|safe }}
@@ -95,7 +76,7 @@ label variable is_canonical_reply "The definitive reply for this observation"
 
 compress
 order _all, sequential
-order patientusername patientid dayzero study condition script script_reference n_in_sequence is_canonical_reply due_date record_date day_in* period_*  , first
+order username dayzero study condition script script observation_index is_canonical_reply due_date collected day_in* period_*  , first
 saveold data, replace
 export excel data_values.xlsx, replace firstrow(var) nolabel
 export excel data_labels.xlsx, replace firstrow(var)

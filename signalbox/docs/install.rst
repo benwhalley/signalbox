@@ -90,7 +90,7 @@ Note that all settings, API keys, and passwords are stored in environment variab
 
 Environment variables can be se using::
 
-	heroku config:set VAR=xxx
+	heroku config:set VAR=SOMEVALUE
 
 
 The key ones you will need to set are::
@@ -154,42 +154,43 @@ The admin interface works best in a recent webkit browser (Safari or Chrome) but
 
 
 
-
-
 Reference for all user-configurable environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-Each of these is loaded from an environment variable by signalbox.configurable_settings.py, and some are documented there. XXX Add more details here.
+Each of these is loaded from an environment variable by signalbox.configurable_settings.py, and some are documented there::
 
 
-DB_URL default: postgres://localhost/sbox
+	DB_URL default: postgres://localhost/sbox
 
-LOGIN_FROM_OBSERVATION_TOKEN
-SHOW_USER_CURRENT_STUDIES
+	LOGIN_FROM_OBSERVATION_TOKEN
+	SHOW_USER_CURRENT_STUDIES
+	DEFAULT_USER_PROFILE_FIELDS
 
-DEBUG
+	DEBUG
 
-AWS_STORAGE_BUCKET_NAME
-COMPRESS_ENABLED
-AWS_QUERYSTRING_AUTH
+	AWS_STORAGE_BUCKET_NAME
+	COMPRESS_ENABLED
+	AWS_QUERYSTRING_AUTH
 
-SECRET_KEY
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-TWILIO_ID
-TWILIO_TOKEN
+	SECRET_KEY
+	AWS_ACCESS_KEY_ID
+	AWS_SECRET_ACCESS_KEY
+	TWILIO_ID
+	TWILIO_TOKEN
 
-ALLOWED_HOSTS
-SESSION_COOKIE_HTTPONLY
-SECURE_BROWSER_XSS_FILTER
-SECURE_CONTENT_TYPE_NOSNIFF
-SECURE_SSL_REDIRECT
-SESSION_COOKIE_AGE
-SESSION_SAVE_EVERY_REQUEST
-SESSION_EXPIRE_AT_BROWSER_CLOSE
+	ALLOWED_HOSTS
+	SESSION_COOKIE_HTTPONLY
+	SECURE_BROWSER_XSS_FILTER
+	SECURE_CONTENT_TYPE_NOSNIFF
+	SECURE_SSL_REDIRECT
+	SESSION_COOKIE_AGE
+	SESSION_SAVE_EVERY_REQUEST
+	SESSION_EXPIRE_AT_BROWSER_CLOSE
 
-USE_VERSIONING
+	SESSION_COOKIE_SECURE=False
+
+	USE_VERSIONING=False
 
 
 

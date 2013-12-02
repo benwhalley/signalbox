@@ -11,7 +11,7 @@ import sys
 import itertools
 from django.db.models import Q
 from django.dispatch import receiver, Signal
-
+from django.conf import settings
 from django.db.models.signals import post_save, pre_save
 from django.contrib.auth.models import User
 from registration.signals import user_registered
@@ -134,6 +134,7 @@ def allocate_new_membership(sender, created, instance, **kwargs):
 
     if created and instance.study.auto_add_observations and instance.study.auto_randomise:
         instance.add_observations()
-        # XXX TODO decide whether to execute at this point... it makes testing awkward,
-        # but would speed up callbacks to mobiles. Would be better done as a queue system though.
-        # execute_the_todo_list()
+        # we don't execute at this point if we are testing because it makes unit
+        # tests awkward (we can't test the intermediate states of some functions.)
+        if not settings.TESTING:
+            execute_the_todo_list()

@@ -78,18 +78,23 @@ class SignalboxField(object):
     required_possible = True
     response_possible = True
 
-    # this should probably be replaced with an attribute on questions themselves
+    # only instruction types can show computed scores
     compute_scores = False
     allow_showing_answers = False
 
     prepend_null_choice = False
-    export_processor = None
+
     widget_kwargs = {}
-    error_messages = {'required': _("An answer to this question is needed.")}
+    error_messages = {'required': _("An answer to this question is required.")}
     choices = None
     input_formats = None
     validators = []
 
+
+    @staticmethod
+    def export_processor(a):
+        """As a default, return the stored answer from the database."""
+        return a
 
     @staticmethod
     def save_answer(response, answer):
@@ -195,7 +200,7 @@ class Instruction(SignalboxField, floppyforms.CharField):
         """Update method to add a datestamp to the hidden field."""
         super(Instruction, self).__init__(*args, **kwargs)
         if not self.initial:
-            self.initial = "User pressed submit on page displaying this instruction at {}".format(datetime.now())
+            self.initial = "{}".format(datetime.now())
 
     @staticmethod
     def voice_function(*args, **kwargs):

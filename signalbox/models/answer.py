@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 from django.db import models
 from django.conf import settings
 from signalbox.utilities.djangobits import supergetattr
+from ask.models import fields
 
 def upload_file_name(instance, filename):
     return '/'.join(['userdata', instance.reply.token, filename])
@@ -91,6 +92,12 @@ class Answer(models.Model):
 
     def __unicode__(self):
         return smart_text("{} (page {}): {}".format(self.variable_name(), supergetattr(self, "page.id", None), smart_text(self.answer)[:80]))
+
+    def get_value_for_export(self):
+        class_name = fields.class_name(supergetattr(self, 'question.q_type', ""))
+        processor = getattr(getattr(fields, class_name), 'export_processor')
+        return processor(self.answer)
+
 
     class Meta:
         verbose_name_plural = "user answers"

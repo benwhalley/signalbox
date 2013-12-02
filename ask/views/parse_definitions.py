@@ -6,13 +6,12 @@ from ask.models import ChoiceSet
 from ask.models import Question
 from ask.models.fields import FIELD_NAMES
 from django.core.exceptions import ValidationError
-from pyparsing import *
 from signalbox.models import ScoreSheet
 from signalbox.utilities.djangobits import get_or_modify, flatten
 from statlib import stats
 import yaml
 from signalbox.utilities.gibberish import random_stata_varname
-
+from pyparsing import *
 
 ########## pyparsing definitions #############
 

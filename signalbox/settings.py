@@ -35,12 +35,8 @@ USER_PROFILE_FIELDS = [
     'postcode',
 ]
 
+# See also DEFAULT_USER_PROFILE_FIELDS in configurable_settings.py
 
-# XXX todo move this to environment variable
-DEFAULT_USER_PROFILE_FIELDS = [
-    # list fields required for all studies
-    # 'postcode',
-]
 
 OB_DATA_TYPES = [
     ('external_id', "External reference number, e.g. a Twilio SID"),
