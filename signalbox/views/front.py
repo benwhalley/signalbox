@@ -72,6 +72,7 @@ def _add_user_to_study(request, user, study):
         messages.error(request, "You were already registered for this study (%s)" % (study.name))
 
 
+@login_required
 def update_profile_for_studies(request, study_pk):
 
     form = UserProfileForm(request.POST or None, instance=request.user.get_profile(), request=request)
