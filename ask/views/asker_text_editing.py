@@ -15,6 +15,7 @@ from pprint import pprint
 import re
 from collections import defaultdict
 
+from ask import validators as vals
 from ask.models import Asker, ChoiceSet, Question, AskPage, Choice, ShowIf
 from ask.models import question
 from ask.yamlextras import yaml
@@ -65,8 +66,18 @@ class TextEditForm(forms.Form):
 
         asker, _ = get_or_modify(Asker, {"id":self.asker.id}, asker_yaml )
 
-        # check variable names are not used in other questionnaires
+        # check variable names are valid and not used in other questionnaires
         variable_names = [i.iden for i in filter(isnotpage, blocks)]
+
+        invalid_names = [i for i in variable_names if any(
+            (   (not vals.first_char_is_alpha(i)),
+                vals._contains_illegal_chars(i),
+            )
+        )]
+        if invalid_names:
+            raise forms.ValidationError("Invalid variable names ({})".format(
+                ", ".join(invalid_names)))
+
         naughtyquestions = Question.objects.filter(variable_name__in=variable_names).exclude(page__asker=asker)
         if naughtyquestions.count():
             raise forms.ValidationError(

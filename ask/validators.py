@@ -54,7 +54,7 @@ def is_lower(value):
 def first_char_is_alpha(value):
     if not value[0].isalpha():
         raise ValidationError(
-            """First character of the variable name must be a letter.""")
+            """First character of the variable name ({}) must be a letter.""".format(value))
     return value
 
 
@@ -62,14 +62,17 @@ def first_char_is_alpha(value):
 # a-z), digits (0-9), and underscores (_). The first character of a name
 # must be a letter or an underscore.
 
-LEGAL_STATA_VARIABLE_NAME_CHARACTERS = list(
-    '_-' + string.lowercase + string.uppercase + string.digits)
+LEGAL_STATA_CHARS = set('_-' + string.lowercase + string.uppercase + string.digits)
+ILLEGAL_STATA_CHARS = set(string.printable) - LEGAL_STATA_CHARS
+
+
+def _contains_illegal_chars(value):
+    return bool(ILLEGAL_STATA_CHARS.intersection(set(value)))
 
 
 def illegal_characters(value):
-    illegals = [
-        i for i in value if i not in LEGAL_STATA_VARIABLE_NAME_CHARACTERS]
-    if illegals:
+    naughties = ILLEGAL_STATA_CHARS.intersection(set(value))
+    if naughties:
         raise ValidationError(
             "Illegal characters found: %s" % ("".join(illegals), ))
     return value
