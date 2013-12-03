@@ -6,8 +6,6 @@ statlib
 python-magic
 twilio
 django-floppyforms
-django_extensions # for timestamped  model mixin
-cmsmenu_redirect
 Pillow
 django-localflavor
 pyyaml

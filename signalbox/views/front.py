@@ -79,7 +79,7 @@ def update_profile_for_studies(request, study_pk):
     if form.is_valid():
         form.save()
         messages.info(request, "Personal details updated.")
-        _ = execute_the_todo_list(user=request.user)
+        execute_the_todo_list(user=request.user)
         return HttpResponseRedirect(reverse('user_homepage'))
 
     return render_to_response('signalbox/additional_info.html',

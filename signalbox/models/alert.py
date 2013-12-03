@@ -4,10 +4,10 @@ from django.db import models
 from django.conf import settings
 from twiliobox.models import TwilioNumber
 from signalbox.models import Observation
-from django_extensions.db.models import TimeStampedModel
 from validators import is_mobile_number
 from phonenumber_field.modelfields import PhoneNumberField
 from observation_helpers import send_email, send_sms
+from signalbox.utilities.mixins import TimeStampedModel
 
 
 class Alert(models.Model):

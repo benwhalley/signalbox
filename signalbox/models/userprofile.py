@@ -87,11 +87,9 @@ class UserProfile(models.Model):
 
     def has_all_required_details(self, studies=None):
         # fields required installation wide
-        required = settings.DEFAULT_USER_PROFILE_FIELDS
 
-        # extra fields required by user's current studies
-        required.extend(list(self.get_required_fields_for_studies()))
-        for i in set(required):
+        required = set(settings.DEFAULT_USER_PROFILE_FIELDS).union(set(self.get_required_fields_for_studies()))
+        for i in filter(bool, required):
             if not getattr(self, i, None):
                 return False
         return True
