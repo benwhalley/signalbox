@@ -28,7 +28,6 @@ def show_codebook(request, asker_id=None):
     return render_to_response('admin/ask/codebook.html',
         {'askers': askers}, context_instance=RequestContext(request))
 
-
 @login_required
 def preview_asker(request, asker_id=None, page_num=None):
     page_num = int(page_num) or 0

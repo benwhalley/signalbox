@@ -7,6 +7,9 @@ import shortuuid
 from signalbox.utilities.get_env_variable import get_env_variable
 from twilio.rest import TwilioRestClient
 
+
+BRAND_NAME = get_env_variable('BRAND_NAME', default="SignalBox")
+
 # determines numbers format on input for twilio
 DEFAULT_TELEPHONE_COUNTRY_CODE = get_env_variable('DEFAULT_TELEPHONE_COUNTRY_CODE', default="GB")
 

@@ -186,25 +186,23 @@ legend a:hover {
             <span class="icon-bar"></span>
           </a>
 
-          {% block branding %}{% endblock %}
-
+          <div class="brand">
+              <a href="/">{{BRAND_NAME}}</a>
+          </div>
 
         {% if user.is_authenticated %}
 
-        <ul class="nav">
+        <ul class="nav span5">
 
             <li>
-                <a href="/"><i class="icon-home icon-white"></i> Public Website</a>
+                <a href="/admin"><i class="icon-home icon-white"></i></a>
             </li>
-
-        <li><a href="{% url "admin:app_list" "signalbox" %}">Study Setup</a></li>
-        <li><a href="{% url "admin:app_list" "ask" %}">Questionnaire Setup</a></li>
-
-
+        <li><a href="{% url "admin:signalbox_study_changelist" %}">Studies</a></li>
+        <li><a href="{% url "admin:ask_asker_changelist" %}">Questionnaires</a></li>
 
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="icon-wrench icon-white"></i>  Tools
+              Tools
               <b class="caret"></b>
             </a>
             <ul class="dropdown-menu">
@@ -213,58 +211,37 @@ legend a:hover {
                 {% endfor %}
             </ul>
           </li>
-
-
-          {% load signalbox_tags %}
-          <li class="navbar-form ">
-                {% find_participant %}
-          </li>
-
-
         {% endif %}
-
-
         </ul>
 
+        {% load signalbox_tags %}
+        <div class="nav-collapse collapse">
+            <ul class="nav span4">
+            <li class="navbar-form pull-right ">
+              {% find_participant %}
+            </li>
+        </ul>
+        </div>
 
           <div class="nav-collapse collapse">
-            <ul class="nav pull-right">
-            {% if user.is_active and user.is_staff %}
-                <li class="navbar-text">{% trans 'Welcome,' %} <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong></li>
-            {% endif %}
-
-
-
-
-            {% block userlinks %}
-                <li class="divider-vertical"></li>
-                {% url 'django-admindocs-docroot' as docsroot %}
-                {% if docsroot %}
-                    <li><a href="{{ docsroot }}">{% trans 'Documentation' %}</a></li>
-                {% endif %}
-                <li><a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a></li>
-                <li><a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a></li>
-            {% endblock %}
-
-
-            </ul>
             {% block nav-global %}{% endblock %}
-
           </div><!--/.nav-collapse -->
+
+          {% block signin %}
+          {% with hideprofilebutton=1%}
+                {% include 'signin_or_show_user.html' %}
+          {% endwith %}
+          {% endblock %}
+
         </div>
       </div>
     </div>
+
+
     <!-- END Header -->
     <div class="container">
     <div class="row-fluid">
-        <div class="span12">
-            {% block breadcrumbs %}
-            <ul class="breadcrumb">
-                <li><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>{% if title %} <span class="divider">/</span>{% endif %}</li>
-                {% if title %}<li>{% render_with_template_if_exist app_label|lower|add:"/admin_app_name.html" app_label %}</li>{% endif %}
-            </ul>
-            {% endblock %}
-        </div>
+
     </div>
     {% endif %}
 
