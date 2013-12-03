@@ -108,12 +108,13 @@ def make_question_dict(blockParseResult):
                     )[0],
             }
         )
+
     keyvals = blockParseResult.keyvals or {}
     classlist = blockParseResult.classes and blockParseResult.classes.asList()
-    d.update({'widget_kwargs': {k: v for k, v in keyvals.items()}})
     d.update({'field_kwargs': {k: v for k, v in keyvals.items()}})
+    d.update({'widget_kwargs': {k: v for k, v in keyvals.items()}})
 
-    d.update({'widget_kwargs': {'classes': {k: True for k in classlist}}})
+    d['widget_kwargs'].update({'classes': {k: True for k in classlist}})
     d.update({'required': 'required' in classlist})
 
     return d
