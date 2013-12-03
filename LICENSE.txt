@@ -11,3 +11,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
 http://www.gnu.org/licenses/agpl-3.0.html
+
+
+In addition, I'd appreciate it (although it's not required) if you'd let me know what you're using Signalbox for.

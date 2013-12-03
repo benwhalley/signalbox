@@ -76,10 +76,10 @@ Scheduled tasks
 ~~~~~~~~~~~~~~~~~
 Remember to add a scheduled task to send observations via the heroku control panel. The frequency is up to you - polling more often can cost more in dyno time if it overruns the free quota (but not much), but you'll want to add scheduled tasks for these scripts::
 
-	app/manage.py runtask send
-	app/manage.py runtask remind
-	app/manage.py cleanup
+	app/manage.py send
+	app/manage.py remind
 
+If adding through cron on your own server remember to make sure the python used has signalbox in it's path (i.e. activate the virtualenv first).
 
 
 

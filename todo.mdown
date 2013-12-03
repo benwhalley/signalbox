@@ -1,4 +1,3 @@
-get rid of kronos
 
 check what happens with duplicate scores when exporting data to labels
 
