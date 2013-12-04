@@ -8,6 +8,8 @@ from signalbox.utilities.get_env_variable import get_env_variable
 from twilio.rest import TwilioRestClient
 
 
+DEBUG = get_env_variable('DEBUG', required=False, default=False)
+
 BRAND_NAME = get_env_variable('BRAND_NAME', default="SignalBox")
 
 # determines numbers format on input for twilio
@@ -17,14 +19,9 @@ DEFAULT_TELEPHONE_COUNTRY_CODE = get_env_variable('DEFAULT_TELEPHONE_COUNTRY_COD
 LOGIN_FROM_OBSERVATION_TOKEN = get_env_variable('LOGIN_FROM_OBSERVATION_TOKEN', default=False)
 SHOW_USER_CURRENT_STUDIES = get_env_variable('SHOW_USER_CURRENT_STUDIES', default=False)
 
-
 # comma separated list of fields to be required for all user signups
 # see signalbox.setting for possible values.
 DEFAULT_USER_PROFILE_FIELDS = get_env_variable('DEFAULT_USER_PROFILE_FIELDS', default="").split(",")
-
-
-DEBUG = get_env_variable('DEBUG', required=False, default=False)
-
 
 # database
 os.environ["REUSE_DB"] = "1"
@@ -34,7 +31,10 @@ DATABASES = {'default': dj_database_url.config(default=DB_URL)}
 
 
 # amazon files settings
-AWS_STORAGE_BUCKET_NAME = get_env_variable("AWS_STORAGE_BUCKET_NAME", default="thesignalbox")
+AWS_STORAGE_BUCKET_NAME = get_env_variable(
+    "AWS_STORAGE_BUCKET_NAME", default="signalboxbucket",
+    warning="Specify an S3 bucket name in which to store uploaded files."
+)
 COMPRESS_ENABLED = get_env_variable('COMPRESS_ENABLED', default=True)
 AWS_QUERYSTRING_AUTH = get_env_variable('AWS_QUERYSTRING_AUTH', default=False)
 
@@ -79,25 +79,16 @@ TTS_VOICE = get_env_variable('TTS_VOICE', default='female')
 TTS_LANGUAGE = get_env_variable('TTS_LANGUAGE', default='en-gb')
 
 
-
 ##### EMAIL #####
 
-EMAIL_HOST = get_env_variable('EMAIL_HOST', required=False, default='localhost')
 EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
-EMAIL_PORT = int(get_env_variable('EMAIL_PORT', default="465", required=False))
-EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER', required=EMAIL_HOST != "localhost")
-EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD', required=EMAIL_HOST != "localhost")
-
-if EMAIL_HOST == "localhost" and EMAIL_PORT != 25 and get_env_variable('DEBUG', as_yaml=True, required=False, default=False):
-    EMAIL_PORT = 25
-    print >> sys.stderr, "Resetting EMAIL_PORT to 25 because EMAIL_HOST is localhost"
-
-
-
+EMAIL_HOST = get_env_variable('EMAIL_HOST', required=False, warning="Set an smtp hostname.")
+EMAIL_PORT = int(get_env_variable('EMAIL_PORT', required=False, default="465", warning="SMTP port defaulting to 465."))
+EMAIL_HOST_USER = get_env_variable('EMAIL_HOST_USER', required=False, )
+EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD', required=False, )
 
 
 # DO SOME EXTRA SETUP BASED ON THESE VALUES
-
 # setup twilio based on settings above
 if TWILIO_ID and TWILIO_TOKEN:
     TWILIOCLIENT = TwilioRestClient(TWILIO_ID, TWILIO_TOKEN)
@@ -105,22 +96,16 @@ else:
     TWILIOCLIENT = None
 
 
-# load a customised frontend for the site
-fe = get_env_variable('FRONTEND', required=False, default="frontend")
-FRONTEND = str(fe)[:10]
-assert set(FRONTEND).issubset(set(string.ascii_letters + "_-"))
-
-
 try:
     TESTING = 'test' == sys.argv[1]
 except IndexError:
     TESTING = False
 
+
 # override setting above in testing because some tests need it
 if bool('test' in sys.argv):
     print "Turning on versioning because we are testing"
     USE_VERSIONING = True
-
 
 
 ALLOWED_UPLOAD_MIME_TYPES = [

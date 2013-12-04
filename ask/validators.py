@@ -24,7 +24,7 @@ def checkyamlchoiceset(yaml):
 def is_allowed_upload_file_type(value):
     try:
         ftype = magic.from_buffer(
-        value.read(1024 * 4), mime=True)
+            value.read(1024 * 4), mime=True)
         if ftype not in settings.ALLOWED_UPLOAD_MIME_TYPES:
             raise ValidationError(
                 "{0} files not allowed. Allowed types are: {1} and {2}.".format(

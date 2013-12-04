@@ -234,7 +234,6 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
                         page=None, questions=[self], reply=None, request=request)
         return form
 
-
     def label_variable(self):
         return self.field_class().label_variable(self)
 

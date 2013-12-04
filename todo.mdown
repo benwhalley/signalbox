@@ -4,11 +4,7 @@ check what happens with duplicate scores when exporting data to labels
 # add tests for text editing including scoresheets
 
 
-# factor away question.choices_as_json()
-
-
 # factor away choicesets and choices altogether?
-
 
 
 # For twilio - need to record some standard prompts which get attached to the asker
@@ -21,26 +17,9 @@ check what happens with duplicate scores when exporting data to labels
 
 
 
-
-
-
-
-
 # IOS app to do reminders?
 
 
-
-
-# Secure messages
-
-..note:: In future participants may be able to send secure messages to study administrators via the site (which are logged)
-
-
-# Questions
-
-Pickle questions and choicsets for export of data. Version questions on each save and store that?
-
-TIDY data model for questions... make  questions duplicated, and filter the main lists when adding questions.
 
 ## Use managers
 

@@ -1,16 +1,13 @@
 """Classes used by django-selectable for lookups."""
 
-from django.http import HttpResponseForbidden
-
 from django.contrib.auth import get_user_model
-User = get_user_model()
-
 from django.db.models import Q
-
-from selectable.base import ModelLookup
-from selectable import registry
-
+from django.http import HttpResponseForbidden
 from models import Membership, Observation
+from selectable import registry
+from selectable.base import ModelLookup
+
+User = get_user_model()
 
 
 class UserLookup(ModelLookup):
@@ -32,7 +29,6 @@ class UserLookup(ModelLookup):
             return User.objects.get(username__istartswith=value)
         except Exception:
             return None
-
 
     def get_item_label(self, user):
         return user.username

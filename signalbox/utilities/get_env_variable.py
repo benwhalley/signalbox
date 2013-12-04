@@ -2,10 +2,24 @@ import os
 import sys
 from django.core.exceptions import ImproperlyConfigured
 import yaml
+from contracts import contract
 
-def get_env_variable(var_name, required=True, default=None, as_yaml=True):
-    """ Get the environment variable, process and return, or raise exception."""
-    if default != None:
+
+@contract
+def get_env_variable(var_name, required=True, default=None, as_yaml=True, warning=None):
+    """Get the environment variable, process and return, or raise exception.
+
+    :type var_name: string
+    :type required: bool
+    :type default: string
+    :type as_yaml: bool
+    :type warning: string
+
+    :rtype: string
+
+    """
+
+    if default:
         required = False
 
     try:
@@ -15,9 +29,11 @@ def get_env_variable(var_name, required=True, default=None, as_yaml=True):
         return answer
 
     except KeyError:
-        error_msg = "Set the %s env variable" % var_name
+        if warning:
+            sys.stdout.write("WARNING: {} not present in the environment\n".format(var_name))
+            sys.stdout.write(warning + "\n")
 
         if required:
-            raise ImproperlyConfigured(error_msg)
+            raise ImproperlyConfigured("{} is required".format(var_name))
         else:
             return default
