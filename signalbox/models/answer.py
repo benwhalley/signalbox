@@ -7,6 +7,8 @@ from django.db import models
 from django.conf import settings
 from signalbox.utilities.djangobits import supergetattr
 from ask.models import fields
+from signalbox.exceptions import SignalBoxException
+
 
 def upload_file_name(instance, filename):
     return '/'.join(['userdata', instance.reply.token, filename])
@@ -14,6 +16,12 @@ def upload_file_name(instance, filename):
 
 class Answer(models.Model):
     """Stores user questionnaire data."""
+
+    def save(self, *args, **kwargs):
+        if (not settings.USE_VERSIONING) and self.id:
+            raise SignalBoxException(
+                "Editing answers is not allowed unless you enable version control")
+        super(Answer, self).save(*args, **kwargs)
 
     def __iter__(self):
         for i in self._meta.get_all_field_names():
@@ -56,7 +64,6 @@ class Answer(models.Model):
         score_maptos = {i.score: i.mapped_score for i in possiblechoices}
         return score_maptos.get(self.answer, self.answer)
 
-
     def participant(self):
         """Return the user to whom the answer relates (maybe not the user who entered it)."""
         return supergetattr(self, "reply.observation.dyad.user", None)
@@ -91,13 +98,16 @@ class Answer(models.Model):
         return _get_label(self.answer) or self.answer
 
     def __unicode__(self):
-        return smart_text("{} (page {}): {}".format(self.variable_name(), supergetattr(self, "page.id", None), smart_text(self.answer)[:80]))
+        return smart_text("{} (page {}): {}".format(
+            self.variable_name(),
+            supergetattr(self, "page.id", None),
+            smart_text(self.answer)[:80])
+        )
 
     def get_value_for_export(self):
         class_name = fields.class_name(supergetattr(self, 'question.q_type', ""))
         processor = getattr(getattr(fields, class_name), 'export_processor')
         return processor(self.answer)
-
 
     class Meta:
         verbose_name_plural = "user answers"
