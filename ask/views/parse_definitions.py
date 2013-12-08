@@ -16,7 +16,7 @@ from pyparsing import *
 ########## pyparsing definitions #############
 
 # any number of ~ tildes to start
-blockstart = OneOrMore(Literal("~"))
+blockstart = Suppress(Literal("~")*3 + ZeroOrMore(Literal("~")))
 
 # names of things in header, e.g. class names, can't have and of {}~= in them
 attrword = Word("".join([i for i in set(printables)-set("<>{}~=()")]))
@@ -67,7 +67,7 @@ page = LineStart() + Suppress(Literal("#")) + ZeroOrMore(Word(alphanums))('step_
 
 
 # the whole definition of a page or question block
-block = (header + code('code') + Optional(choices('choices')|calculated_score('calculated_score'))) | page
+block = (blockstart + header + code('code') + Optional(choices('choices')|calculated_score('calculated_score'))) | page
 
 _yaml_header_start = Literal("-").suppress()*3 + Optional(ZeroOrMore(Literal("-"))).suppress()
 yaml_header = _yaml_header_start + SkipTo(Literal("---")|Literal("..."))('yaml')
