@@ -17,8 +17,8 @@ def upload_file_name(instance, filename):
 class Answer(models.Model):
     """Stores user questionnaire data."""
 
-    def save(self, *args, **kwargs):
-        if (not settings.USE_VERSIONING) and self.id:
+    def save(self, force_save=False, *args, **kwargs):
+        if (not force_save) and (not settings.USE_VERSIONING) and self.pk:
             raise SignalBoxException(
                 "Editing answers is not allowed unless you enable version control")
         super(Answer, self).save(*args, **kwargs)
