@@ -103,9 +103,6 @@ class Reply(models.Model, ProcessManager):
     external_id = models.CharField(null=True, blank=True, max_length=100,
                         help_text="""Reference for external API, e.g. Twilio""")
 
-    twilio_question_index = models.IntegerField(
-        null=True, blank=True, default=0)
-
     entry_method = models.CharField(
         choices=[(k, v) for k, v in ENTRY_METHOD_LOOKUP.items()],
         max_length=100, null=True, blank=True,)

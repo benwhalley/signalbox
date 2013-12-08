@@ -384,7 +384,7 @@ class ReplyAdmin(ConditionalVersionAdmin):
         }),
 
         ("External APIs", {
-            'fields': ('external_id', 'twilio_question_index')
+            'fields': ('external_id',)
         }),)
 
 
