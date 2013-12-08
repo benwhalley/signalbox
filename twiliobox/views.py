@@ -57,12 +57,9 @@ def save_answer(reply, question, querydict):
     user_answer = first(querydict.getlist('Digits'), "")
     extra_json = json.dumps(querydict, sort_keys=True, indent=4)
 
-
     # if versioning is off we need to delete any previous answers before trying
     # to create this one because answers can't be modified (but can be deleted)
     prev_answers = Answer.objects.filter(reply=reply, question=question, page=question.page)
-    # import ipdb; ipdb.set_trace()
-
     if not settings.USE_VERSIONING and prev_answers.count():
         prev_answers.delete()
 
