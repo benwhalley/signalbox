@@ -11,15 +11,15 @@ def get_env_variable(var_name, required=True, default=None, as_yaml=True, warnin
 
     :type var_name: string
     :type required: bool
-    :type default: string
+    :type default: string|bool|None|int
     :type as_yaml: bool
-    :type warning: string
+    :type warning: string|None
 
-    :rtype: string
+    :rtype: string|bool|seq|int|None
 
     """
 
-    if default:
+    if default is not None:
         required = False
 
     try:
