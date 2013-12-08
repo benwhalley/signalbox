@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from django.template import Context, Template
-from django.contrib.humanize.templatetags.humanize import ordinal
-from django.db import models
-from django.core.exceptions import ValidationError
+from datetime import datetime, timedelta, time
+import datetime as dtmod
+import itertools as it
 
 from dateutil import *
 from dateutil.parser import *
 from dateutil.rrule import *
-from datetime import datetime, timedelta, time
-import datetime as dtmod
 from dateutil_constants import *
-import itertools as it
-from signalbox.utils import csv_to_list
-import validators as v
-from signalbox.utilities.linkedinline import admin_edit_url
+from django.contrib.humanize.templatetags.humanize import ordinal
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.template import Context, Template
 from naturaltimes import parse_natural_date
 from signalbox.utilities.djangobits import render_string_with_context, safe_help
+from signalbox.utilities.djangobits import supergetattr
+from signalbox.utilities.linkedinline import admin_edit_url
+from signalbox.utils import csv_to_list
+import validators as v
 
 
 
@@ -485,6 +486,12 @@ will not result in an error, but won't produce any output either. """))
         if self.asker and self.external_asker_url:
             raise ValidationError("""You can't use both an internal
                                     Questionnaire and one hosted on an external site.""")
+
+        if supergetattr(self, "script_type.require_study_ivr_number", False):
+            last_q = self.asker.questions()[-1]
+            if last_q.q_type != "hangup":
+                raise ValidationError("The last question of a telephone call needs to be a 'hangup' type (currently {})".format(last_q.q_type))
+
 
         if self and self.script_type and self.script_type.name == "TwilioSMS":
             if len(self.script_body) > 160:
