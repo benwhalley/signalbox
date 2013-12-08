@@ -1,0 +1,4 @@
+
+class TwilioBoxException(Exception):
+    pass
+

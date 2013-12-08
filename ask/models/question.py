@@ -273,13 +273,16 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         Indicates whether a user response is possible for this Question"""
         return self.field_class().response_possible
 
+    @contract
     def check_telephone_keypad_answer(self, raw_response_as_string):
-        """::Question -> String -> Bool
-        Check a user response to see if it is allowed.
+        """Check a user response to see if it is allowed by the question.
+        :type raw_response_as_string: string
+        :rtype: bool
         """
 
         if not self.response_possible():
-            return False
+            # if no response expected we don't care what they pressed
+            return True
 
         if self.choiceset:
             try:
@@ -291,9 +294,11 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         # If we have no choiceset specified then anything is allowed
         return True
 
+    @contract
     def previous_answer(self, reply):
-        """Question -> Reply -> String | None
-        Check for previous answer during this reply and return the previous answer value.
+        """
+        Return the an earlier answer if one exists for this reply.
+        :rtype: string|None
         """
         from signalbox.models import Answer  # yuck, but otherwise circular import hell
 
@@ -497,7 +502,7 @@ class ChoiceSet(models.Model):
         :returns: A list of valid options, e.g. used to validate user input
         :rtype: list(int)
         """
-        return [i.score for i in self.get_choices()]
+        return [int(i.score) for i in self.get_choices()]
 
 
     def __unicode__(self):
