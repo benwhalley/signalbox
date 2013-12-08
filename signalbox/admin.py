@@ -339,8 +339,8 @@ class ContactRecordAdmin(admin.ModelAdmin):
 class AnswerAdmin(ConditionalVersionAdmin):
     date_hierarchy = 'last_modified'
     save_on_top = True
-    # readonly_fields = ['question', 'other_variable_name', 'reply',
-    #                    'answer', 'choices', 'meta']
+    readonly_fields = ['question', 'other_variable_name', 'reply',
+                       'answer', 'choices', 'meta']
     search_fields = [
         'reply__token', 'reply__observation__dyad__user__username',
         'question__variable_name', 'reply__observation__token',
