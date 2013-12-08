@@ -90,7 +90,7 @@ def get_or_modify(klass, lookups, params):
         if k in klassfields:  # ignore extra fields by default
             mods.append(not getattr(ob, k) == v)
             setattr(ob, k, v)
-    modified = bool(sum(mods))
+    modified = any(mods)
     ob.save()
 
     return ob, modified
