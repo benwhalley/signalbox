@@ -47,22 +47,19 @@ class TextEditForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.asker = kwargs.pop('asker')
-        initial = kwargs.get('initial', {})
-        if not initial.get('text'):
-            initial['text'] = as_custom_markdown(self.asker)
-        kwargs['initial'] = initial
-        self.base_fields['text'].widget.attrs['rows']=len(initial['text'].split("\n"))+10
         super(TextEditForm, self).__init__(*args, **kwargs)
-
+        self.base_fields['text'].initial = as_custom_markdown(self.asker)
+        self.base_fields['text'].widget.attrs['rows']=len(self.base_fields['text'].initial.split("\n"))+10
 
     def clean(self):
+        cleaned_data = super(TextEditForm, self).clean()
         try:
             text = self.cleaned_data.get("text")
             asker_yaml = yaml.safe_load(yaml_header.searchString(text)[0][0])
             blocks = block.searchString(text)
         except Exception as e:
             raise forms.ValidationError(
-                "There was a problem parsing the yaml:\n\n {}".format(e))
+                "There was a problem parsing the text:\n\n {}".format(e))
 
         asker, _ = get_or_modify(Asker, {"id":self.asker.id}, asker_yaml )
 
@@ -114,8 +111,6 @@ class TextEditForm(forms.Form):
         # delete unused pages and questions
         [i.delete() for i in asker.askpage_set.all()]
         [i.delete() for i in asker.questions()]
-        # if i.variable_name not in [i.variable_name for i in itertools.chain(*questionsbypage_obs)]]
-        # raise Exception(blocks)
 
         # group by page, using filter(bool) to get rid of empty pages
         questionsbypage = filter(bool,
