@@ -88,14 +88,6 @@ def play(request, reply_token, question_index=0):
             "No reply found for this token."))
     asker = reply.asker
 
-    # # ---- tmp for testing
-    # from ask.models import Asker
-    # reply = Reply()
-    # reply.asker = Asker.objects.get(id=42)
-    # asker = reply.asker or reply.observation.created_by_script.asker
-    # reply.save()
-    # # ---- endtmp
-
     repeat_url = current_site_url() + reverse('play', args=(reply.token, question_index))
     questions = [i for i in asker.questions() if i.showme(reply)]
     prev_question = get_question(questions, question_index - 1)
@@ -104,7 +96,6 @@ def play(request, reply_token, question_index=0):
     except IndexError:
         raise TwilioBoxException("There is no question {}".format(question_index))
 
-    # import ipdb; ipdb.set_trace()
     if request.POST and prev_question:
         answer = save_answer(reply, prev_question, request.POST)
         was_suitable = prev_question.check_telephone_keypad_answer(answer.answer)
@@ -113,15 +104,16 @@ def play(request, reply_token, question_index=0):
             if thequestion.index() + 1 == len(questions):
                 # mark the observation and reply as complete because the last
                 # question is required to be a hangup type which doesn't collect
-                # any data xxx todo add hangup if last q is not hangup to asker
+                # any data
                 _ = reply.observation and reply.observation.update(1)
                 _ = reply.finish(request)
                 # then drop through to play the last question
-
-            return HttpResponseRedirect(
-                current_site_url() +
-                reverse('play', args=(reply.token, question_index + 1))
-            )
+            else:
+                # we only go to the next question if there are two left to play
+                return HttpResponseRedirect(
+                    current_site_url() +
+                    reverse('play', args=(reply.token, question_index + 1))
+                )
 
         # if the user responds with a * then repeat the question again
         elif answer.answer == "*":
