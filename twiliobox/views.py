@@ -57,16 +57,18 @@ def save_answer(reply, question, querydict):
     user_answer = first(querydict.getlist('Digits'), "")
     extra_json = json.dumps(querydict, sort_keys=True, indent=4)
 
-    # if versioning is off we need to delete any previous answers before trying
-    # to create this one because answers can't be modified (but can be deleted)
-    prev_answers = Answer.objects.filter(reply=reply, question=question, page=question.page)
-    if not settings.USE_VERSIONING and prev_answers.count():
-        prev_answers.delete()
+    if question:
+        # if versioning is off we need to delete any previous answers before trying
+        # to create this one because answers can't be modified (but can be deleted)
+        prev_answers = Answer.objects.filter(reply=reply, question=question, page=question.page)
+        if not settings.USE_VERSIONING and prev_answers.count():
+            prev_answers.delete()
 
-    answer, created = Answer.objects.get_or_create(reply=reply, question=question, page=question.page)
+    answer, created = Answer.objects.get_or_create(
+        reply=reply, question=question, page=question and question.page)
     answer.answer = user_answer
     answer.meta = extra_json,
-    answer.choices = question.choices_as_json()
+    answer.choices = question and question.choices_as_json()
     answer.save(force_save=True) # force save because answer may be readonly if versioning off
     return answer
 
@@ -90,31 +92,35 @@ def play(request, reply_token, question_index=0):
 
     repeat_url = current_site_url() + reverse('play', args=(reply.token, question_index))
     questions = [i for i in asker.questions() if i.showme(reply)]
-    prev_question = get_question(questions, question_index - 1)
+
     try:
         thequestion = questions.pop(question_index)
     except IndexError:
         raise TwilioBoxException("There is no question {}".format(question_index))
 
-    if request.POST and prev_question:
-        answer = save_answer(reply, prev_question, request.POST)
-        was_suitable = prev_question.check_telephone_keypad_answer(answer.answer)
+    if thequestion.index() == len(questions):
+        # mark the observation and reply as complete because the last
+        # question is required to be a hangup type which doesn't collect
+        # any data
+        _ = reply.observation and reply.observation.update(1)
+        _ = reply.finish(request)
+
+    if not request.POST:
+        vfun = thequestion.field_class()(thequestion, reply, request).voice_function
+        return reply_to_twilio(
+            # note, we will post to the same url as displays the question
+            vfun(twiml.Response(), thequestion, repeat_url, reply)
+        )
+    else:
+        answer = save_answer(reply, thequestion, request.POST)
+        was_suitable = thequestion.check_telephone_keypad_answer(answer.answer)
 
         if was_suitable:
-            if thequestion.index() + 1 == len(questions):
-                # mark the observation and reply as complete because the last
-                # question is required to be a hangup type which doesn't collect
-                # any data
-                _ = reply.observation and reply.observation.update(1)
-                _ = reply.finish(request)
-                # then drop through to play the last question
-            else:
-                # we only go to the next question if there are two left to play
-                return HttpResponseRedirect(
-                    current_site_url() +
-                    reverse('play', args=(reply.token, question_index + 1))
-                )
-
+            # only move on to the next question if we have a good response
+            return HttpResponseRedirect(
+                current_site_url() +
+                reverse('play', args=(reply.token, question_index + 1))
+            )
         # if the user responds with a * then repeat the question again
         elif answer.answer == "*":
             response = twiml.Response()
@@ -122,17 +128,12 @@ def play(request, reply_token, question_index=0):
             response.redirect(url=repeat_url, method="POST")
             return reply_to_twilio(response)
 
-        else: # wasn't a suitable response
+        else: # if it wasn't a suitable response
             response = twiml.Response()
-            say_extra_text(response, "Sorry, {} wasn't a suitable answer.")
+            say_extra_text(response, "Sorry, {} wasn't a suitable answer.".format(answer.answer))
             response.redirect(url=repeat_url, method="POST")
             return reply_to_twilio(response)
 
-
-    vfun = thequestion.field_class()(thequestion, reply, request).voice_function
-    return reply_to_twilio(
-        vfun(twiml.Response(), thequestion, reverse("play", args=(reply.token, question_index+1, )), reply)
-    )
 
 
 
