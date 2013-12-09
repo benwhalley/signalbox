@@ -132,7 +132,7 @@ def show_page(request, reply_token, preview=False):
     page_needs_reponses = bool(page.questions_which_require_answers(reply))
     asker_only_has_one_page = len(list(reply)) == 1
     showredbutton = True
-    showredbutton = (not reply.is_complete()) and (page.is_last() or asker_only_has_one_page)
+    showredbutton = (page.is_last() or asker_only_has_one_page)
     if page.asker.finish_on_last_page:
         if page.next_page() and page.next_page().is_last():
             showredbutton = True

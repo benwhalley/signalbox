@@ -37,9 +37,6 @@ from ask.views.parse_definitions import block, yaml_header, make_question_dict, 
     ispage, isnotpage
 
 
-
-
-
 class TextEditForm(forms.Form):
 
     text = forms.CharField(required=True,
