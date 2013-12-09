@@ -49,11 +49,12 @@ $(document).ready(function() {
 
          <a class='btn btn-large btn-primary pull-right' href='{% url "preview_asker" asker.id 0 %}'>Preview</a>
 
-         <p>
+
 
                 <input type="submit" class="btn btn-danger btn-large" value="Save changes"/>
 
                 <a class='btn btn-large' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details</a>
+
 
      </div>
      <div id="fader">
@@ -71,7 +72,13 @@ $(document).ready(function() {
             <div class="alert warning">{{e}}</div>
         {% endfor %}
     {% endif %}
-    {{form.text}}
+    {% if not form.locked %}{{form.text}}
+    {% else %}
+    <div class="alert">Locked for editing because Replies have already been made <a class="btn" href="{% url "admin:signalbox_reply_changelist" %}?asker__id__exact=34&o={{form.asker.id}}">Delete previous replies</a>
+    </div>
+    <p><pre>{{form.fields.text.initial|markdown}}</pre>
+    {% endif %}
+
 
 </div>
 

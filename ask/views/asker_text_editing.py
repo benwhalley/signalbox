@@ -47,9 +47,11 @@ class TextEditForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.asker = kwargs.pop('asker')
+        self.locked = kwargs.pop('locked')
         super(TextEditForm, self).__init__(*args, **kwargs)
         self.base_fields['text'].initial = as_custom_markdown(self.asker)
         self.base_fields['text'].widget.attrs['rows']=len(self.base_fields['text'].initial.split("\n"))+10
+
 
     def clean(self):
         cleaned_data = super(TextEditForm, self).clean()
@@ -151,22 +153,20 @@ class TextEditForm(forms.Form):
         return asker
 
 
+from django.views.decorators.cache import never_cache
+@never_cache
 @group_required(['Researchers', 'Research Assistants'])
 def edit_asker_as_text(request, asker_id):
     asker = Asker.objects.get(id=asker_id)
 
     asker.reply_set.filter(entry_method="preview").delete()
-    nreplies = asker.reply_set.all().count()
+    nreplies = asker.reply_set.all().count()>0
+    print nreplies
+    form = TextEditForm(request.POST or None, asker=asker, locked=nreplies)
 
-    if nreplies:
-        form = None
-    else:
-
-        form = TextEditForm(request.POST or None, asker=asker)
-
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('edit_asker_as_text', args=(asker.id,)))
+    if form.is_valid():
+        form.save()
+        return HttpResponseRedirect(reverse('edit_asker_as_text', args=(asker.id,)))
 
     return render_to_response(
         'admin/ask/text_asker_edit.html', {'form': form, 'asker': asker},
