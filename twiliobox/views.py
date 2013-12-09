@@ -28,7 +28,7 @@ def initialise_call(request, observation_token):
     """
 
     observation = get_object_or_404(Observation, token=observation_token)
-    observation.make_reply(request, entry_method="twilio",
+    reply = observation.make_reply(request, entry_method="twilio",
         external_id=request.POST.get('CallSid', None))
     url = current_site_url() + reverse('play', args=(reply.token, 0))
     return HttpResponseRedirect(url)
