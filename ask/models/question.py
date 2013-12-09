@@ -158,6 +158,8 @@ class Question(models.Model):
         except NameError as e:
             # if we are missing one of the variables shown we default to showing the question
             return True
+        except ParseException:
+            return True
 
     text = models.TextField(blank=True, null=True,
         help_text=safe_help("""
