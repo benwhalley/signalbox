@@ -1,28 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import collections
+from fnmatch import fnmatch
+import os
+import os
+import sys
+import tempfile
+import time
+
 from contracts import contract
 from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404
 from django.template import Context, Template
 from django.utils.safestring import mark_safe
-from fnmatch import fnmatch
-import collections
+import hotshot
 import markdown
-import os
-import sys
+import settings
 
 
 safe_help = lambda x: mark_safe(markdown.markdown(x))
 dict_map = lambda f, d: {k: f(v) for k, v in d.items()}
 
-
-
-import hotshot
-import os
-import time
-import settings
-import tempfile
 
 try:
     PROFILE_LOG_BASE = settings.PROFILE_LOG_BASE
@@ -66,7 +65,6 @@ def profile(log_file):
     return _outer
 
 
-
 @contract
 def get_or_modify(klass, lookups, params):
     """
@@ -94,6 +92,7 @@ def get_or_modify(klass, lookups, params):
     ob.save()
 
     return ob, modified
+
 
 def walk(x, action, format, meta):
   """Walk a tree, applying an action to every object.
@@ -125,7 +124,6 @@ def walk(x, action, format, meta):
     return obj
   else:
     return x
-
 
 
 def int_or_string(string):
@@ -189,4 +187,3 @@ def get_object_from_queryset_or_404(queryset, **kwargs):
         return queryset.get(**kwargs)
     except queryset.model.DoesNotExist:
         raise Http404
-
