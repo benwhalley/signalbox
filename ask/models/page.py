@@ -6,7 +6,8 @@ from question import Question
 from signalbox.process import Step
 import itertools
 from signalbox.utilities.linkedinline import admin_edit_url
-
+from signalbox.utilities.djangobits import supergetattr
+from contracts import contract
 
 def head(iterable):
     """Return the first item in an iterable or None"""
@@ -35,11 +36,8 @@ class AskPage(models.Model, Step):
     def scoresheets(self):
         return set(filter(bool, [i.scoresheet for i in self.get_questions()]))
 
-    def visible_questions(self, reply):
-        return  filter(lambda i: i.showme(reply), self.get_questions())
-
     def visible_variable_names(self, reply):
-        return  [i.variable_name for i in self.visible_questions(reply)]
+        return  [i.variable_name for i in self.get_questions(reply)]
 
     def answers(self, reply):
         return reply.answer_set.filter(question__variable_name__in=self.visible_variable_names(reply))
@@ -52,7 +50,7 @@ class AskPage(models.Model, Step):
         return bool(len(answers) >= len(self.visible_variable_names(reply)))
 
     def all_questions_complete(self, reply):
-        if self.questions_which_require_answers() == 0:
+        if self.questions_which_require_answers(reply) == 0:
             return False
         answers = self.answers(reply)
         answers = filter(lambda x: bool(x.answer), answers)
@@ -105,23 +103,35 @@ class AskPage(models.Model, Step):
     def get_questions(self, reply=None):
         '''Returns an ordered list of Questions for the page.
 
-        Rather than simply using a queryset, we build and return a list
-        joining together all the questions within.
+        Passing a reply filters using _questions_to_show()
         '''
-        return self.question_set.all().order_by('order')
 
+        if not reply:
+            return self.question_set.all().order_by('order')
+        else:
+            return self._questions_to_show(reply=reply)
 
-    def questions_to_show(self, reply=None):
-        """Return Questions in the page, filtered depending on users past answers in this Reply."""
+    def _questions_to_show(self, reply):
+        """Filtered list of questions, based on users past answers in this Reply."""
 
-        qlist = self.get_questions(reply)
+        mapping_of_answers = {
+            supergetattr(i, 'question.variable_name', i.other_variable_name): i.answer
+                for i in reply.answer_set.all()
+        }
+        mapping_of_answers.update({k: v.get('score', None) for k, v in self.summary_scores(reply).items()})
+        qlist = self.get_questions()
+        return [q for q in qlist if bool(q.show_conditional(mapping_of_answers))]
 
-        if reply:
-            qlist = [q for q in qlist if q.showme(reply) is True]
-        return qlist
+    @contract
+    def questions_which_require_answers(self, reply=None):
+        """
+        :rtype: int
+        """
+        return sum([i.response_possible() for i in self.get_questions(reply)])
 
-    def questions_which_require_answers(self):
-        return sum([i.response_possible() for i in self.questions_to_show()])
+    def summary_scores(self, reply):
+        answers = reply.answer_set.all()
+        return {i.name: i.compute(answers) for i in self.scoresheets()}
 
     class Meta:
         verbose_name = "Page"

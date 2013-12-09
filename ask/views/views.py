@@ -129,7 +129,7 @@ def show_page(request, reply_token, preview=False):
     # if we get here we are displaying the form
 
     # do we need a red 'save and finish' button? Note we might have already set this above...
-    page_needs_reponses = bool(page.questions_which_require_answers())
+    page_needs_reponses = bool(page.questions_which_require_answers(reply))
     asker_only_has_one_page = len(list(reply)) == 1
     showredbutton = True
     showredbutton = (not reply.is_complete()) and (page.is_last() or asker_only_has_one_page)
@@ -155,6 +155,6 @@ def print_asker(request, asker_id):
                    for p in asker.askpage_set.all()]
 
     return render_to_response('asker_print.html',
-                              {'forms': [(i, i.conditional_questions)
+                              {'forms': [(i, i.questions)
                                          for i in listofforms], 'asker': asker, },
                               context_instance=RequestContext(request))

@@ -64,7 +64,6 @@ class QuestionInlineForPage(admin.StackedInline):
                 'fields': (
                     'order',
                     'required',
-                    'showif',
                     'help_text',
                     'allow_not_applicable',
                     'audio',

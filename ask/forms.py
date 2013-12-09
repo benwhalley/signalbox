@@ -39,7 +39,7 @@ class PageForm(forms.Form):
         request = kwargs.pop('request')
 
         if page:
-            self.questions_to_show = page.questions_to_show(reply)
+            self.questions_to_show = page.get_questions(reply)
         else:
             self.questions_to_show = kwargs.pop('questions')
 
@@ -53,8 +53,7 @@ class PageForm(forms.Form):
             )
 
         if page:
-            self.conditional_questions = [{'question': question, 'showif': question.showif}
-                for question in page.questions_to_show()]
+            self.questions = [{'question': question, } for question in page.get_questions(reply)]
             self.page = page
             initialpage = page.index()
         else:

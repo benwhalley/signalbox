@@ -91,7 +91,7 @@ def play(request, reply_token, question_index=0):
     asker = reply.asker
 
     repeat_url = current_site_url() + reverse('play', args=(reply.token, question_index))
-    questions = [i for i in asker.questions() if i.showme(reply)]
+    questions = asker.questions(reply=reply)
 
     try:
         thequestion = questions.pop(question_index)

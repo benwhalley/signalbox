@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-
+from pyparsing import *
 from ask.models.fields import FIELD_NAMES
 import ask.validators as valid
 from ask.yamlextras import yaml
@@ -127,9 +127,37 @@ class Question(models.Model):
 
     required = models.BooleanField(default=False)
 
-    showif = models.ForeignKey('ask.ShowIf', null=True, blank=True,
-        help_text="""Conditionally hide or show this Question based on these rules""",
-        verbose_name="""Show the question if""")
+    def show_conditional(self, mapping_of_answers):
+        """
+        Use pyparsing to match an 'if' keyval on questions.
+        :type mapping_of_answers: dict
+        """
+
+        condition = self.field_kwargs.get('if', None)
+        map_tuples = [(i,j) for i, j in mapping_of_answers.items() if i and j]
+
+        if not condition or not map_tuples:
+            # default to showing the question – only hide if we are sure we should
+            return True
+
+        replaceme = lambda i, j: j
+        prev_matchers = [Literal(i).setParseAction(replaceWith(j)) for i, j in map_tuples]
+        prev_answer = Or(prev_matchers)
+        comparator = Word(nums)
+
+        operator = oneOf("< > == <= => in".split())
+        subexpression = (prev_answer + operator + comparator)('subexp')
+        subexpression.setParseAction(lambda x: eval(" ".join(map(str, x.subexp))))
+
+        boolean_operator = oneOf("or and not".split())
+        expression = OneOrMore((subexpression + boolean_operator) | subexpression)
+        expression.setParseAction(lambda x: eval(" ".join(map(str, x))))
+
+        try:
+            return expression.parseString(condition)[0]
+        except NameError as e:
+            # if we are missing one of the variables shown we default to showing the question
+            return True
 
     text = models.TextField(blank=True, null=True,
         help_text=safe_help("""
@@ -167,11 +195,6 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
     audio = models.FileField(storage=settings.MAIN_STORAGE, upload_to="audio", blank=True, null=True,
         help_text="""Audio file for use in automated telephone calls.""")
 
-    def showme(self, reply):
-        """Return a boolean indicating whether the question should be hidden."""
-        if self.showif:
-            return self.showif.evaluate(reply)
-        return True
 
     def show_as_image_data_url(self):
         """:: Question -> Bool
@@ -179,7 +202,6 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         if self.q_type == "webcam":
             return True
         return False
-
 
     @contract
     def display_text(self, reply=None, request=None):
@@ -203,14 +225,15 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
             'answers_label': {}
         }
 
-        fc = self.field_class()
-        if reply and reply.asker and fc.compute_scores:
-            answers = reply.answer_set.all()
-            scores = {i.name: i.compute(answers) for i in self.page.scoresheets()}
-            context['scores'] = scores
-            context.update({k: v.get('score', None) for k, v in scores.items()}) # put actual values into main namespace too
 
-        if fc.allow_showing_answers and reply and reply.asker:
+        fc = self.field_class()
+
+        if reply and reply.asker and fc.compute_scores:
+            context['scores'] = self.page.summary_scores(reply)
+            # put actual values into main namespace too
+            context.update({k: v.get('score', None) for k, v in context['scores'].items()})
+
+        if fc.allow_showing_answers and reply:
             context['answers'] = {i.variable_name(): int_or_string(i.answer) for i in reply.answer_set.all()}
 
         for i in self.questionasset_set.all():
@@ -322,9 +345,6 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
 
         if self.choiceset:
             keyvals.update({'choiceset': self.choiceset.name })
-
-        if self.showif:
-            keyvals.update({'showif': self.showif.as_markdown()})
 
         keyvals.update(self.widget_kwargs)
 

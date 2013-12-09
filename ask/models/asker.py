@@ -18,7 +18,7 @@ import json
 import re
 from ask.yamlextras import yaml, MyDumper
 from collections import OrderedDict
-
+from contracts import contract
 
 def filtered_model_to_dict(instance, fields=None, exclude=None):
     fields = fields or []
@@ -103,8 +103,12 @@ class Asker(models.Model):
     def scoresheets(self):
         return itertools.chain(*[i.scoresheets() for i in self.askpage_set.all()])
 
-    def questions(self):
-        questionsbypage = map(lambda i: i.get_questions(),  self.askpage_set.all())
+    @contract
+    def questions(self, reply=None):
+        """All questions, filtered by previous answers if a reply is passed in, see methods on Page.
+        :rtype: list
+        """
+        questionsbypage = map(lambda i: i.get_questions(reply=reply),  self.askpage_set.all())
 
         for i, pagelist in enumerate(questionsbypage):
             for q in pagelist:
@@ -112,7 +116,6 @@ class Asker(models.Model):
 
         questions = list(itertools.chain(*questionsbypage))
         return questions
-
 
     def first_page(self):
         return self.askpage_set.all()[0]
