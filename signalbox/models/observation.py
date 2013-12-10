@@ -5,7 +5,7 @@ import twilio
 from django.contrib import messages
 from django.db.models import Q
 from datetime import datetime, timedelta
-from django_extensions.db.fields import UUIDField
+from shortuuidfield import ShortUUIDField
 from django.db import models
 
 from django.contrib.auth.models import AnonymousUser
@@ -170,7 +170,7 @@ class Observation(models.Model):
 
     attempt_count = models.IntegerField(default=0, db_index=True)
 
-    token = UUIDField()
+    token = ShortUUIDField(auto=True)
 
     def add_reminders(self):
         scriptreminders = ScriptReminder.objects.filter(script=self.created_by_script)

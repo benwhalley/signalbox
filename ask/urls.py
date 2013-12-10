@@ -9,7 +9,7 @@ from signalbox.views.replies import *
 urlpatterns = patterns('',
     url(r'^preview/(?P<asker_id>\d+)?/(?P<page_num>\d+)?/$', preview_asker,
         name="preview_asker"),
-    url(r'^(?P<reply_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})/$', show_page, {'preview': False },
+    url(r'^(?P<reply_token>[\w-]+)/$', show_page, {'preview': False },
         name="show_page"),
     url(r'^anon/(?P<asker_id>\d+)/(?P<collector>[\w\-\_]+)?/?$', start_anonymous_survey,
                 name="start_anonymous_survey"),

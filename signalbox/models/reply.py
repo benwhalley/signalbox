@@ -11,7 +11,7 @@ User = get_user_model()
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django_extensions.db.fields import UUIDField
+from shortuuidfield import ShortUUIDField
 from signalbox.models.scoresheet import ScoreSheet
 from signalbox.utilities.linkedinline import admin_edit_url
 from answer import Answer
@@ -90,6 +90,8 @@ class Reply(models.Model, ProcessManager):
     observation = models.ForeignKey(
         'signalbox.Observation', blank=True, null=True)
 
+    # we have links to both Observations and Memberships because of
+    # signalbox.views.replies.use_adhoc_asker
     membership = models.ForeignKey(
         'signalbox.Membership', blank=True, null=True)
 
@@ -114,7 +116,7 @@ class Reply(models.Model, ProcessManager):
 
     complete = models.BooleanField(default=False, db_index=True)
 
-    token = UUIDField()
+    token = ShortUUIDField(auto=True)
 
     external_id = models.CharField(null=True, blank=True, max_length=100,
                         help_text="""Reference for external API, e.g. Twilio""")

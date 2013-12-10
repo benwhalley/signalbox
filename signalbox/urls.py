@@ -132,10 +132,10 @@ adminpatterns = patterns('',
 # FRONTEND URLS
 
 urlpatterns = urlpatterns + patterns('',
-    url(r'^enter/data/(?P<observation_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})/?$',
+    url(r'^enter/data/(?P<observation_token>[\w-]+)/?$',
         start_data_entry, {'entry_method': "participant"}, name="start_data_entry"),
 
-    url(r'^double/enter/data/(?P<observation_token>[\w]{8}(-[\w]{4}){3}-[\w]{12})/?$',
+    url(r'^double/enter/data/(?P<observation_token>[\w-]+)/?$',
         start_data_entry, {'entry_method': "double_entry"},
         name="start_double_entry"),
 

@@ -12,6 +12,7 @@ pyyaml
 django-yamlfield
 pycontracts
 shortuuid
+django-shortuuidfield
 dj-static
 django-secure
 django-smtp-ssl
