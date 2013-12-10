@@ -133,7 +133,11 @@ class Question(models.Model):
         :type mapping_of_answers: dict
         """
 
-        condition = self.field_kwargs.get('if', None)
+        try:
+            condition = self.field_kwargs.get('if', None)
+        except AttributeError:
+            condition = None
+
         map_tuples = [(i,j) for i, j in mapping_of_answers.items() if i and j]
 
         if not condition or not map_tuples:
