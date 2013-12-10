@@ -138,7 +138,7 @@ class Question(models.Model):
         except AttributeError:
             condition = None
 
-        map_tuples = [(i,j) for i, j in mapping_of_answers.items() if i and j]
+        map_tuples = [(i,j) for i, j in mapping_of_answers.items() if (i and j) and isinstance(j, int)]
 
         if not condition or not map_tuples:
             # default to showing the question – only hide if we are sure we should
