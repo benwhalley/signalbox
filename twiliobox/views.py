@@ -126,7 +126,7 @@ def play(request, reply_token, question_index=0):
         elif answer.answer == "*":
             response = twiml.Response()
             say_extra_text(response, "Repeating the question")
-            response.redirect(url=repeat_url, method="POST")
+            response.redirect(url=repeat_url, method="GET")
             return reply_to_twilio(response)
 
         else: # if it wasn't a suitable response
@@ -137,11 +137,11 @@ def play(request, reply_token, question_index=0):
             response = twiml.Response()
             if errors.count() >= MAX_QUESTION_ERRORS:
                 say_extra_text(response, "I didn't understand your answer, but I'll skip to the next question now anyway.".format(answer.answer))
-                response.redirect(url=next_question_url, method="POST")
+                response.redirect(url=next_question_url, method="GET")
                 return reply_to_twilio(response)
             else:
                 say_extra_text(response, "Sorry, {} wasn't a suitable answer.".format(answer.answer))
-                response.redirect(url=repeat_url, method="POST")
+                response.redirect(url=repeat_url, method="GET")
                 return reply_to_twilio(response)
 
 
