@@ -36,6 +36,7 @@ __all__ = [
     "UserMessage",
     "Answer",
     "Reply",
+    "ReplyData",
     "ContactRecord",
     "ContactReason",
     "Reminder",

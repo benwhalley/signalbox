@@ -137,6 +137,12 @@ class ObservationDataInline(admin.StackedInline):
     readonly_fields = ['key', 'value', ]
     max_num = 0
 
+class ReplyDataInline(admin.StackedInline):
+    save_on_top = True
+    model = ReplyData
+    readonly_fields = ['key', 'value', ]
+    max_num = 0
+
 
 class ReminderInstanceInline(LinkedInline):
     model = ReminderInstance
@@ -369,7 +375,7 @@ class ReplyAdmin(ConditionalVersionAdmin):
                     'last_submit', 'observation', 'collector']
     list_filter = ['asker', 'complete', 'observation__dyad__study', 'entry_method', 'collector']
     search_fields = ['token', 'observation__token']
-    inlines = [AnswerInline, ]
+    inlines = [AnswerInline, ReplyDataInline,]
     fieldsets = (
         ("Actions", {
             'fields': ('is_canonical_reply', )

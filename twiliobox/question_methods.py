@@ -1,8 +1,7 @@
 from django.conf import settings
 from django.http import HttpResponse
 
-DEFAULT_TIMEOUT = 7
-QUESTION_REPEATS = 4
+from twiliobox.settings import *
 
 
 def reply_to_twilio(response):

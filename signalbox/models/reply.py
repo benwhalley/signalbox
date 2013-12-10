@@ -10,13 +10,14 @@ User = get_user_model()
 
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-
+from django.conf import settings
 from django_extensions.db.fields import UUIDField
 from signalbox.models.scoresheet import ScoreSheet
 from signalbox.utilities.linkedinline import admin_edit_url
 from answer import Answer
 from signalbox.process import Step, ProcessManager
 from signalbox.utilities.djangobits import supergetattr
+from signalbox.utilities.mixins import TimeStampedModel
 
 
 ENTRY_METHOD_LOOKUP = {
@@ -51,9 +52,24 @@ class ReplyManager(models.Manager):
         return qs
 
 
+class ReplyData(TimeStampedModel):
+    reply = models.ForeignKey('signalbox.Reply')
+    key = key = models.CharField(max_length=255, choices=settings.REPLY_DATA_TYPES, db_index=True)
+    value = models.TextField(blank=True, null=True)
+
+    class Meta():
+        app_label = 'signalbox'
+
+
+
 class Reply(models.Model, ProcessManager):
 
     '''Organises a set of Answers and tracks Asker completion.'''
+
+    def add_data(self, key, value):
+        d = ReplyData(reply=self, key=key, value=value)
+        d.save()
+        return d
 
     def __iter__(self):
         """Returns a series of pages: steps to complete within the reply."""

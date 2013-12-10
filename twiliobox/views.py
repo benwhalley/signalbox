@@ -17,6 +17,8 @@ from twilio import twiml
 from twiliobox.exceptions import TwilioBoxException
 from twiliobox.models import TwilioNumber
 from contracts import contract
+from twiliobox.settings import *
+
 
 @csrf_exempt
 @contract
@@ -91,6 +93,8 @@ def play(request, reply_token, question_index=0):
     asker = reply.asker
 
     repeat_url = current_site_url() + reverse('play', args=(reply.token, question_index))
+    next_question_url = current_site_url() + reverse('play', args=(reply.token, question_index + 1))
+
     questions = asker.questions(reply=reply)
 
     try:
@@ -117,10 +121,7 @@ def play(request, reply_token, question_index=0):
 
         if was_suitable:
             # only move on to the next question if we have a good response
-            return HttpResponseRedirect(
-                current_site_url() +
-                reverse('play', args=(reply.token, question_index + 1))
-            )
+            return HttpResponseRedirect(next_question_url)
         # if the user responds with a * then repeat the question again
         elif answer.answer == "*":
             response = twiml.Response()
@@ -129,10 +130,19 @@ def play(request, reply_token, question_index=0):
             return reply_to_twilio(response)
 
         else: # if it wasn't a suitable response
+            reply.add_data('question_error', thequestion.variable_name)
+            reply.add_data('incorrect_response', answer.answer)
+
+            errors = reply.replydata_set.filter(key='question_error', value=thequestion.variable_name)
             response = twiml.Response()
-            say_extra_text(response, "Sorry, {} wasn't a suitable answer.".format(answer.answer))
-            response.redirect(url=repeat_url, method="POST")
-            return reply_to_twilio(response)
+            if errors.count() >= MAX_QUESTION_ERRORS:
+                say_extra_text(response, "I didn't understand your answer, but I'll skip to the next question now anyway.".format(answer.answer))
+                response.redirect(url=next_question_url, method="POST")
+                return reply_to_twilio(response)
+            else:
+                say_extra_text(response, "Sorry, {} wasn't a suitable answer.".format(answer.answer))
+                response.redirect(url=repeat_url, method="POST")
+                return reply_to_twilio(response)
 
 
 

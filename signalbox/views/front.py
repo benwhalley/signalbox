@@ -1,23 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from django import forms
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.views.generic import DetailView
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, get_object_or_404
-from django.contrib import messages
-from django.conf import settings
-from signalbox.utils import *
-from signalbox.models import *
 from registration.backends.simple.views import RegistrationView
-
-from signalbox.forms import UserProfileForm
-
+from registration.backends.simple.views import RegistrationView
 from registration.forms import RegistrationForm
-from registration.backends.simple.views import RegistrationView
-from django import forms
+from signalbox.forms import UserProfileForm
+from signalbox.models import *
+from signalbox.utils import *
+from signalbox.utils import execute_the_todo_list, send_reminders_due_now
+
 
 
 class SignalboxRegistrationForm(RegistrationForm):
@@ -114,6 +114,8 @@ def user_homepage(request):
 
     if not request.user.get_profile().has_all_required_details():
         return HttpResponseRedirect(reverse('update_profile_for_studies'))
+    else:
+        execute_the_todo_list(user=request.user)
 
     return render_to_response('signalbox/user_home.html',
                               {'hideprofilebutton': True},

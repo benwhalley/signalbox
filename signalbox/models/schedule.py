@@ -487,7 +487,7 @@ will not result in an error, but won't produce any output either. """))
             raise ValidationError("""You can't use both an internal
                                     Questionnaire and one hosted on an external site.""")
 
-        if supergetattr(self, "script_type.require_study_ivr_number", False):
+        if self.asker and supergetattr(self, "script_type.require_study_ivr_number", False):
             last_q = self.asker.questions()[-1]
             if last_q.q_type != "hangup":
                 raise ValidationError("The last question of a telephone call needs to be a 'hangup' type (currently {})".format(last_q.q_type))

@@ -48,6 +48,13 @@ OB_DATA_TYPES = [
     ('timeshift', "Timeshift"),
 ]
 
+
+REPLY_DATA_TYPES = [
+    ('incorrect_response', "incorrect_response"),
+    ('question_error', "an error occured answering question with variablename"),
+]
+
+
 OB_DATA_TYPES_DICT = dict(OB_DATA_TYPES)
 
 STATUS_CHOICES_DICT = {

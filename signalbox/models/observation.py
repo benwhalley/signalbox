@@ -272,6 +272,11 @@ class Observation(models.Model):
         else:
             return ""
 
+
+    def has_required_details(self):
+        return self.dyad.user.get_profile().has_all_required_details()
+
+
     def open_until(self):
         """Return the last date/time this observation can be completed."""
 
@@ -346,6 +351,7 @@ class Observation(models.Model):
         bools.append(self.still_open() is True)
         bools.append(self.curfew_applies() is False)
         bools.append(self.membership_active() is True)
+        bools.append(self.has_required_details() is True)
 
         return False not in bools
 
