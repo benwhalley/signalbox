@@ -29,6 +29,13 @@ except:
     PROFILE_LOG_BASE = tempfile.gettempdir()
 
 
+def int_or_None(thing):
+    try:
+        return int(thing)
+    except Exception as e:
+        print e
+        return None
+
 def profile(log_file):
     """Profile some callable.
 
