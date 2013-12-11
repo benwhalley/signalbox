@@ -20,10 +20,10 @@ import fields
 from jsonfield import JSONField
 import markdown
 from signalbox.exceptions import DataProtectionException
-from signalbox.utilities.djangobits import supergetattr, flatten, safe_help, int_or_string, int_or_None
+from signalbox.utilities.djangobits import supergetattr, flatten, safe_help, int_or_string
 from signalbox.utilities.linkedinline import admin_edit_url
 from yamlfield.fields import YAMLField
-
+from parse_conditional import parse_conditional
 
 truncatelabel = lambda x, y: (x[:int(y) / 2] + '...' + x[- int(y) / 2:]) if len(x) > y else x
 
@@ -127,44 +127,22 @@ class Question(models.Model):
 
     required = models.BooleanField(default=False)
 
+    @contract
     def show_conditional(self, mapping_of_answers):
         """
         Use pyparsing to match an 'if' keyval on questions.
         :type mapping_of_answers: dict
+        :rtype: bool
         """
-
         try:
             condition = self.field_kwargs.get('if', None)
         except AttributeError:
             condition = None
 
-        map_tuples = [(i,int_or_None(j)) for i, j in mapping_of_answers.items()
-            if i and isinstance(int_or_None(j), int)]
+        show =  parse_conditional(condition, mapping_of_answers)
+        print condition, mapping_of_answers, show
+        return show
 
-        if not condition or not map_tuples:
-            # default to showing the question – only hide if we are sure we should
-            return True
-
-        replaceme = lambda i, j: j
-        prev_matchers = [Literal(i).setParseAction(replaceWith(j)) for i, j in map_tuples]
-        prev_answer = Or(prev_matchers)
-        comparator = Word(nums)
-
-        operator = oneOf("< > == <= => in".split())
-        subexpression = (prev_answer + operator + comparator)('subexp')
-        subexpression.setParseAction(lambda x: eval(" ".join(map(str, x.subexp))))
-
-        boolean_operator = oneOf("or and not".split())
-        expression = OneOrMore((subexpression + boolean_operator) | subexpression)
-        expression.setParseAction(lambda x: eval(" ".join(map(str, x))))
-
-        try:
-            return expression.parseString(condition)[0]
-        except NameError as e:
-            # if we are missing one of the variables shown we default to showing the question
-            return True
-        except ParseException:
-            return True
 
     text = models.TextField(blank=True, null=True,
         help_text=safe_help("""

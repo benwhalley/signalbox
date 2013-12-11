@@ -76,6 +76,8 @@ class Asker(models.Model):
 
     hide_menu = models.BooleanField(default=True)
 
+
+
     def used_in_studies(self):
         from signalbox.models import Study
         return Study.objects.filter(studycondition__scripts__asker=self)
@@ -102,6 +104,10 @@ class Asker(models.Model):
 
     def scoresheets(self):
         return itertools.chain(*[i.scoresheets() for i in self.askpage_set.all()])
+
+    def summary_scores(self, reply):
+        answers = reply.answer_set.all()
+        return {i.name: i.compute(answers) for i in self.scoresheets()}
 
     @contract
     def questions(self, reply=None):

@@ -102,31 +102,34 @@ def show_page(request, reply_token, preview=False):
 
     form = PageForm(request.POST or None, request.FILES or None, page=page,
         reply=reply, request=request)
+    form2 = None
 
     if form.is_valid():
-        # this means we had user input and we will do a redirect
-
+        # this means we had user input and we will validate it
         form.save(reply=reply, page=page)
-        askstofinish = bool(request.GET.get('finish', False))
 
-        if askstofinish and (reply.is_complete() or page.is_last()):
-            reply.finish(request)
-            return HttpResponseRedirect(reply.asker.redirect_url)
+        # a second pass to check fields which may _become_ required based on user input
+        form = PageForm(request.POST or None, request.FILES or None, page=page, reply=reply, request=request)
+        if form.is_valid():
+            # the second pass is OK so we will now do a redirect to another page
+            url = reverse('show_page', kwargs={'reply_token': reply.token})
+            askstofinish = bool(request.GET.get('finish', False))
 
-        url = reverse('show_page', kwargs={'reply_token': reply.token})
+            if askstofinish and (reply.is_complete() or page.is_last()):
+                reply.finish(request)
+                return HttpResponseRedirect(reply.asker.redirect_url)
 
-        if askstofinish and page.asker.finish_on_last_page and page.next_page() and page.next_page().is_last():
-            # we finish the reply early, but display the last page anyway
-            # i.e. not retuning and drop through to below
-            reply.finish(request)
+            if askstofinish and page.asker.finish_on_last_page and page.next_page() and page.next_page().is_last():
+                # we finish the reply early, but display the last page anyway
+                # i.e. not retuning and drop through to below
+                reply.finish(request)
 
-        if nextpage:
-            url = url + "?page={}".format(nextpage)
+            if nextpage:
+                url = url + "?page={}".format(nextpage)
 
-        return HttpResponseRedirect(url)
+            return HttpResponseRedirect(url)
 
-
-    # if we get here we are displaying the form
+    # if we get here the form didn't validate or we didn't get input so are displaying a form
 
     # do we need a red 'save and finish' button? Note we might have already set this above...
     page_needs_reponses = bool(page.questions_which_require_answers(reply))

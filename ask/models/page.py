@@ -114,13 +114,11 @@ class AskPage(models.Model, Step):
     def _questions_to_show(self, reply):
         """Filtered list of questions, based on users past answers in this Reply."""
 
-        mapping_of_answers = {
-            supergetattr(i, 'question.variable_name', i.other_variable_name): i.answer
-                for i in reply.answer_set.all()
-        }
-        mapping_of_answers.update({k: v.get('score', None) for k, v in self.summary_scores(reply).items()})
         qlist = self.get_questions()
-        return [q for q in qlist if bool(q.show_conditional(mapping_of_answers))]
+        answer_mapping = reply.mapping_of_answers_and_scores()
+        toshow = [q for q in qlist
+            if bool(q.show_conditional(answer_mapping))]
+        return toshow
 
     @contract
     def questions_which_require_answers(self, reply=None):

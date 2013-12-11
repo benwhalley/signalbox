@@ -74,7 +74,7 @@ $(document).ready(function() {
     {% endif %}
     {% if not form.locked %}{{form.text}}
     {% else %}
-    <div class="alert">Locked for editing because Replies have already been made <a class="btn" href="{% url "admin:signalbox_reply_changelist" %}?asker__id__exact=34&o={{form.asker.id}}">Delete previous replies</a>
+    <div class="alert">Locked for editing because Replies have already been made <a class="btn" href="{% url "admin:signalbox_reply_changelist" %}?asker__id__exact={{form.asker.id}}">Delete previous replies</a>
     </div>
     <p><pre>{{form.fields.text.initial|markdown}}</pre>
     {% endif %}

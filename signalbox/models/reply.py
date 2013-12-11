@@ -66,7 +66,27 @@ class Reply(models.Model, ProcessManager):
 
     '''Organises a set of Answers and tracks Asker completion.'''
 
+
+    def mapping_of_answers_and_scores(self):
+        """
+        Create a mapping of all answers and summary scores in this Reply
+        :rtype: dict
+        """
+
+        mapping = {
+            supergetattr(i, 'question.variable_name', i.other_variable_name): i.answer
+                for i in self.answer_set.all()
+        }
+        mapping.update({k: v.get('score', None) for k, v in self.asker.summary_scores(self).items()})
+        return mapping
+
+
     def add_data(self, key, value):
+        """Add a ReplyData object for this Reply, save, and return it.
+        :type key: string
+        :type value: string
+        """
+
         d = ReplyData(reply=self, key=key, value=value)
         d.save()
         return d

@@ -26,6 +26,7 @@ class PageForm(forms.Form):
         for key, val in self.cleaned_data.iteritems():
             save_question_response(val, reply, page, variable_name=key)
 
+        # broadcast a signal
         user_input_received.send(self, reply=reply)
 
         return True
