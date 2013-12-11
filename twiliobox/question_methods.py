@@ -51,10 +51,11 @@ def multiple(twimlresponse, question, url, reply=None, *args, **kwargs):
     return twimlresponse
 
 
-# needs more testing at some point
-def listen(twimlresponse, question, reply=None, *args, **kwargs):
+def listen(twimlresponse, question, url, reply=None, *args, **kwargs):
+    """Use the Record verb on twilio to save a voice recording."""
     say_or_play(twimlresponse, question, reply)
-    twimlresponse.record()
+    twimlresponse.record(action=url, method="POST")
+    twimlresponse.redirect(url=url, method="POST")
     return twimlresponse
 
 

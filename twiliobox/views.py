@@ -56,8 +56,14 @@ def save_answer(reply, question, querydict):
     """Takes a Reply, a question and the POST dict and returns a (saved) answer."""
 
     # twilio returns a list of digits, but we only take the first
-    user_answer = first(querydict.getlist('Digits'), "")
+    digits = first(querydict.getlist('Digits'), "")
+    recordingurl = first(querydict.getlist('RecordingUrl'), "")
     extra_json = json.dumps(querydict, sort_keys=True, indent=4)
+
+    if recordingurl:
+        user_answer = recordingurl
+    else:
+        user_answer = digits
 
     if question:
         # if versioning is off we need to delete any previous answers before trying

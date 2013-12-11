@@ -43,6 +43,7 @@ FIELD_NAMES = [
 
     'uninterruptible-instruction',
     'hangup',
+    'listen',
     'upload',
     'webcam',
 
@@ -232,6 +233,10 @@ class LongText(SignalboxField, floppyforms.CharField):
     @staticmethod
     def voice_function(*args, **kwargs):
         return twiliofunctions.listen(*args, **kwargs)
+
+
+class Listen(LongText):
+    pass
 
 
 class Likert(SignalboxField, floppyforms.ChoiceField):

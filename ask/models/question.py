@@ -212,7 +212,6 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
 
 
         fc = self.field_class()
-
         if reply and reply.asker and fc.compute_scores:
             context['scores'] = self.page.summary_scores(reply)
             # put actual values into main namespace too

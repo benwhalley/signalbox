@@ -82,7 +82,7 @@ class Reply(models.Model, ProcessManager):
 
 
     def add_data(self, key, value):
-        """Add a ReplyData object for this Reply, save, and return it.
+        """Add a ReplyData object for this Reply, save it, and return it.
         :type key: string
         :type value: string
         """

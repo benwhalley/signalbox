@@ -3,7 +3,7 @@ from pyparsing import *
 from signalbox.utilities.djangobits import supergetattr, int_or_None
 
 @contract
-def parse_conditional(condition, mapping_of_answers):
+def parse_conditional(condition, mapping_of_answers, SHOW_IF_NO_INFORMATION=True):
     """
     :type condition: string|None
     :type mapping_of_answers: dict
@@ -17,8 +17,8 @@ def parse_conditional(condition, mapping_of_answers):
         if i and isinstance(int_or_None(j), int)]
 
     if not map_tuples:
-        # default to hiding the question - only hide if we are sure we should
-        return False
+        # default for hiding/showing the question
+        return SHOW_IF_NO_INFORMATION
 
     replaceme = lambda i, j: j
     prev_matchers = [Literal(i).setParseAction(replaceWith(j)) for i, j in map_tuples]
@@ -37,8 +37,6 @@ def parse_conditional(condition, mapping_of_answers):
         return expression.parseString(condition)[0]
     except NameError as e:
         # if we are missing one of the variables shown we default to showing the question
-        print e
-        return True
+        return SHOW_IF_NO_INFORMATION
     except ParseException as e:
-        print e
         return True
