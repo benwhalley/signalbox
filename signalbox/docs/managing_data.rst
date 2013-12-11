@@ -10,9 +10,9 @@ Signalbox is able to export data to delimeted text, or to Stata (a common statis
 
 Signalbox understands that within a single clinical trial there may be multiple sub-studies (each set up as a Study object within the system). Because studies may be linked, and require joint analysis, Signalbox allows you to export data for multiple studies at once.
 
-If this is this case, you need to define a `reference study` --- this will typically be the study which manages the primary randomisation, e.g. to Treatment/Control. Selecting a reference study is useful, because Signalbox uses the date of randomisation for that study to compute additional variables, including `days_in_trial`, which can be contrasted with `days_in_study` and indicates the elapsed days since the user was randomised to the reference study. :class:`~signalbox.models.StudyPeriod` objects attached to the reference study are also used to compute a set of `period_x` variables: indicator variables denoting whether a :class:`~signalbox.models.Reply` fell within period `x`.
+If this is this case, you need to define a `reference study` --- this will typically be the study which manages the primary randomisation, e.g. to Treatment/Control. Selecting a reference study is useful, because Signalbox uses the date of randomisation for that study to compute additional variables, including `days_in_trial`, which can be contrasted with `days_in_study` and indicates the elapsed days since the user was randomised to the reference study.
 
-.. note:: Additional computed variables, including `period_x` and `days_in_trial` are only computed when the exported syntax file is run using Stata, and are not present in the raw text data, ``data.txt``.
+.. note:: Additional computed variables, including days_in_trial` are only computed when the exported syntax file is run using Stata, and are not present in the raw text data, ``data.txt``.
 
 
 

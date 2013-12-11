@@ -30,11 +30,6 @@ class ConditionInline(admin.StackedInline):
     filter_horizontal = ['scripts']
 
 
-class StudyPeriodInline(admin.TabularInline):
-    model = StudyPeriod
-    extra = 0
-
-
 class StudyAdminForm(forms.ModelForm):
 
     def clean(self):
@@ -103,7 +98,7 @@ class StudyAdmin(admin.ModelAdmin):
             )
         }),
     )
-    inlines = [ConditionInline, ]  # StudyPeriodInline
+    inlines = [ConditionInline, ]
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
             if db_field.name == "administrators":
@@ -312,12 +307,6 @@ class PermissionAdmin(admin.ModelAdmin):
     save_on_top = True
     search_fields = ['name', 'codename', 'content_type__name']
 
-
-class StudyPeriodAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__', 'study', 'show_dates']
-    list_filter = ['study']
-
-
 class ScoreSheetAdmin(admin.ModelAdmin):
     filter_horizontal = ['variables']
 
@@ -412,7 +401,6 @@ admin.site.register(Alert)
 admin.site.register(AlertInstance)
 admin.site.register(Answer, AnswerAdmin)
 admin.site.register(ScoreSheet, ScoreSheetAdmin)
-admin.site.register(StudyPeriod, StudyPeriodAdmin)
 admin.site.register(Observation, ObservationAdmin)
 admin.site.register(ObservationData, ObservationDataAdmin)
 admin.site.register(Membership, MembershipAdmin)

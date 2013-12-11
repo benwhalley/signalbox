@@ -78,7 +78,7 @@ Additional components which may not always be used
 
 Users are linked to a UserProfile which can contain additional fields like a telephone number, address etc. A Study can specify the subset of these fields which are required when a user signs up. ContactRecords are made when the administration interface is used to send a User a message. In some studies, its necessary to collect data from some Users (e.g. therapists) about other Users (e.g. clients); where this is the case a Membership can store an additional field indicating which User the data is about, as well as who it has been collected from
 
-StudySites represent different locations in a multi-site trial, can can be used to filter Memberships when viewing date. StudyPeriods represent ranges of days which the Membership has been randomised, and can again be used to filter Replies.
+StudySites represent different locations in a multi-site trial, can can be used to filter Memberships when viewing date.
 
 
 Database schema

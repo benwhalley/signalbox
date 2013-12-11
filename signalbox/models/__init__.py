@@ -24,7 +24,6 @@ __all__ = [
     "ObservationCreator",
     "Study",
     "StudyCondition",
-    "StudyPeriod",
     "Script",
     "ScriptType",
     "Membership",

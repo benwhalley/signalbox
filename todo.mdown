@@ -81,7 +81,6 @@ Would have a study attached to a number... each condition within the study would
 - check response for twilio and repeat if not in approved list
 - perhps use django forms for twilio?
 - test reminder sending logic
-- test study period logic
 
 - create installer script for heroku
     - scheduler optional

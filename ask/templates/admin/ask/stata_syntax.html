@@ -41,7 +41,7 @@ label variable finished_date "Date captured"
 note finished_date: This is when the data were captured by the system
 
 
-// calculate days in study, days in reference study and study periods
+// calculate days in study, days in reference study
 bysort username study: egen double _dayzero = min(randomised_date) if is_reference_study == 1
 bysort username (_dayzero): gen double dayzero = _dayzero[1]
 drop _dayzero
@@ -76,7 +76,7 @@ label variable is_canonical_reply "The definitive reply for this observation"
 
 compress
 order _all, sequential
-order username dayzero study condition script script observation_index is_canonical_reply due_date collected day_in* period_*  , first
+order username dayzero study condition script script observation_index is_canonical_reply due_date collected day_in*  , first
 saveold data, replace
 export excel data_values.xlsx, replace firstrow(var) nolabel
 export excel data_labels.xlsx, replace firstrow(var)
