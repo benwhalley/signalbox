@@ -69,11 +69,6 @@ STATUS_CHOICES_DICT = {
 
 STATUS_CHOICES = sorted(zip(STATUS_CHOICES_DICT.keys(), STATUS_CHOICES_DICT.values()), reverse=True)
 
-# Could be expanded in future for minimization, etc.
-ALLOCATION_CHOICES = (
-    ("random", "Weighted random"),
-    ("balanced_groups_adaptive_randomisation", "Adaptive (weighted) randomisation to balance conditions")
-)
 
 SMS_STATUSCODES = {
     'd': ('delivered', True),

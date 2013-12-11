@@ -161,20 +161,14 @@ class Study(models.Model):
         concern (e.g. where the experimenter carries out one of several
         manipulations).""")
 
-    allocation_method = models.CharField(
-        max_length=85, default=settings.ALLOCATION_CHOICES[1][0],
-        choices=settings.ALLOCATION_CHOICES,
-        help_text="""See the documentation for more details. Adaptive
-        randomisations require a adaptive_randomisation_probability (see
-        below).""")
-
     randomisation_probability = models.DecimalField(
-        blank=True, null=True, max_digits=2,
-        decimal_places=1, default=.5,
+        max_digits=2, decimal_places=1, default=.5,
         help_text="""Indicates the probability that the adaptive algorithm will
         choose weighted randomisation rather than allocation to the group which
-        minimises the imbalance. For example, if set to .8, then deterministic
-        allocation to the smallest group will only happen 20% of the time.""")
+        minimises the imbalance (minimisation or adaptive randomisation).
+        For example, if set to .5, then deterministic allocation to the
+        smallest group will only happen half of the time. To turn off adaptive
+        randomisation set to 1.""")
 
     visible_profile_fields = models.CharField(max_length=200,
         blank=True, null=True, help_text="""Available profile fields
@@ -183,7 +177,7 @@ class Study(models.Model):
         validators=[only_includes_allowed_fields])
 
     required_profile_fields = models.CharField(max_length=200,
-                                               blank=True, null=True, help_text="""Profile fields which users
+        blank=True, null=True, help_text="""Profile fields which users
         will be forced to complete for this study. Can be any of: {0},
         separated by a space.""".format(", ".join(settings.USER_PROFILE_FIELDS)),
         validators=[only_includes_allowed_fields])
@@ -258,10 +252,6 @@ class Study(models.Model):
         if self.auto_randomise is False and self.auto_add_observations is True:
             raise ValidationError("""Observations can only be added automatically
                 when participants are automatically randomised to a condition.""")
-
-        if ("adaptive" in self.allocation_method and (not self.randomisation_probability)):
-            raise ValidationError(
-                """You must add a randomisation probability for the chosen allocation method.""")
 
         needtwilio = bool(sum(map(lambda x: x.script_type.require_study_ivr_number, self.scripts_used_by_this_study())))
         if needtwilio and not self.twilio_number:

@@ -61,18 +61,10 @@ class Test_Allocation(TestCase):
         ratios = list(permutations([1, 2, 3, 4], 3))
         # [(1, 2, 3), (1, 2, 4), (1, 3, 2), (1, 3, 4) ... etc]
 
-        study.allocation_method = "balanced_groups_adaptive_randomisation"
         study.randomisation_probability = .5
 
         study.save()
 
-
-
-        meanp = stats.lmean([.00001] + [_get_p_for_allocation(study, users, i) for i in ratios])
-        assert meanp > .05
-
-        study.allocation_method = "random"
-        study.save()
         meanp = stats.lmean([.00001] + [_get_p_for_allocation(study, users, i) for i in ratios])
         assert meanp > .05
 

@@ -96,7 +96,6 @@ class StudyAdmin(admin.ModelAdmin):
         ('Advanced', {
             'classes': ('collapse',),
             'fields': (
-                'allocation_method',
                 'auto_randomise',
                 'auto_add_observations',
                 'randomisation_probability',
