@@ -65,14 +65,6 @@ class AnswerFileView(SingleObjectMixin, DownloadView):
         return self.get_object().upload.name
 
 
-def do_outstanding_observations(request):
-    from signalbox.cron import send, remind
-
-    return HttpResponse(
-        str((send(), remind()))
-    )
-
-
 @group_required(['Researchers', 'Research Assistants'])
 def send_password_reset(request, user_id):
     user = get_object_or_404(User, id=user_id)

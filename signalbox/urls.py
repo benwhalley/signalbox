@@ -43,8 +43,6 @@ class AdminMessageView(ExtraContextView):
 
 
 adminpatterns = patterns('',
-    url(r'^cron/$', do_outstanding_observations, {}, 'cron' ),
-
     url(r'^answer/(?P<pk>\d+)/upload/$', AnswerFileView.as_view(), {}, 'user_uploaded_file' ),
 
     # assessor views
