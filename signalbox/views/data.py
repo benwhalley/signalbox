@@ -183,6 +183,7 @@ def build_csv_data_as_string(answers, reference_study):
     # map old names to new ones and reshape wide
     [renamekeys(i, FIELD_MAP) for i in answer_values]
     reply_dicts = _reshape_wide(answer_values, 'reply.id', 'variable_name', 'answer')
+    [i.pop('qtype') for i in reply_dicts]
 
     # add some meta-data to each reply
     [reply.update({'is_reference_study': bool(reply['study'] == supergetattr(reference_study, "slug"))}) for reply in reply_dicts]
