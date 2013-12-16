@@ -5,7 +5,6 @@ from itertools import groupby
 from ask.models import ChoiceSet
 from ask.models import Question
 from ask.models.fields import FIELD_NAMES
-from django.forms.models import model_to_dict
 from django.core.exceptions import ValidationError
 from signalbox.models import ScoreSheet
 from signalbox.utilities.djangobits import get_or_modify, flatten

@@ -1,6 +1,7 @@
 from __future__ import division
 
 from django.db import models
+from django.forms.models import model_to_dict
 from collections import defaultdict
 from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LOOKUP
 
