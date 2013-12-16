@@ -14,7 +14,6 @@
     <input type="submit" class="btn btn-danger pull-right" style="margin-left:.5em;" value="Save changes"/>
 
     <a class='btn pull-right' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details</a>
-
 {% endblock %}
 
 
@@ -75,8 +74,10 @@
 <p>{{j.text}}</p>
 <div class="scores">
 {% if j.choiceset %}{{j.choiceset.choices_as_string}}{% endif %}
+{% if j.scoresheet %}
+{{j.scoresheet.as_markdown}}{% endif %}
 </div>
-{% if j.scoresheet %}Computed score: scores.{{j.scoresheet}}{% endif %}
+
 </div>
 <hr>
 {% endfor %}
