@@ -1,4 +1,7 @@
 
+
+#allow summrscores and real score on same question
+
 check what happens with duplicate scores when exporting data to labels
 
 # add tests for text editing
@@ -21,16 +24,6 @@ check what happens with duplicate scores when exporting data to labels
 
 
 # factor away choicesets and choices altogether?
-
-
-# For twilio - need to record some standard prompts which get attached to the asker - think about _gettext 
-
-"Sorry, that wasn't a suitable answer."
-"I'm sorry, I couldn't hear a response. I'll repeat the question:"
-
-"I'm sorry, I still couldn't hear a response. I'll skip to the next question now, but if you're have a problem please press the star key for help."
-
-"If you've made mistakes and would like to start the call again, please press 1. If you're having problems and would like to be connected to a member of the study team, please press 2. If you don't want to answer any question today, please just hangup at any time."
 
 
 
