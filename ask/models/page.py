@@ -2,12 +2,12 @@
 
 from django.core.urlresolvers import reverse
 from django.db import models
-from question import Question
 from signalbox.process import Step
 import itertools
 from signalbox.utilities.linkedinline import admin_edit_url
 from signalbox.utilities.djangobits import supergetattr
-from contracts import contract
+from signalbox.custom_contracts import *
+
 
 def head(iterable):
     """Return the first item in an iterable or None"""
@@ -28,10 +28,18 @@ class AskPage(models.Model, Step):
     def index(self):
         return self.page_number()
 
+    @contract
     def available(self, reply):
+        """
+        Are we allowed to complete this page now?
+
+        :type reply: is_reply
+        :rtype: bool
+        """
         for step, available in reply.step_availability():
             if self == step:
                 return True
+        return False
 
     def scoresheets(self):
         return set(filter(bool, [i.scoresheet for i in self.get_questions()]))
@@ -59,7 +67,7 @@ class AskPage(models.Model, Step):
     def natural_key(self):
         return (self.asker.slug, self.order)
 
-    asker = models.ForeignKey('Asker')
+    asker = models.ForeignKey('ask.Asker')
     order = models.FloatField(default=0)
 
     submit_button_text = models.CharField(max_length=255, default="""Continue""")
@@ -82,15 +90,12 @@ class AskPage(models.Model, Step):
     def is_last(self):
         return self == list(self.asker.askpage_set.all())[-1]
 
+    @contract
     def progress_pages(self):
         """Returns a tuple with current page and number of pages for use in progress bar.
+        :rtype: tuple(int, int)
         """
         return (self.page_number() + 1, self.asker.page_count())
-
-    def percent_complete(self):
-        if self.asker.show_progress:
-            return int((self.page_number() + 1.0) / self.asker.page_count() * 100)
-        return None
 
     def next_page(self):
         next_pages = self.asker.askpage_set.filter(order__gt=self.order)
@@ -100,19 +105,24 @@ class AskPage(models.Model, Step):
         prev_pages = self.asker.askpage_set.filter(order__lt=self.order).order_by('-order')
         return head(prev_pages) or self.asker.first_page()
 
+    @contract
     def get_questions(self, reply=None):
         '''Returns an ordered list of Questions for the page.
-
         Passing a reply filters using _questions_to_show()
+        :rtype: list(is_question)
         '''
 
         if not reply:
-            return self.question_set.all().order_by('order')
+            return list(self.question_set.all().order_by('order'))
         else:
             return self._questions_to_show(reply=reply)
 
+    @contract
     def _questions_to_show(self, reply):
-        """Filtered list of questions, based on users past answers in this Reply."""
+        """Filtered list of questions, based on users past answers in this Reply.
+        :type reply: is_reply
+        :rtype: list(is_question)
+        """
 
         qlist = self.get_questions()
         answer_mapping = reply.mapping_of_answers_and_scores()
@@ -121,8 +131,9 @@ class AskPage(models.Model, Step):
         return toshow
 
     @contract
-    def questions_which_require_answers(self, reply=None):
+    def questions_which_require_answers(self, reply):
         """
+        :type reply: is_reply
         :rtype: int
         """
         return sum([i.response_possible() for i in self.get_questions(reply)])
@@ -139,6 +150,11 @@ class AskPage(models.Model, Step):
 
     def admin_edit_url(self):
         return admin_edit_url(self)
+
+    MARKDOWN_FORMAT = u"\n\n# {}\n"
+
+    def as_markdown(self):
+        return self.MARKDOWN_FORMAT.format(self.step_name or "")
 
     def __unicode__(self):
         return u"{}: {} (p {})".format(self.asker, self.step_name, self.order)

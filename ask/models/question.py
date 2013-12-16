@@ -5,7 +5,6 @@ from ask.models.fields import FIELD_NAMES
 import ask.validators as valid
 from ask.yamlextras import yaml
 import ast
-from contracts import contract, new_contract
 from django import http
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -22,8 +21,10 @@ import markdown
 from signalbox.exceptions import DataProtectionException
 from signalbox.utilities.djangobits import supergetattr, flatten, safe_help, int_or_string
 from signalbox.utilities.linkedinline import admin_edit_url
+from signalbox.custom_contracts import *
 from yamlfield.fields import YAMLField
 from parse_conditional import parse_conditional
+
 
 truncatelabel = lambda x, y: (x[:int(y) / 2] + '...' + x[- int(y) / 2:]) if len(x) > y else x
 
@@ -143,47 +144,24 @@ class Question(models.Model):
         print condition, mapping_of_answers, show
         return show
 
-
     text = models.TextField(blank=True, null=True,
-        help_text=safe_help("""
-The text displayed for this question.
-<a href="#" onClick="$('.questiontexthelp').show();$(this).hide();return false;">
-Syntax help</a>
-<div class="questiontexthelp hide">
-As part of instruction questions it's now possible to
-include variables representing summary scores (ScoreSheets) attached to
-the Asker, or previous question responses.
-
-This is done by including Django template syntax in the `text` attribute
-of the question.
-
-Summary scores can be accessed as: `{{scores.<scoresheetname>.score}}`
-and computation messages as `{{scores.<scoresheetname>.message}}`.
-
-Previous answers can be displayed using `{{answers.<variable_name>}}`.
-
-Standard Django template logic can also be used with these variables,
-for example `{% if scores.<scoresheetname>.score %}Show something else
-{% endif %}`.
-</div>"""))
+        help_text=safe_help(settings.QUESTION_TEXT_HELP_TEXT)
+        )
 
     variable_name = models.SlugField(default="", max_length=32, unique=True,
         validators=[valid.first_char_is_alpha, valid.illegal_characters,
             valid.is_lower], help_text="""Variable names can use characters a-Z,
             0-9 and underscore (_), and must be unique within the system.""")
 
-    choiceset = models.ForeignKey('ChoiceSet', null=True, blank=True)
+    choiceset = models.ForeignKey('ask.ChoiceSet', null=True, blank=True)
 
     help_text = models.TextField(blank=True, null=True)
 
-    # we use S3 because otherwise there's a real lag on the call from twilio
-    audio = models.FileField(storage=settings.MAIN_STORAGE, upload_to="audio", blank=True, null=True,
-        help_text="""Audio file for use in automated telephone calls.""")
-
-
+    @contract
     def show_as_image_data_url(self):
-        """:: Question -> Bool
-        Say whether the answer is a stored data url for an image."""
+        """Say whether the answer is a stored data url for an image.
+        :rtype: bool
+        """
         if self.q_type == "webcam":
             return True
         return False
@@ -191,8 +169,7 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
     @contract
     def display_text(self, reply=None, request=None):
         """
-        :type self: a
-        :type reply: b|None
+        :type reply: is_reply|None
         :type request: c|None
 
         :return: The html formatted string displaying the question
@@ -209,7 +186,6 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
             'answers': {},
             'answers_label': {}
         }
-
 
         fc = self.field_class()
         if reply and reply.asker and fc.compute_scores:
@@ -235,7 +211,7 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
 
     def preview_html(self):
         """Return a form with a single question which can be used to preview questions -> PageForm"""
-        from ask.forms import PageForm
+        from ask.forms import PageForm  # yuck but circular imports
         request = http.HttpRequest()
         form = PageForm(None, None,
                         page=None, questions=[self], reply=None, request=request)
@@ -250,13 +226,12 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
     def label_choices(self):
         return self.field_class().label_choices(self)
 
-    widget_kwargs = JSONField(default="{}", help_text="""A JSON representation of a python dictionary of
+    extra_attrs = YAMLField(blank=True, help_text="""A YAML representation of a python dictionary of
         attributes which, when deserialised, is passed to the form widget when the questionnaire is
         rendered. See django-floppyforms docs for options.""")
 
-    field_kwargs = JSONField(blank=True, help_text="""A JSON representation of a python dictionary of
-        attributes which, when deserialised, is passed to the field when the questionnaire is
-        rendered. See django-floppyforms docs for options.""")
+    def extra_attrs_as_yaml(self):
+        return yaml.dump(self.extra_attrs, default_flow_style=False)
 
     def voice_function(self):
         """Returns the function to render instructions for external telephony API."""
@@ -272,6 +247,7 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
         """
         :rtype: None|list(tuple)
         """
+
         return (self.choiceset and self.choiceset.choice_tuples()) or None
 
 
@@ -319,25 +295,34 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
     def __unicode__(self):
         return truncatelabel(self.variable_name, 26)
 
+    MARKDOWN_FORMAT = u"""~~~{{{variable_name} {classes} {keyvals} }}\n{text}\n{details}\n~~~"""
+
     def as_markdown(self):
-        keyvals = {
-            'type': self.q_type,
-        }
 
-        if self.required:
-            keyvals.update({'required': self.required})
+        iden = "#"+self.variable_name
+        if self.extra_attrs:
+            classes = self.extra_attrs.pop('classes', {})
+            classesstring = " ".join([".{}".format(k) for k, v in classes.items() if v])
+        else:
+            classesstring = ".{}".format(self.q_type)
 
+        keyvals = self.extra_attrs or {}
+        keyvalsstring = " ".join(["""{}="{}" """.format(k, v) for k, v in keyvals.items()])
+
+        detailsstring = ""
         if self.choiceset:
-            keyvals.update({'choiceset': self.choiceset.name })
+            detailsstring = u">>>\n" + self.choiceset.as_markdown()
+        elif self.scoresheet:
+            detailsstring = u">>>\n" + self.scoresheet.as_markdown()
 
-        keyvals.update(self.widget_kwargs)
-
-        keyvals_str = " ".join(['{}={}'.format(k, json.dumps(v)) for k, v in sorted(keyvals.items())])
-        return """
-~~~{#%s %s}
-%s
-~~~
-""" % (self.variable_name, keyvals_str, self.text)
+        return self.MARKDOWN_FORMAT.format(**{
+            'variable_name': iden,
+            'classes': classesstring,
+            'keyvals': keyvalsstring,
+            'text': self.text,
+            'details': detailsstring
+            }
+        )
 
 
     def clean(self, *args, **kwargs):
@@ -400,7 +385,7 @@ class Choice(models.Model):
         return (self.choiceset, self.label, self.score)
     natural_key.dependencies = ['ask.choiceset']
 
-    choiceset = models.ForeignKey('ChoiceSet', blank=True, null=True)
+    choiceset = models.ForeignKey('ask.ChoiceSet', blank=True, null=True)
 
     is_default_value = models.BooleanField(default=False, db_index=True,
         help_text="""Indicates whether the value will be checked by default.""")
@@ -470,16 +455,31 @@ class ChoiceSet(models.Model):
         """
         return [(int(i.score), i.label) for i in self.get_choices()]
 
-    @contract
-    def choices_as_string(self):
-        """
-        :returns: succinct display of options as text.
-        :rtype: string
-        """
-        return "; ".join(["%s%s (%s)" % (i.label, i.is_default_value and "*" or "", i.score, ) for i in self.get_choices()])
 
+    MARKDOWN_FORMAT = u"""{isdefault}{score}{mapped_score}={label} """
 
-    # @contract
+    def as_markdown(self):
+        if not self.yaml:
+            self.yaml = {i:d for i, d in enumerate([{'score':x.score, 'isdefault': x.is_default_value, 'label':x.label} for x in self.get_choices()])}
+
+        def _formatmappedscore(c):
+            score = c['score']
+            mapped_score = c.get('mapped_score', score)
+            return mapped_score != score and "[{}]".format(mapped_score) or ""
+
+        return "\n".join([
+            self.MARKDOWN_FORMAT.format(**{
+                    'isdefault': c.get('isdefault', "") and "*" or "",
+                    'score': c['score'],
+                    'mapped_score': _formatmappedscore(c),
+                    'label': c['label'],
+                    }
+                )
+                for i, c in self.yaml.items()])
+
+    # synonym in case we want to change display
+    choices_as_string = lambda self: self.as_markdown()
+
     def get_choices(self):
         """
         "returns: A sorted list of Choice objects
@@ -527,7 +527,7 @@ class ShowIf(models.Model):
     class Meta:
         app_label = 'ask'
 
-    previous_question = models.ForeignKey(Question, blank=True, null=True,
+    previous_question = models.ForeignKey('ask.Question', blank=True, null=True,
         related_name="previous_question",
         help_text='''For previous values, enter the name of the question which
         will already have been answered in this survey (technically, within this Reply)''')

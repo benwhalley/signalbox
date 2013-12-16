@@ -79,3 +79,27 @@ SMS_STATUSCODES = {
 }
 
 TITLE_CHOICES = [(i, i) for i in ['', 'Mr', 'Mrs', 'Ms', 'Miss', 'Dr', 'Prof', 'Rev']]
+
+
+
+QUESTION_TEXT_HELP_TEXT = """
+The text displayed for this question.
+<a href="#" onClick="$('.questiontexthelp').show();$(this).hide();return false;">
+Syntax help</a>
+<div class="questiontexthelp hide">
+As part of instruction questions it's now possible to
+include variables representing summary scores (ScoreSheets) attached to
+the Asker, or previous question responses.
+
+This is done by including Django template syntax in the `text` attribute
+of the question.
+
+Summary scores can be accessed as: `{{scores.<scoresheetname>.score}}`
+and computation messages as `{{scores.<scoresheetname>.message}}`.
+
+Previous answers can be displayed using `{{answers.<variable_name>}}`.
+
+Standard Django template logic can also be used with these variables,
+for example `{% if scores.<scoresheetname>.score %}Show something else
+{% endif %}`.
+</div>"""

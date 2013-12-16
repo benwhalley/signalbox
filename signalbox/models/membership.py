@@ -1,15 +1,13 @@
 from datetime import datetime
 import itertools
-
+from django.conf import settings
 from answer import Answer
 from contracts import contract
-from django.contrib.auth import get_user_model
 from django.db import models
 from observation import Observation
 from signalbox.utilities.linkedinline import admin_edit_url
 from signalbox.utils import proportion
 
-User = get_user_model()
 
 
 class MembershipManager(models.Manager):
@@ -33,11 +31,11 @@ class Membership(models.Model):
         help_text="""If deselected, Observations no longer be sent for Membership.""",
         db_index=True)
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
 
-    study = models.ForeignKey('Study',)
+    study = models.ForeignKey('signalbox.Study',)
 
-    relates_to = models.ForeignKey('Membership', blank=True, null=True,
+    relates_to = models.ForeignKey('signalbox.Membership', blank=True, null=True,
         verbose_name="Linked patient",
         related_name="membership_relates_to",
         help_text="""Sometimes a researcher may themselves become a subject in a study (for
@@ -45,7 +43,7 @@ class Membership(models.Model):
         be added to the study multiple times, with the relates_to field set to another User,
         for which they are providing data.""")
 
-    condition = models.ForeignKey('StudyCondition', null=True, blank=True,
+    condition = models.ForeignKey('signalbox.StudyCondition', null=True, blank=True,
         help_text="""Choose a Study/Condition for this user. To use Randomisation you must
         save the Membership first, then randomise to a condition using the tools menu (or
         if set, the study may auto-randomise the participant).""")

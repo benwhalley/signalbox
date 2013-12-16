@@ -142,7 +142,7 @@ class ScriptReminder(models.Model):
 
     hours_delay = models.PositiveIntegerField(default="48")
     script = models.ForeignKey('signalbox.Script')
-    reminder = models.ForeignKey(Reminder)
+    reminder = models.ForeignKey('signalbox.Reminder')
 
     def calculate_date(self, observation):
         return observation.due + timedelta(hours=self.hours_delay)
@@ -220,7 +220,7 @@ class Script(models.Model):
         help_text="""If true, replies to this script are visible to the user
         on their personal dashboard.""")
 
-    script_type = models.ForeignKey(ScriptType,
+    script_type = models.ForeignKey('signalbox.ScriptType',
         help_text="""IMPORTANT: This type attribute determines the
         interpretation of some fields below.""")
 
@@ -402,7 +402,7 @@ will not result in an error, but won't produce any output either. """))
                                  help_text="""Number of minutes (plus or minus) to randomise observation
         timing by.""")
 
-    reminders = models.ManyToManyField(Reminder, through=ScriptReminder)
+    reminders = models.ManyToManyField('signalbox.Reminder', through='signalbox.ScriptReminder')
 
     def calculate_start_datetime(self, start_date=None):
         """Return the date the observations should start on."""

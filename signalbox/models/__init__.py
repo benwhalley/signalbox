@@ -15,7 +15,6 @@ import observation_methods
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-
 # apply s sort to django Users
 User._meta.ordering = ["username"]
 

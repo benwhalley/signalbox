@@ -42,16 +42,15 @@
         {% endfor %}
     </ul>
 
-    {% if page.asker.show_progress %}
-        <p> Page {{ page.progress_pages.0 }} of {{ page.progress_pages.1 }}
-        </p>
-    {% endif %}
-
-
     <!-- <hr> -->
     </div>
 {% endif %}
-
+{% if page.asker.show_progress %}
+    <div class="span12">
+        <p> Page {{ page.progress_pages.0 }} of {{ page.progress_pages.1 }}
+    </p>
+</div>
+{% endif %}
 
 </div>
 
@@ -99,9 +98,8 @@
     <hr>
     <p>
 
-            {% if page.questions_which_require_answers %}
+
             <input class="btn btn" type=submit value="Save" onclick="javascript:$('#questionnaire_form').attr('action', '?page={{page.index}}');">
-            {% endif %}
 
 
             {% if not page.is_last and not redbutton %}

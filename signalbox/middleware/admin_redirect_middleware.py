@@ -26,7 +26,7 @@ class AdminRedirectMiddleware:
                     request.session["next"] = request.session["next"][-3:]
                     return response
         else:
-            # request.session["next"] = []
+            request.session["next"] = []
             return response
 
         # apply redirects

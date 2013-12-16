@@ -278,11 +278,22 @@ In addition, for IVR telephone calls, there are:
 - Listen (records audio of the user)
 - Hangup (speaks the text of the question and then ends the current call; it is required that the asker ends with a hangup question)
 
+All questions can take an 'audio' attribute for use in IVR calls, for example::
+
+    ~~~{#ivrexample .likert audio="http://www.example.com/audio.mp3"}
+    This text will be shown on the web, but http://www.example.com/audio.mp3 will be played over the telephone.
+    >>>
+    1=1
+    2=2
+    ...
+    ~~~
+
+
 
 Repeating questions within a Questionnaire
 ----------------------------------------------------
 
-Each question must have unique variable name which will be used to identify data collected. If a question is to be repeated within a questionnaire, it should either be duplicated and given a second, different, name, or placed within an Instrument, and that Instrument given a prefix.
+Each question must have unique variable name which will be used to identify data collected. If a question is to be repeated within a questionnaire, it should either be duplicated and given a second, different, name.
 
 
 
@@ -318,26 +329,4 @@ Or to show a summary score::
     ~~~
 
 Be sure to enable a particular summary score for your Questionnaire on the main editing page - it won't be available unless you do.
-
-
-
-
-
-
-
-
-
-Instruments and question re-use
-------------------------------------
-
-Instruments are packages fo questions which can be placed as a unit within a questionnaire, e.g. for a psychometric scales which will be used in multiple studies.
-
-A useful property of instruments embedded within questionnaires is the ability to make all questions required or not-required with a single checkbox. This can be turned on once testing is over to ensure participants complete all questions.
-
-
-
-
-
-
-
 

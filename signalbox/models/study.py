@@ -72,7 +72,7 @@ class Study(models.Model):
         help_text="""If True, pauses sending of signals. Observations missed
         will not be caught up later without manual intervention.""", db_index=True)
 
-    participants = models.ManyToManyField(User, through='Membership', )
+    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Membership', )
 
     slug = models.SlugField(help_text="""A short name
         used to refer to the study in URLs and other places.""")
@@ -265,8 +265,8 @@ class Study(models.Model):
 
 class StudyCondition(models.Model):
     '''Groupings of participants within a study.'''
-    study = models.ForeignKey('Study', blank=True, null=True)
-    users = models.ManyToManyField(User, through='Membership')
+    study = models.ForeignKey('signalbox.Study', blank=True, null=True)
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through='Membership')
     tag = models.SlugField(max_length=255, default="main")
     display_name = models.CharField(max_length=30, blank=True, null=True,
                                     help_text="""A label for this condition which can be shown to

@@ -566,7 +566,7 @@ class ObservationData(models.Model):
     class Meta:
         app_label = 'signalbox'
 
-    observation = models.ForeignKey(Observation)
+    observation = models.ForeignKey('signalbox.Observation')
     key = models.CharField(max_length=255, choices=settings.OB_DATA_TYPES, db_index=True)
     value = models.TextField(blank=True, null=True)
     added = models.DateTimeField(auto_now_add=True)
@@ -581,7 +581,7 @@ class TextMessageCallback(models.Model):
         request.POST object from the twilio callback""")
     timestamp = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=255, blank=True, null=True)
-    likely_related_user = models.ForeignKey(User, blank=True, null=True)
+    likely_related_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
 
     def from_(self):
         return self.post.get('From', "")

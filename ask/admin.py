@@ -66,8 +66,7 @@ class QuestionInlineForPage(admin.StackedInline):
                     'required',
                     'help_text',
                     'allow_not_applicable',
-                    'audio',
-                    'widget_kwargs'
+                    'extra_attrs',
                     )
             }),
         )
@@ -161,7 +160,6 @@ class QuestionAdminForm(forms.ModelForm):
     class Meta:
         widgets = {
             'text': forms.Textarea(attrs={'cols': 80, 'rows': 10}),
-            # 'variable_label': forms.Textarea(attrs={'cols': 80, 'rows': 3}),
             'help_text': forms.Textarea(attrs={'cols': 80, 'rows': 3}),
         }
 
@@ -186,13 +184,13 @@ class QuestionAdmin(admin.ModelAdmin):
         }),
 
         ("Additional info", {
-        'fields': ( 'help_text', 'audio')
+        'fields': ( 'help_text',)
         }),
 
         ("Advanced", {
         'classes': ('collapse',),
         'fields': (
-            'field_kwargs', 'widget_kwargs'
+            'extra_attrs',
         )
         }
     ))

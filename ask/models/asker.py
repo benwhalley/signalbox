@@ -1,39 +1,26 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ask.models import Choice
+from collections import OrderedDict
 from datetime import datetime
-from django.core import serializers
-from django.core.urlresolvers import reverse
-from django.db import models
-from django.forms.models import model_to_dict
 from functools import partial
-from page import AskPage
-from question import Question
-from signalbox.utilities.djangobits import supergetattr, flatten, dict_map
-from signalbox.utilities.linkedinline import admin_edit_url
 import functools
 import itertools
 import json
 import re
+
+from ask.models import Choice
 from ask.yamlextras import yaml, MyDumper
-from collections import OrderedDict
-from contracts import contract
-
-def filtered_model_to_dict(instance, fields=None, exclude=None):
-    fields = fields or []
-    exclude = exclude or []
-
-    d = model_to_dict(instance)
-
-    if exclude:
-        return {k: v for k, v in d.items() if k not in exclude}
-
-    if not fields:
-        fields = d.keys()
-
-    return {k:v for k, v in d.items() if k in set(fields)}
-
+from django.core import serializers
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.forms.models import model_to_dict
+from page import AskPage
+from question import Question
+from signalbox.utilities.djangobits import supergetattr, flatten, dict_map
+from signalbox.utilities.linkedinline import admin_edit_url
+from yamlfield.fields import YAMLField
+from twiliobox.settings import IVR_SYSTEM_MESSAGES
+from signalbox.custom_contracts import *
 
 
 class AskerManager(models.Manager):
@@ -76,7 +63,14 @@ class Asker(models.Model):
 
     hide_menu = models.BooleanField(default=True)
 
+    system_audio = YAMLField(blank=True, help_text="""A mapping of slugs to text strings or
+        urls which store audio files, for the system to play on errors etc. during IVR calls""")
 
+    def get_phrase(self, key):
+        if self.system_audio:
+            return self.system_audio.get(key, IVR_SYSTEM_MESSAGES.get(key))
+        else:
+            return IVR_SYSTEM_MESSAGES.get(key, None)
 
     def used_in_studies(self):
         from signalbox.models import Study
@@ -114,7 +108,8 @@ class Asker(models.Model):
         """All questions, filtered by previous answers if a reply is passed in, see methods on Page.
         :rtype: list
         """
-        questionsbypage = map(lambda i: i.get_questions(reply=reply),  self.askpage_set.all())
+
+        questionsbypage = map(lambda i: i.get_questions(reply=reply), self.askpage_set.all())
 
         for i, pagelist in enumerate(questionsbypage):
             for q in pagelist:
@@ -158,7 +153,6 @@ class Asker(models.Model):
         CHOICE_FIELDS = ('choiceset.natural_key', 'is_default_value', 'order',
                          'label', 'score')
 
-
         qdicts = [_asdict(i, QUESTION_FIELDS) for i in questions]
         # give a consistent ordering to everything
         [d.update({'order': i}) for i, d in enumerate(qdicts)]
@@ -178,12 +172,41 @@ class Asker(models.Model):
 
         return "{}".format(jsonstring)
 
+    @contract
+    def as_markdown(self):
+        """A helper to convert an asker and associated models to markdown format.
+        :rtype: string
+        """
+
+        _fields = "slug name steps_are_sequential redirect_url finish_on_last_page \
+            show_progress success_message step_navigation system_audio".split()
+
+        metayaml = yaml.safe_dump({i: getattr(self, i) for i in _fields},
+            default_flow_style=False)
+
+        _pages_questions = [
+            (i.as_markdown(), [j.as_markdown() for j in i.get_questions()])
+            for i in self.askpage_set.all()
+        ]
+        qstrings = "\n\n".join(flatten(flatten(_pages_questions)))
+
+        return "---\n" + metayaml + "---\n\n" + qstrings
+
     class Meta:
         permissions = (
             ("can_preview", "Can preview surveys"),
         )
         verbose_name = "Questionnaire"
         app_label = "ask"
+
+    def save(self, *args, **kwargs):
+        # set defaults for system_audio if none exist
+        if self.system_audio:
+            if isinstance(self.system_audio, dict):
+                IVR_SYSTEM_MESSAGES.update(self.system_audio)
+            self.system_audio = IVR_SYSTEM_MESSAGES
+
+        super(Asker, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return "{}".format(self.name or self.slug)

@@ -55,7 +55,7 @@ class UserProfile(models.Model):
 
     county = models.CharField(blank=True, null=True, max_length=50)
 
-    site = models.ForeignKey(StudySite, blank=True, null=True)
+    site = models.ForeignKey('signalbox.StudySite', blank=True, null=True)
 
     title = models.CharField(blank=True, null=True, max_length=20, choices=settings.TITLE_CHOICES)
 

@@ -21,9 +21,6 @@ class ScoreSheet(models.Model):
         'ask.Question', related_name="varsinscoresheet")
     function = models.CharField(max_length=200, choices=[(i, i) for i in SCORESHEET_FUNCTION_NAMES])
 
-    def as_str_for_yaml(self):
-        return "{}({})".format(self.function, " ".join([i.variable_name for i in self.variables.all()]))
-
     def as_simplified_dict(self):
         return {
             'name': self.name,
@@ -64,6 +61,14 @@ class ScoreSheet(models.Model):
 
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.function)
+
+    MARKDOWN_FORMAT = u"""\n{name} <- {function}({variable_string})"""
+
+    def as_markdown(self):
+        d = model_to_dict(self)
+        d.update({'variable_string': " ".join([i.variable_name for i in self.variables.all()])})
+
+        return self.MARKDOWN_FORMAT.format(**d)
 
     class Meta:
         app_label = "signalbox"

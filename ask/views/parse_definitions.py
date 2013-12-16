@@ -5,6 +5,7 @@ from itertools import groupby
 from ask.models import ChoiceSet
 from ask.models import Question
 from ask.models.fields import FIELD_NAMES
+from django.forms.models import model_to_dict
 from django.core.exceptions import ValidationError
 from signalbox.models import ScoreSheet
 from signalbox.utilities.djangobits import get_or_modify, flatten
@@ -76,6 +77,7 @@ yaml_header = _yaml_header_start + SkipTo(Literal("---")|Literal("..."))('yaml')
 ispage = lambda x: bool(x.step_name)
 isnotpage = lambda x: not ispage(x)
 
+
 ############ END OF PYPARSING DEFINITIONS ############
 
 
@@ -111,10 +113,10 @@ def make_question_dict(blockParseResult):
 
     keyvals = blockParseResult.keyvals or {}
     classlist = blockParseResult.classes and blockParseResult.classes.asList()
-    d.update({'field_kwargs': {k: v for k, v in keyvals.items()}})
-    d.update({'widget_kwargs': {k: v for k, v in keyvals.items()}})
+    d.update({'extra_attrs': {k: v for k, v in keyvals.items()}})
+    d.update({'extra_attrs': {k: v for k, v in keyvals.items()}})
 
-    d['widget_kwargs'].update({'classes': {k: True for k in classlist}})
+    d['extra_attrs'].update({'classes': {k: True for k in classlist}})
     d.update({'required': 'required' in classlist})
 
     return d
@@ -148,92 +150,4 @@ def make_page_dict(blockParseResult):
     }
     return d
 
-
-
-
-def _find_choiceset(d):
-    if d.get('choiceset'):
-        cs, _ = ChoiceSet.objects.get_or_create(name=d.get('choiceset'))
-    else:
-        cs = None
-    d.update({'choiceset': cs})
-    return d
-
-
-
-# xxx move these to be methods on the objects
-
-def choiceset_as_markdown(choiceset):
-    if not choiceset.yaml:
-        choiceset.yaml = {i:d for i, d in enumerate([{'score':x.score, 'isdefault': x.is_default_value, 'label':x.label} for x in choiceset.get_choices()])}
-
-    def _formatmappedscore(c):
-        score = c['score']
-        mapped_score = c.get('mapped_score', score)
-        return mapped_score != score and "[{}]".format(mapped_score) or ""
-
-    return "\n".join([
-        u"""{}{}{}={} """.format(
-                c.get('isdefault', "") and "*" or "",
-                c['score'],
-                _formatmappedscore(c),
-                c['label'],
-            )
-            for i, c in choiceset.yaml.items()])
-
-def page_as_markdown(page):
-    return u"\n\n# {}\n".format(page.step_name or "")
-
-from django.forms.models import model_to_dict
-
-def scoresheet_as_markdown(scoresheet):
-    d = model_to_dict(scoresheet)
-    d.update({'variable_string': " ".join([i.variable_name for i in scoresheet.variables.all()])})
-    return """\n{name} <- {function}({variable_string})""".format(**d)
-
-def question_as_markdown(question):
-
-    # iden = question.q_type != "instruction" and "#"+question.variable_name or ""
-    iden = "#"+question.variable_name
-    # classesstring = " ".join(["."+i for i in [question.q_type]])
-
-    if question.widget_kwargs:
-        classesstring = " ".join([".{}".format(k) for k, v in question.widget_kwargs.get('classes', {}).items() if v])
-    else:
-        classesstring = ".{}".format(question.q_type)
-
-    keyvals = dict(question.widget_kwargs)
-    keyvalsstring = " ".join(["""{}="{}" """.format(k, v) for k, v in keyvals.items() if k!="classes"])
-    detailsstring = ""
-    if question.choiceset:
-        detailsstring = u">>>\n" + choiceset_as_markdown(question.choiceset)
-    elif question.scoresheet:
-        detailsstring = u">>>\n"+scoresheet_as_markdown(question.scoresheet)
-
-    return u"""~~~{{{} {} {} }}\n{}\n{}\n~~~""".format(iden, classesstring, keyvalsstring, question.text, detailsstring)
-
-
-def as_custom_markdown(asker):
-    """A helper to convert an asker and associated questions to our custom markdown
-    format. In future this should migrate to the asker model."""
-
-
-    askerasyaml = yaml.safe_dump({
-            'slug':asker.slug,
-            'name':asker.name,
-            'steps_are_sequential': asker.steps_are_sequential,
-            'redirect_url': asker.redirect_url,
-            'finish_on_last_page': asker.finish_on_last_page,
-            'show_progress': asker.show_progress,
-            'success_message': asker.success_message,
-            'step_navigation': asker.step_navigation,
-        }, default_flow_style=False)
-
-    allqs = [(i, i.get_questions()) for i in asker.askpage_set.all()]
-    allqs = map(lambda x: (page_as_markdown(x[0]), x[1]), allqs)
-    allqs = [(i[0], map(question_as_markdown, i[1])) for i in allqs]
-
-    x = flatten(allqs)
-    x = flatten(x)
-    return "---\n" + askerasyaml + "---\n\n" + "\n\n".join(x)
 

@@ -29,9 +29,9 @@ class ContactReason(models.Model):
 
 class ContactRecord(models.Model):
     participant = models.ForeignKey(settings.AUTH_USER_MODEL)
-    reason = models.ForeignKey(ContactReason, blank=True, null=True)
+    reason = models.ForeignKey('ContactReason', blank=True, null=True)
     added = models.DateTimeField(auto_now_add=True)
-    added_by = models.ForeignKey(User, related_name="added_by")
+    added_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="added_by")
     notes = models.TextField(blank=True)
 
     @property

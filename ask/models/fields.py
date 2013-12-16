@@ -26,27 +26,27 @@ FIELD_NAMES = [
     'instruction',
     'likert',
     'likert-list',
+    'pulldown',
+    'required-checkbox',
     'checkboxes',
 
     'long-text',
+    'open',
     'short-text',
 
     'integer',
-    'pulldown',
-    'required-checkbox',
+    'decimal',
+
     'slider',
     'range-slider',
+
     'date',
     'date-time',
     'time',
-    'decimal',
 
-    'uninterruptible-instruction',
     'hangup',
-    'listen',
     'upload',
     'webcam',
-
 ]
 
 
@@ -56,7 +56,7 @@ def class_name(q_type_string):
 __all__ = [class_name(i) for i in FIELD_NAMES]
 
 
-def _merge_field_or_widget_kwargs(old, extra):
+def _merge_field_or_extra_attrs(old, extra):
     if extra:
         for k, v in extra.items():
             if isinstance(v, dict) and old.get(k, None):
@@ -85,7 +85,7 @@ class SignalboxField(object):
 
     prepend_null_choice = False
 
-    widget_kwargs = {}
+    extra_attrs = {}
     error_messages = {'required': _("An answer to this question is required.")}
     choices = None
     input_formats = None
@@ -165,15 +165,15 @@ class SignalboxField(object):
         self.widget.attrs.update({'name': question.variable_name})
 
         # ...Field class
-        self.widget.attrs.update(self.widget_kwargs.get('attrs', {}))
+        self.widget.attrs.update(self.extra_attrs.get('attrs', {}))
         # ...Question instance
-        if question.widget_kwargs:
-            self.widget.attrs.update(question.widget_kwargs)
+        if question.extra_attrs:
+            self.widget.attrs.update(question.extra_attrs)
 
         # Extra information about the field stored on the Question
         # XXXTODO check this is still needed and document what uses it if so...
-        if question.field_kwargs:
-            for k, v in question.field_kwargs.items():
+        if question.extra_attrs:
+            for k, v in question.extra_attrs.items():
                 setattr(self, k, v)
 
         # Setup choices
@@ -195,7 +195,7 @@ class Instruction(SignalboxField, floppyforms.CharField):
     """Display question text only."""
 
     widget = custom_widgets.InstructionWidget
-    widget_kwargs = {'a': 1}
+    extra_attrs = {'a': 1}
 
     def __init__(self, *args, **kwargs):
         """Update method to add a datestamp to the hidden field."""
@@ -219,10 +219,6 @@ class ShortText(SignalboxField, floppyforms.CharField):
 
     has_choices = False
 
-    @staticmethod
-    def voice_function(*args, **kwargs):
-        return twiliofunctions.listen(*args, **kwargs)
-
 
 class LongText(SignalboxField, floppyforms.CharField):
     """Enter a single line of text."""
@@ -235,9 +231,8 @@ class LongText(SignalboxField, floppyforms.CharField):
         return twiliofunctions.listen(*args, **kwargs)
 
 
-class Listen(LongText):
+class Open(LongText):
     pass
-
 
 class Likert(SignalboxField, floppyforms.ChoiceField):
     """Choose a single option from radio buttons presented horizontally."""
@@ -337,7 +332,7 @@ class Date(SignalboxField, floppyforms.DateField):
     widget = floppyforms.widgets.TextInput
     input_formats = settings.DATE_INPUT_FORMATS
     has_choices = False
-    widget_kwargs = {'attrs': {'class': 'datepicker'}}
+    extra_attrs = {'attrs': {'class': 'datepicker'}}
 
     @staticmethod
     def set_format(question):
@@ -350,7 +345,7 @@ class DateTime(SignalboxField, floppyforms.DateTimeField):
 
     widget = floppyforms.widgets.TextInput
     has_choices = False
-    widget_kwargs = {'attrs': {'class': 'datetimepicker'}}
+    extra_attrs = {'attrs': {'class': 'datetimepicker'}}
 
     @staticmethod
     def set_format(question):
@@ -362,7 +357,7 @@ class Time(SignalboxField, floppyforms.TimeField):
     """Presents an html datetime-picker object. Degrades to text input."""
 
     has_choices = False
-    widget_kwargs = {'attrs': {'class': 'timepicker'}}
+    extra_attrs = {'attrs': {'class': 'timepicker'}}
 
     @staticmethod
     def set_format(question):

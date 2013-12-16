@@ -1,12 +1,8 @@
 """
 Module which handles importing questionnaires in special markdown dialect
-using pyparsing to process the input. Also see to_markdown functions on Question,
-Asker etc for the reverse of this process.
-
-This is somewhat a work in progress, and is for expert users only just now.
-
+using pyparsing to process the input.
 """
-
+from django.views.decorators.cache import never_cache
 from hashlib import sha1
 from itertools import groupby, chain
 import itertools
@@ -33,8 +29,7 @@ from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LO
 from signalbox.utilities.djangobits import dict_map, get_or_modify, flatten
 from signalbox.utils import padleft
 from ask.views.parse_definitions import block, yaml_header, make_question_dict, \
-    make_page_dict, as_custom_markdown, add_scoresheet_to_question, \
-    ispage, isnotpage
+    make_page_dict, add_scoresheet_to_question, ispage, isnotpage
 
 
 class TextEditForm(forms.Form):
@@ -46,8 +41,6 @@ class TextEditForm(forms.Form):
         self.asker = kwargs.pop('asker')
         self.locked = kwargs.pop('locked')
         super(TextEditForm, self).__init__(*args, **kwargs)
-        self.base_fields['text'].initial = as_custom_markdown(self.asker)
-        self.base_fields['text'].widget.attrs['rows']=len(self.base_fields['text'].initial.split("\n"))+10
 
 
     def clean(self):
@@ -150,16 +143,15 @@ class TextEditForm(forms.Form):
         return asker
 
 
-from django.views.decorators.cache import never_cache
+
 @never_cache
 @group_required(['Researchers', 'Research Assistants'])
 def edit_asker_as_text(request, asker_id):
     asker = Asker.objects.get(id=asker_id)
-
     asker.reply_set.filter(entry_method="preview").delete()
     nreplies = asker.reply_set.all().count()>0
-    print nreplies
-    form = TextEditForm(request.POST or None, asker=asker, locked=nreplies)
+    form = TextEditForm(request.POST or None, asker=asker, locked=nreplies,
+        initial={'text':asker.as_markdown()})
 
     if form.is_valid():
         form.save()

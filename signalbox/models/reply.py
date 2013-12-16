@@ -115,7 +115,7 @@ class Reply(models.Model, ProcessManager):
     membership = models.ForeignKey(
         'signalbox.Membership', blank=True, null=True)
 
-    user = models.ForeignKey(User, blank=True, null=True,
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
         related_name="reply_user",
         help_text="""IMPORTANT: this is not necessarily the user providing the data (i.e. a
         patient) but could be an assessor or admin person doing double entry from paper. It

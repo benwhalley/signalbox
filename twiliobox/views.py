@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from question_methods import say_extra_text, reply_to_twilio
+from question_methods import say_or_play_phrase, reply_to_twilio
 from reversion import revision
 from signalbox.models import Observation, Reply, Answer, TextMessageCallback
 from signalbox.utilities.djangobits import conditional_decorator
@@ -77,7 +77,7 @@ def save_answer(reply, question, querydict):
     answer.answer = user_answer
     answer.meta = extra_json,
     answer.choices = question and question.choices_as_json()
-    answer.save(force_save=True) # force save because answer may be readonly if versioning off
+    answer.save(force_save=True)  # force save because answer may be readonly if versioning off
     return answer
 
 
@@ -94,7 +94,7 @@ def play(request, reply_token, question_index=0):
     question_index = int(question_index)
     reply = Reply.objects.get(token=reply_token)
     if not reply:
-        return reply_to_twilio(say_extra_text(twiml.Response(),
+        return reply_to_twilio(say_or_play_phrase(twiml.Response(),
             "No reply found for this token."))
     asker = reply.asker
 
@@ -131,26 +131,28 @@ def play(request, reply_token, question_index=0):
         # if the user responds with a * then repeat the question again
         elif answer.answer == "*":
             response = twiml.Response()
-            say_extra_text(response, "Repeating the question")
+            say_or_play_phrase(response, asker.get_phrase('repeating'))
             response.redirect(url=repeat_url, method="GET")
             return reply_to_twilio(response)
 
-        else: # if it wasn't a suitable response
+        else:  # if it wasn't a suitable response
             reply.add_data('question_error', thequestion.variable_name)
             reply.add_data('incorrect_response', answer.answer)
 
             errors = reply.replydata_set.filter(key='question_error', value=thequestion.variable_name)
             response = twiml.Response()
             if errors.count() >= MAX_QUESTION_ERRORS:
-                say_extra_text(response, "I didn't understand your answer, but I'll skip to the next question now anyway.".format(answer.answer))
+                say_or_play_phrase(response, asker.get_phrase('you_said'))
+                say_or_play_phrase(response, str(answer.answer))
+                say_or_play_phrase(response, asker.get_phrase('unsuitable'))
+                say_or_play_phrase(response, asker.get_phrase('skipping'))
                 response.redirect(url=next_question_url, method="GET")
                 return reply_to_twilio(response)
             else:
-                say_extra_text(response, "Sorry, {} wasn't a suitable answer.".format(answer.answer))
+                say_or_play_phrase(response, asker.get_phrase('unsuitable'))
+                say_or_play_phrase(response, asker.get_phrase('repeating'))
                 response.redirect(url=repeat_url, method="GET")
                 return reply_to_twilio(response)
-
-
 
 
 TWILIO_SMS_FIELDS = "sid Date_Created Date_Updated Date_Sent Account_Sid From_ To Body \
@@ -191,7 +193,6 @@ def answerphone(request):
     twilio_number = TwilioNumber.objects.get(phone_number__icontains=incoming)
     asker = twilio_number.answerphone_script
 
-
     reply = Reply(
         asker=asker,
         external_id=incoming_data['CallSid'],
@@ -206,4 +207,3 @@ def answerphone(request):
     [i.save() for i in answers]
 
     return play_twiml(request, first=True, external_id=incoming_data['CallSid'])
-
