@@ -1,84 +1,147 @@
 {% extends "signalbox:admin/change_form.html" %}
-
+{% load humanize%}
 
 {% block content %}
 
 <ul class="nav nav-tabs" id="usertabs">
+    {% if original %}
     <li class="active">
-        <a href="#tabmain" data-toggle="tab">Main</a>
+        <a href="#tabsummary" data-toggle="tab">Summary</a>
     </li>
-    <li>
-        <a href="#tabextra" data-toggle="tab">Study information</a>
+    {% endif %}
+    <li class="{%if not original %}active{%endif %}">
+        <a href="#tabmain" data-toggle="tab">Edit</a>
     </li>
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane active" id="tabmain">
+    {% if original %}
+        <div class="tab-pane active" id="tabsummary">
+            <h2>{{original.name}}</h2>
+            <div class=row>
+
+                <div class="span4">
+<h4>Conditions and scripts</h4>
+
+<table class="table">
+{% for i in original.studycondition_set.all %}
+<tr>
+    <th>Condition: '{{i.tag}}'</th>
+</tr>
+{% for j in i.scripts.all %}
+<tr>
+    <td>
+       Script: <a href="{% url 'admin:signalbox_script_change' j.id %}">{{j.name}}</a>
+            {% if j.asker %}uses <a href="{% url 'admin:ask_asker_change' j.id %}">{{j.asker}}</a> at the following times:{% else %}makes observations at the following times:{% endif %}
+<pre>{% for k in j.datetimes_with_natural_syntax %}{{k.syntax}}{% endfor %}</pre>
+    </td>
+</tr>
+{% endfor %}
+
+{% endfor %}
+</table>
+
+
+{% if original.ad_hoc_askers.all %}
+<h4>Ad-hoc questionnaires</h4>
+These questionnaires can be completed at any time by all participants.
+<ul>
+{% for i in original.ad_hoc_askers.all %}
+<li><a href="{% url 'admin:ask_asker_change' i.id %}">{{i}}</a></li>
+{%endfor%}
+</ul>
+{% endif %}
+
+</pre>
+
+<table class="table">
+{% for i in original.createifs.all %}
+   <tr>
+       <td>{{i.script}} <span class="label label-info">responsive mode</span></td>
+
+       <td>
+           <a class="btn btn-mini" href="{% url 'admin:signalbox_script_change' i.script.id %}">Edit script</a>
+
+           {% if i.script.asker %}<a class="btn btn-mini" href="{% url 'admin:ask_asker_change' i.script.asker.id %}">Edit questionnaire</a>
+           {% endif %}
+
+       </td>
+
+   </tr>
+   {% endfor %}
+</table>
+
+
+                </div>
+                <div class="span5">
+<h4>Study participants</h4>
+
+{% if not original.membership_set.all %}
+No participants yet.
+{% else %}
+
+{% if original.membership_set.count > 4 %}
+<p>Current imbalance in membership allocations is:
+{%if original.chisq_imbalance.1 < .05 %}significant{% else %}non-significant{% endif%} (chisq={{original.chisq_imbalance.0|floatformat}}, p={{original.chisq_imbalance.1|floatformat}})
+</p>
+{% endif %}
+
+<table class="table">
+    <tr>
+        <th>Condition</th><th>N</th><td>Expected</td>
+    </tr>
+{% for i in original.studycondition_set.all %}
+    <tr>
+        <td>{{i.tag}}</td><td>{{i.users.count}}</td><td>{{i.expected_n|floatformat}}</td>
+    </tr>
+{% endfor %}
+    <tr>
+        <th>Total</th><th>{{original.studycondition_set.count}}</th><td><a class="btn btn-primary btn-small" href="{% url 'admin:signalbox_membership_changelist' %}?study__id__exact={{original.id}}">Show participants</a></td>
+    </tr>
+</table>
+
+<hr>
+
+
+<p><a class="btn" href="{% url 'admin:signalbox_observation_changelist' %}?dyad__study__id__exact={{object_id}}" class="historylink">Review Observations</a>
+
+<p><a class="btn " href="{% url 'resolve_double_entry_conflicts_for_study' original.id %}">Manage duplicate data</a>
+
+
+
+{% endif %}
+
+                </div>
+
+                <div class="span3">
+                    <h4>Settings</h4>
+                    <table>
+                        <tr><td>slug: <code>{{original.slug}}</code></td></tr>
+                        <tr><td>study_email: <code>{{original.study_email}}</code></td></tr>
+                        <tr><td>twilio_number: <code>{{original.twilio_number}}</code></td></tr>
+                        <tr><td>visible: <code>{{original.visible}}</code></td></tr>
+                        <tr><td>paused: <code>{{original.paused}}</code></td></tr>
+                        <tr><td>auto_randomise: <code>{{original.auto_randomise}}</code></td></tr>
+                        <tr><td>auto_add_observations: <code>{{original.auto_add_observations}}</code></td></tr>
+                        <tr><td>auto_randomise: <code>{{original.auto_randomise}}</code></td></tr>
+                    </table>
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+    {% endif %}
+
+    <div class="tab-pane {%if not original %}active{%endif %}" id="tabmain">
         {{block.super}}
     </div>
-    <div class="tab-pane" id="tabextra">
-        <h4>Data management</h4>
-        <p>
-        {% if original %}
-        <a class="btn btn-primary" href="{% url 'admin:signalbox_membership_changelist' %}?study__id__exact={{original.id}}">Study participants</a>
-
-
-        <a class="btn " href="{% url 'resolve_double_entry_conflicts_for_study' original.id %}">Manage duplicate data</a>
-
-
-        <a class="btn" href="{% url 'admin:signalbox_observation_changelist' %}?dyad__study__id__exact={{object_id}}" class="historylink">Review Observations</a>
-
-        <h4>Study conditions</h4>
-        <table class="table table-striped">
-        {% for condition in original.studycondition_set.all %}
-        <tr>
-            <td>{{condition}}</td>
-            <td>
-                <a class="btn btn-mini" href="{% url 'admin:signalbox_studycondition_change' condition.id %}">Edit</a>
-                <a class="btn btn-mini" href="{% url 'preview_studycondition_timings' condition.id %}">Schedule</a>
-            </td>
-        </tr>
-        {% endfor %}
-        </table>
-
-
-        {% if original.scripts_used_by_this_study %}
-        <h4>Scripts in use </h4>
-
-        <table class="table table-striped">
-            {% for i in original.scripts_used_by_this_study %}
-            <tr>
-                <td>{{i}}  <span class="label label-success">scheduled</span></td>
-                <td>
-                    <a class="btn btn-mini" href="{% url 'admin:signalbox_script_change' i.id %}">Edit script</a>
-
-                    {% if i.asker %}<a class="btn btn-mini" href="{% url 'admin:ask_asker_change' i.asker.id %}">Edit questionnaire</a>
-                    {% endif %}
-
-                </td>
-            </tr>
-            {% endfor %}
-
-            {% for i in original.createifs.all %}
-            <tr>
-                <td>{{i.script}} <span class="label label-info">responsive mode</span></td>
-
-                <td>
-                    <a class="btn btn-mini" href="{% url 'admin:signalbox_script_change' i.script.id %}">Edit script</a>
-
-                    {% if i.script.asker %}<a class="btn btn-mini" href="{% url 'admin:ask_asker_change' i.script.asker.id %}">Edit questionnaire</a>
-                    {% endif %}
-
-                </td>
-
-            </tr>
-            {% endfor %}
-        </table>
-        {% endif %}
 
 
 
-        {% endif %}
     </div>
 
 </div>

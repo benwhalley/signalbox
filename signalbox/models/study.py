@@ -1,33 +1,27 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# -*- coding: utf-8 -*-
-'''
-Models for the SignalBox application
+from __future__ import division
 
-The SignalBox app is the core of the system responsible for defining studies,
-scheduling observations and specifying what is to be done on each occasion
-(e.g. send email, make call).
-
-'''
-import itertools
 from datetime import datetime, timedelta
-from django.conf import settings
-from django.db import models
-from django.core.urlresolvers import reverse
+import itertools
 
-from django.contrib.auth import get_user_model
-User = get_user_model()
-
-from django.template import Context, loader
-from django.db.models.loading import get_model
-from django.core.exceptions import ValidationError
-from django.db.models import Count
-
-from signalbox.utils import incomplete, in_range
-from signalbox.models.validators import is_24_hour, only_includes_allowed_fields
-from signalbox.models import Reply, Answer
 from ask.models import Question
+from contracts import contract
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.db.models import Count
+from django.db.models.loading import get_model
+from django.template import Context, loader
+from signalbox.models import Reply, Answer
+from signalbox.models.validators import is_24_hour, only_includes_allowed_fields
+from signalbox.utils import incomplete, in_range
+from statlib.stats import chisquare
+
+
+User = get_user_model()
 
 
 class StudySite(models.Model):
@@ -244,6 +238,22 @@ class Study(models.Model):
         ordering = ["name"]
         verbose_name_plural = "studies"
 
+    @contract
+    def chisq_imbalance(self):
+        """Returns the chi2 and p value for the imbalance in allocations.
+
+        That is, between current membership allocations and the expected
+        frequencies based on the StudyCondition weights.
+
+        :rtype: tuple(float, float)
+        """
+        conditions = self.studycondition_set.all()
+        counts = [i.users.count() for i in conditions]
+        expected =  [i.expected_n() for i in conditions]
+
+        return chisquare(counts, expected)
+
+
     def get_absolute_url(self):
         return reverse('study', args=(self.pk,))
 
@@ -275,6 +285,13 @@ class StudyCondition(models.Model):
     weight = models.IntegerField(default=1,
                                  help_text="""Relative weights to allocate users to conditions""")
     scripts = models.ManyToManyField('signalbox.Script', blank=True, null=True)
+
+
+    def expected_n(self):
+        """Return the expected number of participants based on the total currently allocated to the parent study."""
+        weights = [i.weight for i in self.study.studycondition_set.all()]
+        w = self.weight/sum(weights)
+        return self.study.membership_set.count() * w
 
     class Meta:
         ordering = ['study', 'tag']

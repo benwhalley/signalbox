@@ -37,7 +37,7 @@ class ObservationCreator(models.Model):
         membership = reply.observation.dyad
 
         if not membership:
-            raise SignalBoxException("We can't add observations if no membership exists")
+            raise SignalBoxException("We can't add observations if no membership exists.")
 
         if not self.showif.evaluate(reply):
             return []  # no new observations need creating
