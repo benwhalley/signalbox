@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import random
 from django.core.urlresolvers import reverse
 from django.db import models
 from signalbox.process import Step
@@ -72,6 +73,7 @@ class AskPage(models.Model, Step):
 
     submit_button_text = models.CharField(max_length=255, default="""Continue""")
     step_name = models.CharField(max_length=255, null=True, blank=True)
+    randomise_questions = models.BooleanField(default=False)
 
     def name(self):
         return self.step_name or "Page {}".format(self.index() + 1)
@@ -113,9 +115,17 @@ class AskPage(models.Model, Step):
         '''
 
         if not reply:
-            return list(self.question_set.all().order_by('order'))
+            qs = list(self.question_set.all().order_by('order'))
         else:
-            return self._questions_to_show(reply=reply)
+            qs = list(self._questions_to_show(reply=reply))
+
+        if self.randomise_questions:
+            # use the same seed to ensure the ordering is consistently
+            # maintained within a reply
+            reply and random.seed(reply.token)
+            random.shuffle(qs)
+
+        return qs
 
     @contract
     def _questions_to_show(self, reply):
