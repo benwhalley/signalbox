@@ -1,5 +1,10 @@
 
 
+Have added ability to randomise question ordering within a page
+but this does't allow for editing in text format yet - nned to change parse definitions and associated code
+
+
+
 #allow summrscores and real score on same question
 
 check what happens with duplicate scores when exporting data to labels
