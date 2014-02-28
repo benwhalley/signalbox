@@ -97,7 +97,7 @@ class ParticipantPasswordForm(forms.Form):
 class SelectExportDataForm(forms.Form):
 
     studies = forms.ModelMultipleChoiceField(queryset=Study.objects.all(), required=False)
-    questionnaire = forms.ModelChoiceField(queryset=Asker.objects.all(), required=False)
+    questionnaires = forms.ModelMultipleChoiceField(queryset=Asker.objects.all(), required=False)
     reference_study = forms.ModelChoiceField(queryset=Study.objects.all(),
         help_text="""The date the user was randomised to this study is used as a
         reference point for all other randomisations.""", required=False)
@@ -105,9 +105,9 @@ class SelectExportDataForm(forms.Form):
     def clean(self):
         cln = self.cleaned_data
         studies = cln.get('studies', None)
-        asker = cln.get('questionnaire', None)
+        askers = cln.get('questionnaires', None)
 
-        if not (studies or asker):
+        if not (studies or askers):
             raise ValidationError("Choose a study or a questionnaire.")
 
         if studies and not cln.get('reference_study', None):
@@ -118,8 +118,8 @@ class SelectExportDataForm(forms.Form):
         if studies:
             answers = get_answers(studies)
 
-        if asker:
-            answers = answers.filter(reply__asker=asker)
+        if askers:
+            answers = answers.filter(reply__asker__in=askers)
 
         if not answers:
             raise ValidationError("No data matching filters.")

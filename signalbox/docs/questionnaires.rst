@@ -195,6 +195,9 @@ A complete example can be found in `ask/fixtures/asker_text.md`.
 Other types of questions available
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Different questions types can be specified as attributes on the question, similar
+to a css class style. Just add a period (.) and the name of the type:
+
 `instruction`
     No answer required, but 'question' text displayed.
 
@@ -231,15 +234,19 @@ Other types of questions available
 `slider or range-slider`
     A slider element which allows users to pick a value between a `min` and a `max` which are specified as additional attributes. E.g.::
 
-        ~~~{#variablename type="slider" min=0 max=100 value=50}
-        Slide the slider to a value between 0 and 100 (this slider defaults to 50).
+        ~~~{#variablename .slider min=0 max=100 value=50}
+        Slide the slider to a value between 0 and 100 (this slider will default to 50).
         ~~~
 
     Or if you want a slider with two movable points to specify a range of values::
 
-        ~~~{#variablename type="slider" min=0 max=100 values=[10,90]}
+        ~~~{#variablename .range-slider min=0 max=100 values=[10,90]}
         Slide the slider to encompass a range of values between 0 and 100 (this slider defaults to the range 10-90).
         ~~~
+
+    Note that for both sliders, a default value will be given and it's therefore
+    impossible to specify that a response is required (becase no response cannot
+    be distinguished from the default response).
 
 `date`
     A date picker.
