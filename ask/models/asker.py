@@ -198,6 +198,7 @@ class Asker(models.Model):
         )
         verbose_name = "Questionnaire"
         app_label = "ask"
+        ordering = ['name']
 
     def save(self, *args, **kwargs):
         # set defaults for system_audio if none exist
