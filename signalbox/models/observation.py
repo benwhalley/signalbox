@@ -113,7 +113,7 @@ class ObservationManager(models.Manager):
 
         if not user.is_staff:
             # only show your own
-            return allobs.filter(dyad__user=user)
+            return allobs.filter(dyad__user__pk=user.id)
 
         if due_now:
             allobs = allobs.filter(due__lt=datetime.now() + timedelta(days=1))

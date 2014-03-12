@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.contrib.auth.decorators import login_required
 from django.conf.urls.defaults import patterns, url, include
 from django.conf.urls.defaults import url, patterns
 from django.contrib.auth.views import logout
@@ -72,10 +73,6 @@ adminpatterns = patterns('',
 
     # view called via jquery for instant previews of the script message
     url(r'^script/message/preview/$', script_message_preview, {}, "script_message_preview"),
-
-
-    # main filter view for observations
-    # url(r'^observations/$', list_obs, {}, "list_obs"),
 
     # custom add and edit participants
     url(r'^participant/new/$',

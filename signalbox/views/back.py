@@ -6,6 +6,7 @@ from django import forms
 import selectable.forms as selectable
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden, Http404
@@ -43,6 +44,21 @@ from django.core.exceptions import PermissionDenied
 from signalbox.models.naturaltimes import parse_natural_date
 
 
+
+
+class StaffRequiredMixin(object):
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ViewSpaceIndex, self).dispatch(*args, **kwargs)
+
+
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ViewSpaceIndex, self).dispatch(*args, **kwargs)
+
+
+
 class AnswerFileView(SingleObjectMixin, DownloadView):
     model = Answer
     use_xsendfile = False
@@ -77,7 +93,7 @@ def send_password_reset(request, user_id):
                                         args=(user.id,)))
 
 
-class VersionView(ListView):
+class VersionView(StaffRequiredMixin, ListView):
     model = Revision
     paginate_by = 60
 
@@ -337,7 +353,11 @@ def resend_observation_signal(request, obs_id,):
         reverse('admin:signalbox_observation_change', args=(str(observation.id),)))
 
 
-class ObservationView(ListView):
+class ObservationView(StaffRequiredMixin, ListView):
+    """XXX TODO This should be a researcher-only view... update
+    when this ticket is fixed: https://code.djangoproject.com/ticket/13879"""
+
+
     model = Observation
     paginate_by = 30
     template_name = "admin/signalbox/observation_list.html"
@@ -367,8 +387,10 @@ class ReplyUpdateAfterDoubleEntryForm(forms.ModelForm):
         fields = ['originally_collected_on']
 
 
-class ReplyUpdateAfterDoubleEntry(UpdateView):
-
+class ReplyUpdateAfterDoubleEntry(StaffRequiredMixin, UpdateView):
+    """XXX TODO This should be a researcher-only view... update
+    when this ticket is fixed: https://code.djangoproject.com/ticket/13879
+    """
     def get_success_url(self):
         return reverse('membership_observations_todo',
                        args=(self.object.observation.dyad.id,))
