@@ -6,7 +6,9 @@ from django import forms
 import selectable.forms as selectable
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, staff_member_required
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden, Http404
