@@ -7,7 +7,8 @@ from tastypie.authentication import Authentication
 from tastypie.authorization import DjangoAuthorization
 from ask.models import ChoiceSet, Asker, Question
 
-SERIALIZER_FORMATS = ['json',]
+SERIALIZER_FORMATS = ['json', ]
+
 
 class WebAuthentication(Authentication):
 
@@ -39,5 +40,3 @@ class ChoiceSetResource(ModelResource):
         serializer = Serializer(formats=SERIALIZER_FORMATS)
         authentication = WebAuthentication()
         authorization = DjangoAuthorization()
-
-

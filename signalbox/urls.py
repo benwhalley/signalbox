@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.decorators import login_required
-from django.conf.urls.defaults import patterns, url, include
-from django.conf.urls.defaults import url, patterns
+from django.conf.urls import patterns, url, include
 from django.contrib.auth.views import logout
 from django.http import HttpResponseForbidden
 from django.views.generic import DetailView, ListView, RedirectView
@@ -35,13 +34,10 @@ urlpatterns = patterns('',
         (r'^api/', include(v1_api.urls)),
 )
 
-
 # ADMIN URLS
 
 class AdminMessageView(ExtraContextView):
     template_name = "admin/message.html"
-
-
 
 adminpatterns = patterns('',
     url(r'^answer/(?P<pk>\d+)/upload/$', AnswerFileView.as_view(), {}, 'user_uploaded_file' ),
@@ -76,7 +72,7 @@ adminpatterns = patterns('',
 
     # custom add and edit participants
     url(r'^participant/new/$',
-        NewParticipantWizard([CreateParticipantForm, ParticipantPasswordForm]), {}, 'new_participant'),
+        NewParticipantWizard.as_view([CreateParticipantForm, ParticipantPasswordForm]), {}, 'new_participant'),
 
     url(r'^participant/(?P<user_id>\d+)/reset/password/$', send_password_reset, {}, "send_password_reset"),
     url(r'^participant/(?P<pk>\d+)/edit/$', edit_participant, {}, 'edit_participant'),
@@ -127,6 +123,12 @@ adminpatterns = patterns('',
 # FRONTEND URLS
 
 urlpatterns = urlpatterns + patterns('',
+    url(r'^$', user_homepage, name='user_homepage'),
+    url(r'^(?P<id>\d+)?/?$', edit_participant, {}, 'edit_participant'),
+    url(r'^$', edit_participant, {}, 'edit_participant'),
+    url(r'^$', find_participant, {}, 'find_participant'),
+
+
     url(r'^enter/data/(?P<observation_token>[\w-]+)/?$',
         start_data_entry, {'entry_method': "participant"}, name="start_data_entry"),
 

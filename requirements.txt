@@ -1,6 +1,6 @@
-Django>=1.5,<1.6
+Django>=1.6
 Markdown==2.3.1
-Pillow==1.7.8
+Pillow==2.3.1
 South==0.8.2
 cmsplugin-simple-markdown==1.2
 django-admin-bootstrapped==0.3.2
@@ -31,3 +31,4 @@ PyYAML>=3.10
 shortuuid>=0.4
 statlib>=1.1
 twilio>=3.6.3
+docutils==0.11

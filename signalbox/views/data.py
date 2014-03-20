@@ -255,7 +255,7 @@ def _shifted(obj, datetimefield, delta):
 
 
 @group_required(['Researchers', ])
-@conditional_decorator(revision.create_on_success, settings.USE_VERSIONING)
+# @conditional_decorator(revision.create_on_success, settings.USE_VERSIONING)
 def dateshift_membership(request, pk=None):
     '''Allows Researchers to shift the time of all observations within a Membership.'''
 

@@ -18,6 +18,7 @@ from django.template.loader import get_template
 import fields
 from jsonfield import JSONField
 import markdown
+
 from signalbox.exceptions import DataProtectionException
 from signalbox.utilities.djangobits import supergetattr, flatten, safe_help, int_or_string
 from signalbox.utilities.linkedinline import admin_edit_url
@@ -104,13 +105,13 @@ class Question(models.Model):
         return self.page.asker.questions().index(self)
 
     def dict_for_yaml(self):
-        d =  {
+        d = {
                 "text": self.text,
                 "q_type": self.q_type,
                 "choiceset": supergetattr(self, "choiceset.name", None),
                 "required": self.required,
                 }
-        return {self.variable_name: {k:v for k, v in d.items() if v}}
+        return {self.variable_name: {k: v for k, v in d.items() if v}}
 
     page = models.ForeignKey('ask.AskPage', null=True, blank=True)
     scoresheet = models.ForeignKey('signalbox.ScoreSheet',  blank=True, null=True)
@@ -119,7 +120,7 @@ class Question(models.Model):
 
     def natural_key(self):
         return (self.variable_name, )
-    natural_key.dependencies = ['ask.choiceset','ask.AskPage']
+    natural_key.dependencies = ['ask.choiceset', 'ask.AskPage']
 
     order = models.IntegerField(default=-1, verbose_name="Page order",
         help_text="""The order in which items will apear in the page.""")
@@ -140,7 +141,7 @@ class Question(models.Model):
         except AttributeError:
             condition = None
 
-        show =  parse_conditional(condition, mapping_of_answers)
+        show = parse_conditional(condition, mapping_of_answers)
         print condition, mapping_of_answers, show
         return show
 
@@ -201,7 +202,6 @@ class Question(models.Model):
 
         return markdown.markdown(templ.render(Context(context)))
 
-
     q_type = models.CharField(choices=[(i, i) for i in FIELD_NAMES],
         blank=False, max_length=100, default="instruction")
 
@@ -249,7 +249,6 @@ class Question(models.Model):
         """
 
         return (self.choiceset and self.choiceset.choice_tuples()) or None
-
 
     def response_possible(self):
         """:: Question -> Bool
@@ -323,7 +322,6 @@ class Question(models.Model):
             'details': detailsstring
             }
         )
-
 
     def clean(self, *args, **kwargs):
 
@@ -430,7 +428,7 @@ class ChoiceSet(models.Model):
             {'score': i.score,  'label': i.label, 'is_default_value': i.is_default_value}
                 for i in self.get_choices()}
         # comprehension to filter out null values to make things clearer to edit by hand
-        sd = {k: {a:b for a, b in v.items() if b != None} for k, v in sd.items()}
+        sd = {k: {a: b for a, b in v.items() if b is not None} for k, v in sd.items()}
         return {self.name: sd}
 
     @contract
@@ -455,12 +453,11 @@ class ChoiceSet(models.Model):
         """
         return [(int(i.score), i.label) for i in self.get_choices()]
 
-
     MARKDOWN_FORMAT = u"""{isdefault}{score}{mapped_score}={label} """
 
     def as_markdown(self):
         if not self.yaml:
-            self.yaml = {i:d for i, d in enumerate([{'score':x.score, 'isdefault': x.is_default_value, 'label':x.label} for x in self.get_choices()])}
+            self.yaml = {i: d for i, d in enumerate([{'score': x.score, 'isdefault': x.is_default_value, 'label': x.label} for x in self.get_choices()])}
 
         def _formatmappedscore(c):
             score = c['score']
@@ -507,7 +504,6 @@ class ChoiceSet(models.Model):
         :rtype: list(int)
         """
         return [int(i.score) for i in self.get_choices()]
-
 
     def __unicode__(self):
         return u'%s' % (self.name, )
@@ -571,7 +567,6 @@ class ShowIf(models.Model):
             inrange = lambda x: x > self.more_than and x < self.less_than
             return False not in map(inrange, vals_to_be_tested)
 
-
     def lowest(self):
         """Return a number that the user's previous response should be higher than"""
         return self.more_than or float("-inf")
@@ -592,7 +587,7 @@ class ShowIf(models.Model):
             possibles = set(self.previous_question.choiceset.allowed_responses())
             vals = set(filter(bool, map(valid.is_int, self.values.split(","))))
             if not vals.issubset(possibles):
-                raise ValidationError("""Valid choices for the selected question are: %s""" % ("; ".join(map(str,possibles)), ))
+                raise ValidationError("""Valid choices for the selected question are: %s""" % ("; ".join(map(str, possibles)), ))
 
         if self.previous_question and self.summary_score:
             raise ValidationError("""You can hide/show this item based on a previous question value
@@ -605,7 +600,6 @@ class ShowIf(models.Model):
         if not self.values and not (self.less_than or self.more_than):
             raise ValidationError(
                 """Please specify a list of values to match, or a range.""")
-
 
     def conditions_as_strings(self):
         conditions = []
@@ -628,10 +622,11 @@ class ShowIf(models.Model):
 
     def operator_as_string(self):
         workouttypeofshowif = tuple(map(bool,
-            [   self.less_than,
-                self.more_than,
-                self.values,
-                bool(self.values and len(self.values.split(",")) > 1)
+            [
+            self.less_than,
+            self.more_than,
+            self.values,
+            bool(self.values and len(self.values.split(",")) > 1)
             ]
         ))
 

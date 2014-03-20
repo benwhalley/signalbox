@@ -4,8 +4,9 @@
 from ask.models import Asker
 from django import forms
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.formtools.wizard import FormWizard
+from django.contrib.formtools.wizard.views import CookieWizardView
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -26,10 +27,6 @@ from signalbox.utilities.djangobits import supergetattr
 User = get_user_model()
 
 
-
-
-
-
 def get_answers(studies):
 
     mems = set(Membership.objects.filter(study__in=studies))
@@ -41,7 +38,6 @@ def get_answers(studies):
                               ).exclude(question__variable_name__isnull=True
                                         ).order_by('reply')
     return answers
-
 
 
 class DateShiftForm(forms.Form):
@@ -56,13 +52,16 @@ class DateShiftForm(forms.Form):
         return cleaned_data.get('new_randomised_date').date() - current
 
 
-class NewParticipantWizard(FormWizard):
+class NewParticipantWizard(CookieWizardView):
     """Wizard to allow a user to be added along with a userprofile.
 
     Only used the in admin interface. See SignupForm below for the form used in conjunction
     with django_registration on the front end.
     """
-    def done(self, request, form_list, **kwargs):
+
+    template_name = "signalbox/wizard_form.html"
+
+    def done(self, form_list, **kwargs):
         userform = form_list[0]
 
         passwordform = form_list[1]
@@ -76,7 +75,7 @@ class NewParticipantWizard(FormWizard):
             user.set_unusable_password()
 
         user.save()
-
+        messages.add_message(self.request, messages.INFO, "Created new user: {}".format(user.username) )
         return HttpResponseRedirect(reverse('edit_participant', args=(user.id, )))
 
 

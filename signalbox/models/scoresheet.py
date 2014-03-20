@@ -5,6 +5,7 @@ from django.forms.models import model_to_dict
 from collections import defaultdict
 from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LOOKUP
 
+
 def float_or_none(string):
     """Try to turn a string into a float, but return None if this fails."""
 
@@ -49,16 +50,15 @@ class ScoreSheet(models.Model):
 
         try:
             scores = [float_or_none(a.mapped_score()) for a in answers_to_use]
-            scores = [a for a in scores if a != None]
+            scores = [a for a in scores if a is not None]
 
             if len(scores) < self.min_number_variables():
-                return {'scoresheet':self, 'score':None, 'message': "Only %s variables submitted" % len(scores)}
+                return {'scoresheet': self, 'score': None, 'message': "Only %s variables submitted" % len(scores)}
             else:
-                return {'scoresheet':self, 'score':self.score_function()(scores), 'message': ""}
+                return {'scoresheet': self, 'score': self.score_function()(scores), 'message': ""}
 
         except Exception as e:
-            return {'scoresheet':self, 'score':None, 'message': str(e)}
-
+            return {'scoresheet': self, 'score': None, 'message': str(e)}
 
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.function)

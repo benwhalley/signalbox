@@ -1,5 +1,9 @@
 
 
+Reenabe revisions search for create_on_success
+
+
+
 Need to fix Stata syntax output on exporting when not related to studies... at present we try to parse the randomised date which is non expistent and causes an error
 
 
@@ -127,18 +131,11 @@ Would have a study attached to a number... each condition within the study would
 
 
 # show row counts in all tables
-SELECT schemaname,relname,n_live_tup 
-  FROM pg_stat_user_tables 
+SELECT schemaname,relname,n_live_tup
+  FROM pg_stat_user_tables
   ORDER BY n_live_tup DESC;
 
 
 
 
 BUG: the system won't check if you try to make more than one Choice the default value for a choiceset. Remember how this might interact with markdown editing when fixing.
-
-
-
-
-
-
-

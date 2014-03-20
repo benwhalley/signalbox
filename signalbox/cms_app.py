@@ -1,6 +1,6 @@
 from django.db.models import Q
 from datetime import datetime as d
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 from django.views.generic import ListView, DetailView
 from django.views.generic.dates import MonthArchiveView
 from cms.app_base import CMSApp
@@ -35,4 +35,3 @@ class ParticipantApphook(CMSApp):
         url(r'^$', find_participant, {}, 'find_participant'),
     ),]
 apphook_pool.register(ParticipantApphook)
-

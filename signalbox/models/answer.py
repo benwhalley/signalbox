@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-
 from django.utils.encoding import smart_text
 from django.utils.safestring import mark_safe
 from django.db import models
@@ -105,6 +104,11 @@ class Answer(models.Model):
         )
 
     def get_value_for_export(self):
+        """Pre-process the answer in preparation for exporting as csv etc.
+
+        The processing which occurs will depend on the field type and the methods
+        described in ask.fields.
+        """
         class_name = fields.class_name(supergetattr(self, 'question.q_type', ""))
         processor = getattr(getattr(fields, class_name), 'export_processor')
         return processor(self.answer)

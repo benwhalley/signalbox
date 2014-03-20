@@ -31,7 +31,6 @@ class PageForm(forms.Form):
 
         return True
 
-
     def __init__(self, *args, **kwargs):
         """Overridden to dynamically create form."""
 
@@ -47,7 +46,7 @@ class PageForm(forms.Form):
         super(PageForm, self).__init__(*args, **kwargs)
 
         for question in self.questions_to_show:
-            self.fields[question.variable_name]= question.field_class()(
+            self.fields[question.variable_name] = question.field_class()(
                 question=question,
                 reply=reply,
                 request=request
@@ -60,11 +59,11 @@ class PageForm(forms.Form):
         else:
             initialpage = 0
 
-        self.fields['page_id'] = forms.IntegerField(required=True,
-            widget=forms.HiddenInput, initial=initialpage)
+        self.fields['page_id'] = forms.IntegerField(required=True, widget=forms.HiddenInput,
+                                                    initial=initialpage)
 
 
-@revision.create_on_success
+# @revision.create_on_success
 def save_question_response(response, reply, page=None, question=None, variable_name=None):
     """Saves response as an Answer, unique within this Reply.
 
@@ -95,5 +94,6 @@ def save_question_response(response, reply, page=None, question=None, variable_n
     else:
         revision.comment = "Existing answers changed"
 
-    answer.save(force_save=True) # force save because answer may be readonly if versioning off but we know we just created this one here
+    answer.save(force_save=True)  # force save because answer may be readonly if versioning off
+                                  # but we know we just created this one here
     return answer

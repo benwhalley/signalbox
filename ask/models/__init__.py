@@ -1,4 +1,4 @@
-from .question import *
+from ask.models.question import *
 from .asker import *
 from .page import *
 

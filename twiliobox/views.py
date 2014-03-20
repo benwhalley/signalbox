@@ -51,7 +51,7 @@ def get_question(questions, index):
         return None
 
 
-@conditional_decorator(revision.create_on_success, settings.USE_VERSIONING)
+# @conditional_decorator(revision.create_on_success, settings.USE_VERSIONING)
 def save_answer(reply, question, querydict):
     """Takes a Reply, a question and the POST dict and returns a (saved) answer."""
 

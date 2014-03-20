@@ -5,7 +5,7 @@ from userprofile import *
 from study import *
 from schedule import *
 from observation import *
-from scoresheet import *
+from scoresheet import ScoreSheet
 from alert import Alert, AlertInstance
 from observationcreator import ObservationCreator
 from usermessage import UserMessage, ContactRecord, ContactReason

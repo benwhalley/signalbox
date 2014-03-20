@@ -247,18 +247,6 @@ legend a:hover {
 
     <!-- Content -->
     <div id="content" class="{% block coltype %}colM{% endblock %}">
-        {% block navbar %}
-        <div class="row-fluid">
-            <div class="navbar">
-                <div class="navbar-inner">
-                    {% block pretitle %}{% endblock %}
-                    {% block content_title %}{% if title %}<a class="brand">{% render_with_template_if_exist title|lower|add:"/admin_app_name.html" title %}</a>{% endif %}{% endblock %}
-                    {% block object-tools %}{% endblock %}
-                </div>
-            </div>
-        </div>
-        {% endblock navbar %}
-
         {% block messages %}
             {% if messages %}
                 <div class="row-fluid">
@@ -274,6 +262,19 @@ legend a:hover {
                 </div>
             {% endif %}
         {% endblock messages %}
+
+        {% block navbar %}
+        <div class="row-fluid">
+            <div class="navbar">
+                <div class="navbar-inner">
+                    {% block pretitle %}{% endblock %}
+                    {% block content_title %}{% if title %}<a class="brand">{% render_with_template_if_exist title|lower|add:"/admin_app_name.html" title %}</a>{% endif %}{% endblock %}
+                    {% block object-tools %}{% endblock %}
+                </div>
+            </div>
+        </div>
+        {% endblock navbar %}
+
 
             {% block content %}{{ content }}{% endblock %}
             {% block sidebar %}{% endblock %}

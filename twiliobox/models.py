@@ -7,6 +7,7 @@ from django.conf import settings
 from django.db import models
 from twilio.rest import TwilioRestClient
 from twilio import TwilioRestException
+from ask.models import Asker
 
 
 class TwilioNumber(models.Model):
@@ -18,7 +19,7 @@ class TwilioNumber(models.Model):
     phone_number = models.CharField(max_length=100, unique=True, blank=True, null=True,
         help_text="""This must be a real twilio-provisioned number. Leave
         blank to populate automatically from the account details""")
-    answerphone_script = models.ForeignKey('ask.Asker', blank=True, null=True)
+    answerphone_script = models.ForeignKey(Asker, blank=True, null=True)
 
     def __unicode__(self):
         return self.phone_number
@@ -49,9 +50,7 @@ class TwilioNumber(models.Model):
         except TwilioRestException as e:
             raise ValidationError("Twilio credentials incorrect: {}".format(e))
 
-
         super(TwilioNumber, self).clean(*args, **kwargs)
-
 
     def save(self, *args, **kwargs):
         if self.is_default_account:
@@ -62,7 +61,6 @@ class TwilioNumber(models.Model):
         if not TwilioNumber.objects.filter(is_default_account=True).count():
             self.is_default_account = True
         super(TwilioNumber, self).save(*args, **kwargs)
-
 
     def delete(self, *args, **kwargs):
         if self.is_default_account:

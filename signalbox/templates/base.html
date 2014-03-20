@@ -1,8 +1,7 @@
 {% load compress %}
 {% load signalbox_tags %}
-{% load cms_tags sekizai_tags %}
+{% load sekizai_tags %}
 {% load markup %}
-{% load cache menu_tags %}
 {% load i18n %}
 
 <!DOCTYPE html>
@@ -32,8 +31,6 @@
     <body>
 
           {% block body %}
-              {% cms_toolbar %}
-
             {% block nav %}
             <div class="container">
 
@@ -48,7 +45,8 @@
 
                     {% if not hidemenu %}
                       <ul class="nav">
-                        {% show_menu 0 2  2 2  "menu.html" %}
+                          Menu here
+{#                         {% show_menu 0 2  2 2  "menu.html" %}#}
                       </ul>
                     {% endif %}
 
@@ -68,7 +66,8 @@
                 <div class="span6">
                     {% block submenu %}
                       <ul class="nav nav-pills">
-                           {% show_menu 1 10 0 1 "sub_menu.html" %}
+                          Submenu here
+{#                            {% show_menu 1 10 0 1 "sub_menu.html" %}#}
                       </ul>
                     {% endblock submenu %}
                 </div>
@@ -76,45 +75,29 @@
 
               {% block progress %}
               {% endblock %}
-                {% load signalbox_tags.messages %}
-                {% render_messages messages %}
 
-                {% for i in sorted_messages.items %}
-                <div class="alert alert-{{i.0}}">
-                  {% for j in i.1 %}
+            {% load signalbox_tags.messages %}
+            {% render_messages messages %}
+
+            {% for i in sorted_messages.items %}
+            <div class="alert alert-{{i.0}}">
+                {% for j in i.1 %}
                     <button type="button" class="close" data-dismiss="alert">×</button>
                     <p>{{j}}</p>
                 {% endfor %}
-                </div>
-                {% endfor %}
-
-
-
-
-                {% block base_content %}
-                {% placeholder main %}
-                {% endblock %}
-
-
-                <hr>
-                {% block footer %}
-                  {% placeholder footer %}
-                {% endblock %}
-
-
-
-
             </div>
 
+            {% endfor %}
 
 
-
-
-      {% endblock %}
-
-
-      {% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
-
+        {% block base_content %}
+        {% endblock %}
+        <hr>
+        {% block footer %}
+        {% endblock %}
+    </div>
+    {% endblock %}
+    {% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
     </body>
   </html>
 

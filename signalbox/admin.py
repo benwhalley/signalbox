@@ -131,6 +131,7 @@ class ObservationDataInline(admin.StackedInline):
     readonly_fields = ['key', 'value', ]
     max_num = 0
 
+
 class ReplyDataInline(admin.StackedInline):
     save_on_top = True
     model = ReplyData
@@ -151,7 +152,7 @@ class ObservationAdmin(ConditionalVersionAdmin):
     search_fields = ['token', 'dyad__study__slug', 'dyad__user__first_name',
                      'dyad__user__last_name', 'dyad__user__username']
     list_display = ["label", "token", "user", "due", "status",
-                    "script_type", "n_questions",]
+                    "script_type", "n_questions", ]
     list_filter = ('due_original', 'status', 'attempt_count', 'dyad__study',
                    'dyad__user__userprofile__site', 'created_by_script__script_type', )
     list_display_links = ['label', 'token']
@@ -180,6 +181,7 @@ class MembershipAdminForm(forms.ModelForm):
     user = selectable.AutoCompleteSelectField(lookup_class=UserLookup)
 
     class Meta(object):
+        fields = "__all__"
         model = Membership
 
 
@@ -307,6 +309,7 @@ class PermissionAdmin(admin.ModelAdmin):
     save_on_top = True
     search_fields = ['name', 'codename', 'content_type__name']
 
+
 class ScoreSheetAdmin(admin.ModelAdmin):
     filter_horizontal = ['variables']
 
@@ -363,7 +366,7 @@ class ReplyAdmin(ConditionalVersionAdmin):
                     'last_submit', 'observation', 'collector']
     list_filter = ['asker', 'complete', 'observation__dyad__study', 'entry_method', 'collector']
     search_fields = ['token', 'observation__token']
-    inlines = [AnswerInline, ReplyDataInline,]
+    inlines = [AnswerInline, ReplyDataInline, ]
     fieldsets = (
         ("Actions", {
             'fields': ('is_canonical_reply', )
