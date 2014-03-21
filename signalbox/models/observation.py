@@ -10,10 +10,10 @@ from django.db import models
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth import get_user_model
-User = get_user_model()
+from django.conf import settings
+User = settings.AUTH_USER_MODEL
 
 from django.core.urlresolvers import reverse
-from django.conf import settings
 
 from jsonfield import JSONField
 from signalbox.utilities.linkedinline import admin_edit_url
@@ -21,7 +21,7 @@ from signalbox.utilities.sanitise_redirects import sanitise_user_supplied_redire
 from ask.models import Question
 from signalbox.exceptions import CategoryErrorException
 from signalbox.utils import pretty_datetime, current_site_url
-import  observation_timing_functions as tf
+import observation_timing_functions as tf
 import observation_methods.default as default
 import observation_helpers as hlp
 from reply import Reply
@@ -66,7 +66,6 @@ class ReminderInstance(models.Model):
 
     def _send_email_reminder(self):
         """Send an email reminder -> (bool_success, str_statusmessage)"""
-
 
         to_address, from_address = hlp.get_email_address_details(self.observation)
         from_address = self.reminder.from_address or from_address  # override if needed
@@ -124,7 +123,7 @@ class ObservationManager(models.Manager):
                     created_by_script__breaks_blind=True
                 )
 
-        return  allobs
+        return allobs
 
 
 class Observation(models.Model):
@@ -272,10 +271,8 @@ class Observation(models.Model):
         else:
             return ""
 
-
     def has_required_details(self):
         return self.dyad.user.get_profile().has_all_required_details()
-
 
     def open_until(self):
         """Return the last date/time this observation can be completed."""

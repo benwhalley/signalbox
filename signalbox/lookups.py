@@ -6,8 +6,8 @@ from django.http import HttpResponseForbidden
 from models import Membership, Observation
 from selectable import registry
 from selectable.base import ModelLookup
-
-User = get_user_model()
+from django.conf import settings
+User = settings.AUTH_USER_MODEL
 
 
 class UserLookup(ModelLookup):

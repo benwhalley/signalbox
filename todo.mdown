@@ -1,3 +1,6 @@
+# apply s sort to django Users
+# User._meta.ordering = ["username"]
+ this stopped working in 1.7
 
 
 Reenabe revisions search for create_on_success

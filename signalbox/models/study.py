@@ -21,7 +21,7 @@ from signalbox.utils import incomplete, in_range
 from statlib.stats import chisquare
 
 
-User = get_user_model()
+User = settings.AUTH_USER_MODEL
 
 
 class StudySite(models.Model):

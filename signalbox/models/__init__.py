@@ -11,12 +11,8 @@ from observationcreator import ObservationCreator
 from usermessage import UserMessage, ContactRecord, ContactReason
 import listeners
 import observation_methods
-
-from django.contrib.auth import get_user_model
-User = get_user_model()
-
-# apply s sort to django Users
-User._meta.ordering = ["username"]
+from django.conf import settings
+User = settings.AUTH_USER_MODEL
 
 
 __all__ = [

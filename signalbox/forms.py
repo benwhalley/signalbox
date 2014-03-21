@@ -24,7 +24,7 @@ from signalbox.phone_field import PhoneNumberFormField, as_phone_number
 from signalbox.utilities.djangobits import supergetattr
 
 
-User = get_user_model()
+User = settings.AUTH_USER_MODEL
 
 
 def get_answers(studies):
@@ -75,7 +75,7 @@ class NewParticipantWizard(CookieWizardView):
             user.set_unusable_password()
 
         user.save()
-        messages.add_message(self.request, messages.INFO, "Created new user: {}".format(user.username) )
+        messages.add_message(self.request, messages.INFO, "Created new user: {}".format(user.username))
         return HttpResponseRedirect(reverse('edit_participant', args=(user.id, )))
 
 

@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from ask.models import Asker, Question, AskPage
 
 from django.contrib.auth import get_user_model
-User = get_user_model()
+User = settings.AUTH_USER_MODEL
 
 from signalbox.models import Reply
 from ask.forms import PageForm

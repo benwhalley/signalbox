@@ -6,11 +6,12 @@ from django.contrib import messages
 from django.db import models
 
 from django.contrib.auth import get_user_model
-User = get_user_model()
+from django.conf import settings
+User = settings.AUTH_USER_MODEL
+
 
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.conf import settings
 from shortuuidfield import ShortUUIDField
 from signalbox.models.scoresheet import ScoreSheet
 from signalbox.utilities.linkedinline import admin_edit_url
