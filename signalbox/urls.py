@@ -30,7 +30,7 @@ urlpatterns = patterns('',
         (r'^ask/', include('ask.urls')),
         (r'^admin/ask/', include('ask.urls_admin')),
         (r'^twilio/', include('twiliobox.urls')),
-        (r'^selectable/', include('selectable.urls')),
+        (r'^selectable/', include('signalbox.selectable_urls')),
         (r'^api/', include(v1_api.urls)),
 )
 
