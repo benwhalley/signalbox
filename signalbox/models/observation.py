@@ -21,6 +21,7 @@ from signalbox.utilities.sanitise_redirects import sanitise_user_supplied_redire
 from ask.models import Question
 from signalbox.exceptions import CategoryErrorException
 from signalbox.utils import pretty_datetime, current_site_url
+from signalbox.exceptions import DataProtectionException
 import observation_timing_functions as tf
 import observation_methods.default as default
 import observation_helpers as hlp
@@ -109,6 +110,9 @@ class ObservationManager(models.Manager):
 
     def personalised(self, user, due_now=False):
         allobs = super(ObservationManager, self).get_query_set().order_by('-due')
+
+        if not user.is_authenticated():
+            raise DataProtectionException("User not authenticated.")
 
         if not user.is_staff:
             # only show your own
