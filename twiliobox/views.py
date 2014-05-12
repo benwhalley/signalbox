@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from question_methods import say_or_play_phrase, reply_to_twilio
-from reversion import revision
+
 from signalbox.models import Observation, Reply, Answer, TextMessageCallback
 from signalbox.utilities.djangobits import conditional_decorator
 from signalbox.utilities.more_itertools import first
@@ -18,6 +18,9 @@ from twiliobox.exceptions import TwilioBoxException
 from twiliobox.models import TwilioNumber
 from contracts import contract
 from twiliobox.settings import *
+
+if settings.USE_VERSIONING:
+    from reversion import revision
 
 
 @csrf_exempt
