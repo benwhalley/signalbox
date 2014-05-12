@@ -6,7 +6,7 @@ from datetime import datetime, time
 from string import capwords
 
 from django.utils.functional import SimpleLazyObject
-from ask.models import stata_functions as stata
+import stata_functions as stata
 import ask.validators as validators
 import ast
 from contracts import contract
@@ -86,7 +86,7 @@ class SignalboxField(object):
     prepend_null_choice = False
 
     extra_attrs = {}
-    error_messages = {'required': _("An answer to this question is required.")}
+    error_messages = {'required': "An answer to this question is required."}
     choices = None
     input_formats = None
     validators = []
@@ -234,6 +234,7 @@ class LongText(SignalboxField, floppyforms.CharField):
 class Open(LongText):
     pass
 
+
 class Likert(SignalboxField, floppyforms.ChoiceField):
     """Choose a single option from radio buttons presented horizontally."""
 
@@ -283,7 +284,7 @@ class Checkboxes(SignalboxField, floppyforms.TypedMultipleChoiceField):
 
     @staticmethod
     def label_choices(question):
-        return  stata.label_choices_checkboxes(question)
+        return stata.label_choices_checkboxes(question)
 
     @staticmethod
     def redisplay_processor(value):
@@ -384,12 +385,13 @@ class Time(SignalboxField, floppyforms.TimeField):
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+
 class Integer(SignalboxField, floppyforms.IntegerField):
     """Text box to enter any integer."""
 
     def __init__(self, *args, **kwargs):
         super(Integer, self).__init__(*args, **kwargs)
-        self.validators+=[MinValueValidator(int(getattr(self, 'min', -sys.maxint - 1))),
+        self.validators += [MinValueValidator(int(getattr(self, 'min', -sys.maxint - 1))),
         MaxValueValidator(int(getattr(self, 'max', sys.maxint)))]
 
     has_choices = False

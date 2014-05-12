@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from ask.models import Asker, Question, AskPage
-
+from django.conf import settings
 from django.contrib.auth import get_user_model
 User = settings.AUTH_USER_MODEL
 
