@@ -5,7 +5,7 @@ from ask.models import Asker
 from django import forms
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+
 from django.contrib.formtools.wizard.views import CookieWizardView
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -23,12 +23,14 @@ from signalbox.models.validators import is_mobile_number, is_number_from_study_a
 from signalbox.phone_field import PhoneNumberFormField, as_phone_number
 from signalbox.utilities.djangobits import supergetattr
 
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
-User = settings.AUTH_USER_MODEL
+from profiling import profile, Profiler
 
 
+@profile
 def get_answers(studies):
-
     mems = set(Membership.objects.filter(study__in=studies))
     que = Q(observation__dyad__study__in=studies) | Q(membership__in=mems)
     replies = Reply.objects.filter(que)
@@ -97,37 +99,11 @@ class SelectExportDataForm(forms.Form):
 
     studies = forms.ModelMultipleChoiceField(queryset=Study.objects.all(), required=False)
     questionnaires = forms.ModelMultipleChoiceField(queryset=Asker.objects.all(), required=False)
-    reference_study = forms.ModelChoiceField(queryset=Study.objects.all(),
-        help_text="""The date the user was randomised to this study is used as a
-        reference point for all other randomisations.""", required=False)
 
-    def clean(self):
-        cln = self.cleaned_data
-        studies = cln.get('studies', None)
-        askers = cln.get('questionnaires', None)
-
-        if not (studies or askers):
-            raise ValidationError("Choose a study or a questionnaire.")
-
-        if studies and not cln.get('reference_study', None):
-            cln['reference_study'] = studies[0]
-
-        answers = Answer.objects.all()
-
-        if studies:
-            answers = get_answers(studies)
-
-        if askers:
-            answers = answers.filter(reply__asker__in=askers)
-
-        if not answers:
-            raise ValidationError("No data matching filters.")
-
-        cln.update({'answers': answers})
-        return cln
 
 
 class ContactRecordForm(forms.ModelForm):
+
     """Form to add ContactRecords on participants.
 
     Sometimes auto-specifies participant and current user"""
@@ -145,6 +121,7 @@ class ContactRecordForm(forms.ModelForm):
 
     class Meta:
         model = ContactRecord
+        exclude = []
 
     def __init__(self, *args, **kwargs):
         super(ContactRecordForm, self).__init__(*args, **kwargs)
@@ -208,6 +185,7 @@ class FindParticipantForm(forms.Form):
 
 
 class CreateParticipantForm(forms.ModelForm):
+
     email = forms.EmailField(required=True,)
 
     class Meta:
