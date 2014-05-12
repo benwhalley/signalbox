@@ -9,6 +9,7 @@ from twilio.rest import TwilioRestClient
 
 
 DEBUG = get_env_variable('DEBUG', required=False, default=False)
+LOG_DATABASE_QUERIES = get_env_variable('LOG_DATABASE_QUERIES', required=False, default=False)
 
 BRAND_NAME = get_env_variable('BRAND_NAME', default="SignalBox")
 
@@ -114,3 +115,10 @@ ALLOWED_UPLOAD_MIME_TYPES = [
     'image/jpeg',
     'image/gif',
 ]
+
+# Pre load some models when we use shell_plus for convenience in using the repl
+SHELL_PLUS_PRE_IMPORTS = (
+    ('signalbox.models', ('*',)),
+    ('ask.models', '*'),
+    ('django.contrib.auth.models', 'User'),
+)
