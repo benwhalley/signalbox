@@ -1,4 +1,4 @@
-import markdown
+import markdown as md
 
 from django import template
 from django.template.defaultfilters import stringfilter
@@ -12,7 +12,7 @@ register = template.Library()
 def markdown(value):
     extensions = ["nl2br", ]
 
-    return mark_safe(markdown.markdown(force_unicode(value),
+    return mark_safe(md.markdown(force_unicode(value),
                                        extensions,
                                        safe_mode=True,
                                        enable_attributes=False))
