@@ -9,7 +9,7 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Permission
-from reversion.admin import VersionAdmin
+
 import selectable.forms as selectable
 from django.core.exceptions import ValidationError
 from signalbox.lookups import UserLookup
@@ -18,6 +18,9 @@ from signalbox.models import *
 from signalbox.allocation import *
 from views import *
 from django.conf import settings
+
+if settings.USE_VERSIONING:
+    from reversion.admin import VersionAdmin
 
 
 # Only use VersionAdmin if site settings say so

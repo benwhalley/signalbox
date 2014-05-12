@@ -3,7 +3,6 @@
 import os
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from reversion import revision
 from ask.models import Question, ChoiceSet, AskPage
 from signalbox.models import Answer
 from django.conf import settings
@@ -14,6 +13,9 @@ from django.utils.encoding import smart_unicode
 import ask.validators as valid
 from ask.utils import statify
 from twilio import twiml
+
+if settings.USE_VERSIONING:
+    from reversion import revision
 
 
 class PageForm(forms.Form):

@@ -9,10 +9,10 @@ django-apptemplates>=0.0.1
 django-bootstrap-pagination==0.1.10
 django-floppyforms==1.1
 django-fsm==1.5.0
-django-jsonfield==0.8.10
+django-jsonfield>=0.8.10
 django-localflavor==1.0
 django-phonenumber-field>=0.2a3
-django-registration==1.0
+-e hg+ssh://hg@bitbucket.org/puterleat/django-registration#egg=django-registration
 django-reversion>=1.6.6,<1.7
 django-secure==0.1.2
 django-sekizai==0.7
@@ -32,3 +32,5 @@ shortuuid>=0.4
 statlib>=1.1
 twilio>=3.6.3
 docutils==0.11
+pandas>=0.13
+xlwt==0.7.5

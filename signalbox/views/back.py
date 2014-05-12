@@ -24,9 +24,6 @@ from django.template.loader import get_template
 from django.contrib.auth.models import User
 
 from django.utils.decorators import method_decorator
-
-from reversion.models import Revision
-
 from signalbox.models import Membership, Observation, Script, Study, Reply, \
     StudyCondition, Answer
 from signalbox.models.observation_timing_functions import \
@@ -45,6 +42,10 @@ from download_view import DownloadView
 from django.core.exceptions import PermissionDenied
 from signalbox.models.naturaltimes import parse_natural_date
 
+from django.conf import settings
+
+if settings.USE_VERSIONING:
+    from reversion.models import Revision
 
 
 
@@ -94,17 +95,17 @@ def send_password_reset(request, user_id):
     return HttpResponseRedirect(reverse('participant_overview',
                                         args=(user.id,)))
 
+if settings.USE_VERSIONING:
+    class VersionView(StaffRequiredMixin, ListView):
+        model = Revision
+        paginate_by = 60
 
-class VersionView(StaffRequiredMixin, ListView):
-    model = Revision
-    paginate_by = 60
+        def get_queryset(self):
+            return Revision.objects.filter(user__isnull=False).order_by('-date_created')
 
-    def get_queryset(self):
-        return Revision.objects.filter(user__isnull=False).order_by('-date_created')
-
-    @method_decorator(group_required(['Researchers']))
-    def dispatch(self, *args, **kwargs):
-        return super(VersionView, self).dispatch(*args, **kwargs)
+        @method_decorator(group_required(['Researchers']))
+        def dispatch(self, *args, **kwargs):
+            return super(VersionView, self).dispatch(*args, **kwargs)
 
 
 class CreateMembershipForm(forms.ModelForm):
