@@ -30,17 +30,10 @@
         <li> Data can be exported from multiple studies at once (e.g. sub-studies within a trial). </li>
 
         <li> Remember to <a href="{% url 'resolve_double_entry_conflicts' %}">resolve duplicate replies for your studies</a> before exporting if possible (get to this from the study edit page).</li>
-        <li> Also remember that duplicate replies <strong>will be</strong> exported, but marked <code>1</code> in the <code>is_canonical_reply</code> column.</li>
-
-        <li>To allow for a shared reference point (in time) for data exported, this form allows you to
-        specify a 'reference study'. </li>
-        <li>The date the participant was randomised to the reference study
-        is used to calculate how many days from baseline (day 0) each observation is. This may be helpful when participants can enter substudies at slightly differently latencies,
-        but final analyses need and offset from a common reference date (e.g. treatment commencement)</li>
+        <li> Also remember that duplicate replies <strong>will be</strong> exported, but marked <code>True</code> in the <code>is_canonical_reply</code> column if you have resolved these duplicate replies.</li>
 
         </ul>
     </div>
 </div>
 
 {% endblock %}
-

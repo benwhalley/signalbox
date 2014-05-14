@@ -23,19 +23,26 @@
     <form action="." method="POST">
     {% with observation.variables_which_differ_between_multiple_replies as diffs %}
         <ul class="thumbnails">
-        {% for r in observation.reply_set.all %}
 
+        {% if diffs %}
+        <div class="span12 alert"><p><strong>Below are listed only the <em>answers</em> which <em>differ</em> between the replies.</strong>
+        <p>Bear in mind that other attributes of the reply (such as date of data entry may differ, but these differences are not shown here.)
+        </div>
+
+        {% for r in observation.reply_set.all %}
 
         <li class="span4">
             <div class="thumbnail">
+                <div class="well">
                 {% if not r.is_canonical_reply %}
                     <a class="btn pull-right" href="{% url 'mark_reply_as_canonical' r.id %}">Choose Reply</a>
                 {% else %}
                     <a class="btn btn-primary pull-right" href="{% url 'unmark_reply_as_canonical' r.id %}">Deselect Reply</a>
                 {% endif %}
 
-              <h4>Reply <a href="{% url 'admin:signalbox_reply_change' r.id %}">{{r.token|truncatechars:10}}</a> {% if r.is_canonical_reply %}{% endif %}</h4>
 
+              <h4>Reply #<a href="{% url 'admin:signalbox_reply_change' r.id %}">{{r.id}}</a> {% if r.is_canonical_reply %}{% endif %}</h4>
+              </div>
               <p>Last submit date: {{r.last_submit}} by
                 {% if r.user%}
                     <a href="{% url 'participant_overview' r.user.id %}">{{r.user}}</a>
@@ -43,26 +50,26 @@
                     Unknown
                 {% endif %}
                 </p>
+                    <table class="table">
+                    <tr><th>Question</th><th>Answer</th></tr>
 
-
-
-
-
-
-
-                <table class="table">
-
-                <tr><th>Question</th><th>Answer</th></tr>
-                {% for a in r.answer_set.all %}
-                    {% if a.question in diffs %}
-                        <tr><td>{{a.question}}</td><td>{{a.display_answer}}</td></tr>
-                    {% endif %}
-                {% endfor %}
-            </table>
-
+                    {% for a in r.answer_set.all %}
+                        {% if a.question in diffs %}
+                            <tr><td>{{a.question}}</td><td>{{a.display_answer}}</td></tr>
+                        {% endif %}
+                    {% endfor %}
+                    </table>
             </div>
           </li>
     {% endfor %}
+        {% else %}
+
+            {% if observation.reply_set.all.count < 2 %}
+                <p class="span12">No duplicate replies found.</p>
+            {% else %}
+                <p class="alert">These replies are identical (in the sense that all the answers given are the same), although dates of entry may differ.</p>
+            {% endif %}
+    {% endif %}
     <ul>
     </form>
 {% endwith %}
