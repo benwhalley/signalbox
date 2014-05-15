@@ -115,6 +115,6 @@ class Answer(models.Model):
 
     class Meta:
         verbose_name_plural = "user answers"
-        ordering = ['last_modified']
+        ordering = ['question__variable_name']
         unique_together = (['other_variable_name', 'reply', 'page'], ['question', 'reply', 'page'])
         app_label = "signalbox"
