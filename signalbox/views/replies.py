@@ -40,7 +40,7 @@ def start_data_entry(request, observation_token, success_url=None,
 
     # Allows us to log users in from an email token
     theuser = observation.dyad.user
-    prof = theuser.get_profile()
+    prof = theuser.userprofile
     if settings.LOGIN_FROM_OBSERVATION_TOKEN and prof.can_login_from_observation_token():
         theuser.backend = 'django.contrib.auth.backends.ModelBackend'
         login(request, theuser)

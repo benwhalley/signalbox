@@ -74,7 +74,7 @@ class UserMessage(models.Model):
 
         number = TwilioNumber.objects.get(is_default_account=True)
         client = number.client()
-        to_number = international_string(self.message_to.get_profile().mobile)
+        to_number = international_string(self.message_to.userprofile.mobile)
         from_number = number.phone_number
         sms = client.sms.messages.create(
             to=to_number, from_=from_number, body=self.message)

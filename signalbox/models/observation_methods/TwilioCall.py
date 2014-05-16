@@ -16,7 +16,7 @@ def do(self):
 
     client = self.dyad.study.twilio_number.client()
 
-    to_number = international_string(self.user.get_profile().get_voice_number())
+    to_number = international_string(self.user.userprofile.get_voice_number())
     from_number = self.dyad.study.twilio_number.number()
 
     if not to_number:

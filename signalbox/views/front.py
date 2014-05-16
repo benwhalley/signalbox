@@ -75,7 +75,7 @@ def _add_user_to_study(request, user, study):
 @login_required
 def update_profile_for_studies(request, study_pk):
 
-    form = UserProfileForm(request.POST or None, instance=request.user.get_profile(), request=request)
+    form = UserProfileForm(request.POST or None, instance=request.user.userprofile, request=request)
 
     if form.is_valid():
         form.save()
@@ -96,7 +96,7 @@ def join_study(request, pk):
 
     membership = _add_user_to_study(request, request.user, study)
 
-    if not request.user.get_profile().has_all_required_details():
+    if not request.user.userprofile.has_all_required_details():
         return HttpResponseRedirect(reverse('update_profile_for_studies', args=(study.id,)))
 
     if not study:
@@ -112,7 +112,7 @@ def user_homepage(request):
     This makes the User available to the template as {{user}} which  is used to
     output relevant details for them."""
 
-    if not request.user.get_profile().has_all_required_details():
+    if not request.user.userprofile.has_all_required_details():
         return HttpResponseRedirect(reverse('update_profile_for_studies'))
     else:
         execute_the_todo_list(user=request.user)

@@ -28,7 +28,7 @@ def do(self, test=False):
     tem = Template(self.created_by_script.script_body)
     con = Context(self.create_observation_context())
     message = tem.render(con)
-    to_number = international_string(self.user.get_profile().mobile)
+    to_number = international_string(self.user.userprofile.mobile)
     from_number = self.dyad.study.twilio_number.number()
 
     try:

@@ -13,7 +13,7 @@ django-jsonfield>=0.8.10
 django-localflavor==1.0
 django-phonenumber-field>=0.2a3
 -e hg+ssh://hg@bitbucket.org/puterleat/django-registration#egg=django-registration
-django-reversion>=1.6.6,<1.7
+django-reversion>=1.8
 django-secure==0.1.2
 django-sekizai==0.7
 django-selectable==0.2
@@ -33,4 +33,4 @@ statlib>=1.1
 twilio>=3.6.3
 docutils==0.11
 pandas>=0.13
-xlwt==0.7.5
+openpyxl==1.8.6

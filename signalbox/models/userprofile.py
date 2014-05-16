@@ -18,7 +18,7 @@ from signalbox import phone_field
 
 
 class UserProfile(models.Model):
-    """Extension of the User model; accessible via get_profile()."""
+    """Extension of the User model; accessible via profile."""
 
     # WARNING. Be careful about relying on userids when using sqlite. See this ticket for details:
     # https://code.djangoproject.com/ticket/10164
@@ -31,7 +31,7 @@ class UserProfile(models.Model):
 
     uuid = UUIDField(auto=True)
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, unique=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL)
 
     landline = phone_field.PhoneNumberField(blank=True, null=True,
         validators=[is_number_from_study_area, is_landline])
@@ -79,11 +79,11 @@ class UserProfile(models.Model):
 
     def get_required_fields_for_studies(self):
         studies = [i.study for i in self.user.membership_set.all()]
-        return set(itertools.chain(*[i.profile_fields_dict()['required'] for i in studies]))
+        return set(itertools.chain(*[i.userprofile_fields_dict()['required'] for i in studies]))
 
     def get_visible_fields_for_studies(self):
         studies = [i.study for i in self.user.membership_set.all()]
-        return set(itertools.chain(*[i.profile_fields_dict()['visible'] for i in studies]))
+        return set(itertools.chain(*[i.userprofile_fields_dict()['visible'] for i in studies]))
 
     def has_all_required_details(self, studies=None):
         # fields required installation wide

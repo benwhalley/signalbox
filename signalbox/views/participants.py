@@ -85,7 +85,7 @@ def edit_participant(request, pk):
     user = get_object_or_404(User, pk=pk)
     try:
         pform = UserProfileForm(
-            request.POST or None, instance=user.get_profile(), request=request)
+            request.POST or None, instance=user.userprofile, request=request)
     except UserProfile.DoesNotExist:
         pform = UserProfileForm(
             request.POST or None, instance=UserProfile(user=user), request=request)

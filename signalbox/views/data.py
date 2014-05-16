@@ -1,12 +1,16 @@
 import os
+from datetime import datetime
 from zipfile import ZipFile
 from tempfile import NamedTemporaryFile
+from django.core.exceptions import ValidationError
 import pandas as pd
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
+from django.template.loader import get_template
+from django.template import Context, Template
 from signalbox.decorators import group_required
-from signalbox.models import Answer, Study, Reply
+from signalbox.models import Answer, Study, Reply, Question
 from signalbox.forms import SelectExportDataForm, get_answers
 
 from profiling import profile, Profiler
@@ -43,9 +47,10 @@ ROW_FIELDS_MAP = dict([
 @profile
 @group_required(['Researchers', ])
 def export_data(request):
-    form = SelectExportDataForm(request.POST or None)
-    if not form.is_valid():
-        return render_to_response('manage/export_data.html', {'form': form},
+    with Profiler("makeform"):
+        form = SelectExportDataForm(request.POST or None)
+        if not form.is_valid():
+            return render_to_response('manage/export_data.html', {'form': form},
                                   context_instance=RequestContext(request))
 
     studies = form.cleaned_data['studies']
@@ -54,17 +59,20 @@ def export_data(request):
     if studies:
         answers = get_answers(studies)
 
+
     if questionnaires:
         answers = Answer.objects.filter(reply__asker__in=questionnaires)
 
-    if not answers:
-        raise ValidationError("No data matching filters.")
+    with Profiler("ifqs"):
+        if not answers.exists():
+            raise ValidationError("No data matching filters.")
 
-    return export_answers(answers)
+    answers = answers.filter(question__variable_name__isnull=False)
+    return export_answers(request, answers)
 
 
 @profile
-def export_answers(answers):
+def export_answers(request, answers):
     "Take a queryset of Answers and export to a zip file."
 
     # extract dicts
@@ -85,13 +93,27 @@ def export_answers(answers):
 
     # make excel files and others
     namesofthingstoexport = "answers meta".split()
-    tmpfiles = [NamedTemporaryFile(suffix=".xls") for i in namesofthingstoexport]
+    tmpfiles = [NamedTemporaryFile(suffix=".xlsx") for i in namesofthingstoexport]
     # write the data as xls not csv to preserve date formatting; requires xlwt
     [j.to_excel(i.name, merge_cells=False, encoding='utf-8') for i, j in zip(tmpfiles, [answerdata, rowmetadata])]
+
+
+    makedotmp = get_template('signalbox/stata/make.dotemplate')
+    makedostring = makedotmp.render(Context({'date': datetime.now(), 'request':request}))
+
+    # make a syntax file to label everything
+    questions = set((i.question for i in answers))
+    choicesets = set(filter(lambda x: x.get_choices(), (i.choiceset for i in questions if i.choiceset)))
+    syntaxtdotmp = get_template('signalbox/stata/process-variables.dotemplate')
+    syntax_dostring = syntaxtdotmp.render(Context({'questions': questions, 'choicesets': choicesets, 'request':request}))
+
 
     # make zip and return bytes
     with ZipFile(NamedTemporaryFile(suffix=".zip").name, 'w') as zipper:
         [zipper.write(i.name, j+os.path.splitext(i.name)[1]) for i, j in zip(tmpfiles, namesofthingstoexport)]
+        zipper.writestr('make.do', makedostring)
+        zipper.writestr('make_labels.do', syntax_dostring)
+
         zipper.close()
         zipbytes = open(zipper.filename, 'rb').read()
 
@@ -110,20 +132,6 @@ def generate_syntax(template, questions, reference_study=None):
         Context({'questions': questions, 'reference_study': reference_study})
     )
     return syntax
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

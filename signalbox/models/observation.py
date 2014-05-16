@@ -82,7 +82,7 @@ class ReminderInstance(models.Model):
 
         client = self.observation.dyad.study.twilio_number.client()
 
-        to_number = self.observation.user.get_profile().mobile()
+        to_number = self.observation.user.userprofile.mobile()
         from_number = self.observation.dyad.study.twilio_number.number()
         _, message = hlp.format_message_content("", self.reminder.message, self.observation)
 
@@ -276,7 +276,7 @@ class Observation(models.Model):
             return ""
 
     def has_required_details(self):
-        return self.dyad.user.get_profile().has_all_required_details()
+        return self.dyad.user.userprofile.has_all_required_details()
 
     def open_until(self):
         """Return the last date/time this observation can be completed."""
@@ -401,7 +401,7 @@ class Observation(models.Model):
             'study': self.dyad.study,
             'script': self.created_by_script,
             'user': self.dyad.user,
-            'userprofile': self.dyad.user.get_profile(),
+            'userprofile': self.dyad.user.userprofile,
         }
 
     def can_resend(self):
