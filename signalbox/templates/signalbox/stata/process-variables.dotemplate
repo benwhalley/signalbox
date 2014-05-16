@@ -1,0 +1,12 @@
+use data, clear
+
+{% for cs in choicesets %}
+    label define {{cs.name}} {% for s in cs.get_choices %} {{s.score}} `"{{s.label}}"'{%endfor%}
+{% endfor %}
+
+{% for  q in questions %}
+    {{q.label_variable|safe}}
+    {% if q.choiceset.get_choices %}label values {{q.variable_name}} {{q.choiceset.name}}{% endif %}
+{% endfor %}
+
+save data_with_labels, replace

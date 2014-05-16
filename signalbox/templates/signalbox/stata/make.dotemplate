@@ -1,0 +1,33 @@
+* Data downloaded {{date}} by {{request.user.email}}
+
+
+* install packages if we need to
+foreach package in sencode {
+	capture which `package'
+	if _rc==111 ssc install `package'
+}
+
+
+quietly {
+	import excel using meta.xlsx, clear firstrow
+	saveold ".rowmetadata.dta", replace
+
+	import excel using answers.xlsx, clear firstrow
+	destring *, replace
+
+	merge m:1 reply using ".rowmetadata.dta", assert(matched)
+	drop _merge
+	rm ".rowmetadata.dta"
+
+	* numerically encode some metadata variables
+	foreach v of varlist participant condition entry_method study {
+		sencode `v', replace
+	}
+}
+
+duplicates list reply
+
+save data.dta, replace
+
+* nb. saveold may not work if we have long strings in the file
+saveold data_stata12.dta, replace
