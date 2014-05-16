@@ -9,7 +9,7 @@ def statify_label(text):
 
 
 def label_variable(question):
-    return """label variable %(var)s "%(lab)s" \nnote %(var)s: %(full)s""" % {
+    return """label variable %(var)s `"%(lab)s"' \nnote %(var)s: `"%(full)s"' """ % {
         'var': question.variable_name,
         'lab': statify_label(question.text),
         'full': " ".join(question.text.splitlines())
