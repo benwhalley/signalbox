@@ -1,12 +1,26 @@
 {% extends "signalbox:admin/change_form.html" %}
 {% load humanize%}
 
+
+{% if original %}
+{% block title %}
+Study Dashboard: {{original.name}}
+{% endblock %}
+
+{% block content_title %}
+<a class="brand">Change Study: <strong>{{original.name}}</strong>
+{% endblock %}
+
+{% endif %}
+
+
+
 {% block content %}
 
 <ul class="nav nav-tabs" id="usertabs">
     {% if original %}
     <li class="active">
-        <a href="#tabsummary" data-toggle="tab">Summary</a>
+        <a href="#tabsummary" data-toggle="tab">Dashboard</a>
     </li>
     {% endif %}
     <li class="{%if not original %}active{%endif %}">
@@ -16,105 +30,127 @@
 
 <div class="tab-content">
     {% if original %}
-        <div class="tab-pane active" id="tabsummary">
-            <h2>{{original.name}}</h2>
+        <div class="tab-pane active" id="tabsummary">    
             <div class=row>
+                <div class="span6">
+                    
+                    <h4>Study participants</h4>
 
+                    {% if not original.membership_set.all %}
+                    No participants yet.
+                    {% else %}
+
+                    {% if original.membership_set.count > 4 %}
+                    <p>Current imbalance in membership allocations is:
+                    {%if original.chisq_imbalance.1 < .05 %}significant{% else %}non-significant{% endif%} (chisq={{original.chisq_imbalance.0|floatformat}}, p={{original.chisq_imbalance.1|floatformat}})
+                    </p>
+                    {% endif %}
+
+                    <table class="table">
+                        <tr>
+                            <th>Condition</th><th>N</th><td>Expected</td>
+                        </tr>
+                    {% for i in original.studycondition_set.all %}
+                        <tr>
+                            <td>{{i.tag}}</td><td>{{i.users.count}}</td><td>{{i.expected_n|floatformat}}</td>
+                        </tr>
+                    {% endfor %}
+                        <tr>
+                            <th>Total</th>
+                            <th>
+                                {{original.studycondition_set.count}}</th><td>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td colspan=3>
+                                <p><a class="btn btn-primary btn-small" href="{% url 'admin:signalbox_membership_changelist' %}?study__id__exact={{original.id}}">Show participants</a>
+                                <a class="btn btn-small" href="{% url 'admin:signalbox_observation_changelist' %}?dyad__study__id__exact={{object_id}}" class="historylink">Review Observations</a>
+                                {% if original.observations_with_duplicate_replies %}
+                                    <a class="btn btn-small" href="{% url 'resolve_double_entry_conflicts_for_study' original.id %}">Manage duplicate data</a>
+                                {% else %}
+                                
+                                    <a class="btn btn-small disabled"  title="Good news: no duplicated replies made as part of this study yet." href="#">Manage duplicate data</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+
+                    {% endif %}
+
+                    
+                    
+                    <h4>Allocation</h4>
+
+                    <table class="table">
+                    {% for i in original.studycondition_set.all %}
+                    <tr>
+                        <th>Condition: '{{i.tag}}'</th>
+                    </tr>
+                        {% for j in i.scripts.all %}
+                        <tr>
+                            <td>
+                               Script: <a href="{% url 'admin:signalbox_script_change' j.id %}">{{j.name}}</a>
+                                    {% if j.asker %}uses <a href="{% url 'admin:ask_asker_change' j.id %}">{{j.asker}}</a> 
+                                    at the following times:{% else %}makes observations at the following times:{% endif %}
+                        <code>{% for k in j.datetimes_with_natural_syntax %}{{k.syntax}}{% endfor %}</code>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endfor %}
+                    </table>
+
+
+                    
+                    <h4>Data collection</h4>
+                    
+                    
+                    <table class="table">
+                        
+                        {% if original.ad_hoc_askers.all %}
+                        <tr>
+                            <th>
+                                Questionnaires available to participants for ad-hoc use
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                        {% for i in original.ad_hoc_askers.all %}
+                            <tr>
+                                <td>{{i}}
+                                </td>
+                                <td>
+                                    <a class="btn btn-small" href="{% url 'admin:ask_asker_change' i.id %}">Edit</a>
+                                </td>
+                        {%endfor%}
+                        {% endif %}
+                        
+                        {% if original.createifs.all %}
+                        <tr>
+                            <th>
+                                Scripts for responsive-mode data collection
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                        {% for i in original.createifs.all %}
+                               <tr>
+                                   <td>
+                                       {{i.script}}
+                                   </td>
+                                   <td>
+                                       <a class="btn btn-mini" href="{% url 'admin:signalbox_script_change' i.script.id %}">Edit script</a>
+                                       {% if i.script.asker %}<a class="btn btn-mini" href="{% url 'admin:ask_asker_change' i.script.asker.id %}">Edit questionnaire</a>
+                                       {% endif %}
+                                   </td>
+                               </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </table>
+                
+                </div>
+        
                 <div class="span4">
-<h4>Conditions and scripts</h4>
-
-<table class="table">
-{% for i in original.studycondition_set.all %}
-<tr>
-    <th>Condition: '{{i.tag}}'</th>
-</tr>
-{% for j in i.scripts.all %}
-<tr>
-    <td>
-       Script: <a href="{% url 'admin:signalbox_script_change' j.id %}">{{j.name}}</a>
-            {% if j.asker %}uses <a href="{% url 'admin:ask_asker_change' j.id %}">{{j.asker}}</a> at the following times:{% else %}makes observations at the following times:{% endif %}
-<pre>{% for k in j.datetimes_with_natural_syntax %}{{k.syntax}}{% endfor %}</pre>
-    </td>
-</tr>
-{% endfor %}
-
-{% endfor %}
-</table>
-
-
-{% if original.ad_hoc_askers.all %}
-<h4>Ad-hoc questionnaires</h4>
-These questionnaires can be completed at any time by all participants.
-<ul>
-{% for i in original.ad_hoc_askers.all %}
-<li><a href="{% url 'admin:ask_asker_change' i.id %}">{{i}}</a></li>
-{%endfor%}
-</ul>
-{% endif %}
-
-</pre>
-
-<table class="table">
-{% for i in original.createifs.all %}
-   <tr>
-       <td>{{i.script}} <span class="label label-info">responsive mode</span></td>
-
-       <td>
-           <a class="btn btn-mini" href="{% url 'admin:signalbox_script_change' i.script.id %}">Edit script</a>
-
-           {% if i.script.asker %}<a class="btn btn-mini" href="{% url 'admin:ask_asker_change' i.script.asker.id %}">Edit questionnaire</a>
-           {% endif %}
-
-       </td>
-
-   </tr>
-   {% endfor %}
-</table>
-
-
-                </div>
-                <div class="span5">
-<h4>Study participants</h4>
-
-{% if not original.membership_set.all %}
-No participants yet.
-{% else %}
-
-{% if original.membership_set.count > 4 %}
-<p>Current imbalance in membership allocations is:
-{%if original.chisq_imbalance.1 < .05 %}significant{% else %}non-significant{% endif%} (chisq={{original.chisq_imbalance.0|floatformat}}, p={{original.chisq_imbalance.1|floatformat}})
-</p>
-{% endif %}
-
-<table class="table">
-    <tr>
-        <th>Condition</th><th>N</th><td>Expected</td>
-    </tr>
-{% for i in original.studycondition_set.all %}
-    <tr>
-        <td>{{i.tag}}</td><td>{{i.users.count}}</td><td>{{i.expected_n|floatformat}}</td>
-    </tr>
-{% endfor %}
-    <tr>
-        <th>Total</th><th>{{original.studycondition_set.count}}</th><td><a class="btn btn-primary btn-small" href="{% url 'admin:signalbox_membership_changelist' %}?study__id__exact={{original.id}}">Show participants</a></td>
-    </tr>
-</table>
-
-<hr>
-
-
-<p><a class="btn" href="{% url 'admin:signalbox_observation_changelist' %}?dyad__study__id__exact={{object_id}}" class="historylink">Review Observations</a>
-
-<p><a class="btn " href="{% url 'resolve_double_entry_conflicts_for_study' original.id %}">Manage duplicate data</a>
-
-
-
-{% endif %}
-
-                </div>
-
-                <div class="span3">
-                    <h4>Settings</h4>
+                    <h4>Study settings</h4>
                     <table>
                         <tr><td>slug: <code>{{original.slug}}</code></td></tr>
                         <tr><td>study_email: <code>{{original.study_email}}</code></td></tr>
@@ -125,10 +161,7 @@ No participants yet.
                         <tr><td>auto_add_observations: <code>{{original.auto_add_observations}}</code></td></tr>
                         <tr><td>auto_randomise: <code>{{original.auto_randomise}}</code></td></tr>
                     </table>
-
                 </div>
-
-
             </div>
 
 
