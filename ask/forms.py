@@ -91,10 +91,11 @@ def save_question_response(response, reply, page=None, question=None, variable_n
             )
             answer.answer = response
 
-    if created:
-        revision.comment = "New answers saved"
-    else:
-        revision.comment = "Existing answers changed"
+    if settings.USE_VERSIONING:
+        if created:
+            revision.comment = "New answers saved"
+        else:
+            revision.comment = "Existing answers changed"
 
     answer.save(force_save=True)  # force save because answer may be readonly if versioning off
                                   # but we know we just created this one here
