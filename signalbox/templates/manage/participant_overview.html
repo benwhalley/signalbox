@@ -26,7 +26,7 @@
         </li>
         <li><a href="#tabmemberships" data-toggle="tab">Study Memberships</a></li>
 
-        {% if participant.get_profile.ad_hoc_scripts_available %}
+        {% if participant.userprofile.ad_hoc_scripts_available %}
             <li {%if not l%}class="active"{%endif%}><a href="#tabextradata" data-toggle="tab">Add extra data</a></li>
         {% endif %}
 

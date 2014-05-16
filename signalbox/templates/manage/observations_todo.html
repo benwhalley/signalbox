@@ -11,7 +11,7 @@
             {% endif %}
             {% block module_content %}
 
-            {% if user.get_profile.obs_by_study %}
+            {% if user.userprofile.obs_by_study %}
                 <h3>Tasks to do:</h3>
                 {% include 'manage/observations_todo_fragment.html' %}
 

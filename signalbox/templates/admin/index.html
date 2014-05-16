@@ -11,7 +11,7 @@
 <div class="span10">
 
 {% block leadcontent %}
-    {% if user.get_profile.obs_by_study %}
+    {% if user.userprofile.obs_by_study %}
         <h3>{{user|capfirst}}, you have tasks to complete:</h3>
         {% include 'manage/observations_todo_fragment.html' %}
         <hr>
@@ -23,9 +23,8 @@
 
 <div class="row">
     <h3 class="span12">Status of your active studies:</h3>
-
     <table class="table span12">
-
+        
         <tr>
             <td></td>
             <th colspan=2>Observations missed</td>
@@ -42,7 +41,7 @@
         </tr>
 
 
-        {% for study in user.get_profile.dashboard_studies %}
+        {% for study in user.userprofile.dashboard_studies %}
         <tr>
             <td><a href="{% url 'admin:signalbox_study_change' study.id %}">{{study}}</a>
             </td>

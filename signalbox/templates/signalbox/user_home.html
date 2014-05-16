@@ -5,7 +5,7 @@
 {% block base_content %}
 
     <div class="row">
-        {% with user.get_profile.tasklist_observations|length as l %}
+        {% with user.userprofile.tasklist_observations|length as l %}
         <div class="tabbable span12"> <!-- Only required for left/right tabs -->
         <ul class="nav nav-tabs" id="usertabs">
 
@@ -36,7 +36,7 @@
 
                 {% if l > 0 %}
                     you have questionnaires to complete:</h2><br/><br/>
-                    {% with user.get_profile.obs_by_study as obs_by_study %}
+                    {% with user.userprofile.obs_by_study as obs_by_study %}
                         {% include 'manage/observations_todo_fragment.html' %}
                     {% endwith %}
                 {%else%}
@@ -60,7 +60,7 @@
                     </tr>
                     <tr>
                         <td>Mobile:</td>
-                        <td>{{user.get_profile.formatted_mobile}}</td>
+                        <td>{{user.userprofile.formatted_mobile}}</td>
                     </tr>
                     </table>
 
@@ -70,11 +70,11 @@
 
             <div class="tab-pane" id="tabstudies">
 
-                {% if user.get_profile.current_memberships %}
+                {% if user.userprofile.current_memberships %}
                 <h4>Current studies</h4>
 
                 <ul>
-                    {% for m in user.get_profile.current_memberships %}
+                    {% for m in user.userprofile.current_memberships %}
                     <li><a href="{% url 'membership_home' m.id %}">{{m.study.name}}</a>
 
                         {% if m.study.show_study_condition_to_user %}
@@ -90,10 +90,10 @@
                 {% endif %}
 
 
-                {% if user.get_profile.other_memberships %}
+                {% if user.userprofile.other_memberships %}
                 <h4>You previously took part in:</h4>
                 <ul>
-                {% for m in user.get_profile.other_memberships %}
+                {% for m in user.userprofile.other_memberships %}
                     <li>{{m.study.name}}</li>
                 {% endfor %}
                 </ul>

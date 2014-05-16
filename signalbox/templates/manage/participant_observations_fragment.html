@@ -1,7 +1,7 @@
 {% if perms.signalbox.can_double_enter %}
-    {% with participant.get_profile.obs_by_study as obs_by_study %}
+    {% with participant.userprofile.obs_by_study as obs_by_study %}
     {% if obs_by_study %}
-        {% with participant.get_profile.participant_admin_overview as next %}
+        {% with participant.userprofile.participant_admin_overview as next %}
             {% include 'manage/observations_todo_fragment.html' %}
         {% endwith %}
     {% else %}

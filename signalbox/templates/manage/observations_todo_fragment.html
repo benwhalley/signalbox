@@ -1,6 +1,6 @@
 {%load humanize%}
 
-{% if user.get_profile.has_observation_expiring_today %}
+{% if user.userprofile.has_observation_expiring_today %}
 <h2> Alert: You have questionnaires which must be completed today...</h2>
 {% else %}
 {% endif %}

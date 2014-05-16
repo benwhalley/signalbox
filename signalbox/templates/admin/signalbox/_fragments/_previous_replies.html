@@ -2,7 +2,7 @@
 {% load signalbox_tags %}
 {% load cache %}
 {% cache 500 prev_replies  request.user.username  %}
-{% regroup participant.get_profile.previous_reply_set by observation.dyad as memberships %}
+{% regroup participant.userprofile.previous_reply_set by observation.dyad as memberships %}
 
 
 {% for m in memberships %}
