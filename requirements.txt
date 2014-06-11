@@ -16,7 +16,7 @@ django-phonenumber-field>=0.2a3
 django-reversion>=1.8
 django-secure==0.1.2
 django-sekizai==0.7
-django-selectable==0.2
+django-selectable==0.8
 django-shortuuidfield>=0.1.2
 django-tastypie==0.9.15
 django-yamlfield>=0.5
