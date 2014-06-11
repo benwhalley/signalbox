@@ -5188,44 +5188,6 @@
   }
 },
 {
-  "pk": 351,
-  "model": "ask.question",
-  "fields": {
-    "showif": null,
-    "q_type": "instrument",
-    "allow_not_applicable": false,
-    "text": "",
-    "choiceset": null,
-    "required": false,
-    "page": 26,
-    "scoresheet": null,
-    "variable_name": "demo_instrument_insertion",
-    "help_text": "",
-    "widget_kwargs": "",
-    "audio": "",
-    "order": 13
-  }
-},
-{
-  "pk": 352,
-  "model": "ask.question",
-  "fields": {
-    "showif": null,
-    "q_type": "instrument",
-    "allow_not_applicable": false,
-    "text": "",
-    "choiceset": null,
-    "required": false,
-    "page": 114,
-    "scoresheet": null,
-    "variable_name": "instrument_included_again",
-    "help_text": "",
-    "widget_kwargs": "",
-    "audio": "",
-    "order": 2
-  }
-},
-{
   "pk": 355,
   "model": "ask.question",
   "fields": {
