@@ -11,4 +11,4 @@ class TestUserProfiles(TestCase):
 
         user = User(**{'username': "TEST", 'email':"TEST@TEST.COM"})
         user.save()
-        assert type(user.get_profile()) == UserProfile
+        assert type(user.userprofile) == UserProfile

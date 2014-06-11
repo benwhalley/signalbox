@@ -38,7 +38,7 @@ def make_user(details, profile_details=None):
     user.save()
 
     if profile_details:
-        profile = user.get_profile()
+        profile = user.userprofile
         [setattr(profile, k, v) for k,v in profile_details.items()]
 
 
