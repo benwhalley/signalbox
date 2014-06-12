@@ -1,4 +1,6 @@
+-e git+https://github.com/wesm/statlib.git#egg=statlib
 -e git+https://github.com/django/django.git@1.7b4#egg=django
+-e hg+ssh://hg@bitbucket.org/puterleat/django-registration#egg=django-registration
 Markdown==2.3.1
 Pillow==2.3.1
 South==0.8.2
@@ -12,7 +14,6 @@ django-fsm==1.5.0
 django-jsonfield>=0.8.10
 django-localflavor==1.0
 django-phonenumber-field>=0.2a3
--e hg+ssh://hg@bitbucket.org/puterleat/django-registration#egg=django-registration
 django-reversion>=1.8
 django-secure==0.1.2
 django-sekizai==0.7
@@ -29,7 +30,6 @@ python-dateutil==2.1
 python-magic>=0.4.3
 PyYAML>=3.10
 shortuuid>=0.4
--e git+https://github.com/wesm/statlib.git#egg=statlib
 twilio>=3.6.3
 docutils==0.11
 pandas>=0.13
