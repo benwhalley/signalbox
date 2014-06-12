@@ -142,7 +142,6 @@ class Question(models.Model):
             condition = None
 
         show = parse_conditional(condition, mapping_of_answers)
-        print condition, mapping_of_answers, show
         return show
 
     text = models.TextField(blank=True, null=True,
