@@ -1,0 +1,13 @@
+
+Release notes
+-----------------
+
+0.3.0
+
+- Django 1.7 compatibility
+- Improved data export using pandas/xlwt
+- Small code fixes
+- Conditional loading of reversion based on user settings
+- Additional help text on duplicate reply resolution templates
+- Changed default ordering of answers to enable better sorting in resolving duplicate replies
+- Improved study change page and summary/dashboard view
