@@ -1,4 +1,4 @@
--e git+https://github.com/wesm/statlib.git#egg=statlib
+-e git+https://github.com/wesm/statlib.git@master#egg=statlib
 -e git+https://github.com/django/django.git@1.7b4#egg=django
 -e hg+ssh://hg@bitbucket.org/puterleat/django-registration#egg=django-registration
 Markdown==2.3.1
