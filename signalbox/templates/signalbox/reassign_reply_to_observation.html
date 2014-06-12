@@ -1,0 +1,42 @@
+{% extends 'admin/base_site.html' %}
+
+
+{% block title %}
+Update observation for reply {{object.id}}
+{% endblock %}
+
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li><a href="/admin">Home</a><span class="divider">/</span></li>
+    <li><a href="/admin/signalbox">Signalbox</a><span class="divider">/</span></li>
+    <li><a href="/admin/signalbox/reply">Reply</a><span class="divider">/</span></li>
+    <li><a href="/admin/signalbox/reply/{{object.id}}">{{object.id}}</a><span class="divider">/</span></li>
+    <li>Reassign observation</li>
+</ul>
+{% endblock %}
+
+
+{% block content_title %}
+<a class="brand" href="#">Update linked observation for reply #{{object.id}}</a>
+{% endblock %}
+
+
+{% block content %}
+
+
+<p class="alert alert-warning">
+    <strong>Be careful. This view allows significant changes to the database. Be sure you know what you are doing.</strong>
+</p>
+
+
+<p>Currently this reply relates to observation id: <code>{{object.observation.id}}</code> ({{object.observation.label}}) If you would like to amend it to refer to a different observation please select it below:
+</p>
+
+
+<form action="" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" class="btn btn-danger" value="Save changes to this reply" />
+</form>
+
+{% endblock %}
