@@ -17,7 +17,7 @@ from django.template import Context, loader
 from signalbox.models import Reply, Answer
 from signalbox.models.validators import is_24_hour, only_includes_allowed_fields
 from signalbox.utils import incomplete, in_range
-from stats import chisquare
+from stats.stats import chisquare
 
 User = settings.AUTH_USER_MODEL
 

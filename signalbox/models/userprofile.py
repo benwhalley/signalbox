@@ -8,7 +8,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models.loading import get_model
 from django.core.urlresolvers import reverse
-from django_extensions.db.fields import UUIDField
+from shortuuidfield import ShortUUIDField
 
 from validators import is_number_from_study_area, is_mobile_number, is_landline
 from study import StudySite, Study
@@ -29,7 +29,7 @@ class UserProfile(models.Model):
     # for example, if a user was deleted and another added, some DB backends might reuse the PK.
     # we still export the pk for the moment, but could double check in future
 
-    uuid = UUIDField(auto=True)
+    uuid = ShortUUIDField(auto=True)
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
 
