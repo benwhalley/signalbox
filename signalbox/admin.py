@@ -374,7 +374,7 @@ class ReplyAdmin(ConditionalVersionAdmin):
                     'last_submit', 'observation', 'collector']
     list_filter = ['asker', 'complete', 'observation__dyad__study', 'entry_method', 'collector']
     search_fields = ['token', 'observation__token']
-    inlines = [AnswerInline, ReplyDataInline, ]
+    inlines = [ReplyDataInline]
     fieldsets = (
         ("Status", {
             'fields': ('is_preferred_reply', 'number_replies_made_for_observation', 'complete', 'last_submit')

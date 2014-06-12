@@ -1,6 +1,5 @@
 {% extends 'admin/base_site.html' %}
 
-
 {% block title %}
 Update observation for reply {{object.id}}
 {% endblock %}
@@ -34,7 +33,7 @@ Update observation for reply {{object.id}}
 </p>
 
 
-<form action="" method="post">{% csrf_token %}
+<form action="." method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" class="btn btn-danger" value="Save changes to this reply" />
 </form>

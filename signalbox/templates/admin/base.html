@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-1.8.21.custom.css" type="text/css" media="screen">
 <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
 {% endcompress %}
-<!-- <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" /> -->
+
 
 <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
 
@@ -28,16 +28,12 @@
 <script type="text/javascript" src="{{STATIC_URL}}js/mousetrap.min.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery.dj.selectable.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}audiojs/audio.min.js"></script>
-
 {% endcompress %}
 
 
 
 
 
-{% block extrahead %}{% endblock %}
-
-{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 <style type="text/css">
 a:active,
 a:focus {

@@ -68,7 +68,6 @@ def export_data(request):
     return export_answers(request, answers)
 
 
-@profile
 def export_answers(request, answers):
     "Take a queryset of Answers and export to a zip file."
 

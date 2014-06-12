@@ -27,7 +27,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-@profile
 def get_answers(studies):
     mems = set(Membership.objects.filter(study__in=studies))
     que = Q(observation__dyad__study__in=studies) | Q(membership__in=mems)

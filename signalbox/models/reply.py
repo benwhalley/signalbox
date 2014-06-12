@@ -53,19 +53,20 @@ class ReplyManager(models.Manager):
 
 
 class ReplyData(TimeStampedModel):
+    """Meta data related to a Reply, for example UUIDs from externally called services."""
     reply = models.ForeignKey('signalbox.Reply')
     key = key = models.CharField(max_length=255, choices=settings.REPLY_DATA_TYPES, db_index=True)
     value = models.TextField(blank=True, null=True)
 
     class Meta():
         app_label = 'signalbox'
-
+        verbose_name = "Reply meta data"
+        verbose_name_plural = "Reply meta data"
 
 
 class Reply(models.Model, ProcessManager):
 
     '''Organises a set of Answers and tracks Asker completion.'''
-
 
     def mapping_of_answers_and_scores(self):
         """
@@ -75,11 +76,10 @@ class Reply(models.Model, ProcessManager):
 
         mapping = {
             supergetattr(i, 'question.variable_name', i.other_variable_name): i.answer
-                for i in self.answer_set.all()
+            for i in self.answer_set.all()
         }
         mapping.update({k: v.get('score', None) for k, v in self.asker.summary_scores(self).items()})
         return mapping
-
 
     def add_data(self, key, value):
         """Add a ReplyData object for this Reply, save it, and return it.
@@ -195,13 +195,13 @@ class Reply(models.Model, ProcessManager):
             return bool(self in canon)
 
     def redirect_url(self):
-        return self.redirect_to or supergetattr(self, "created_by_script.asker.redirect_url", None) or reverse('user_homepage')
+        return self.redirect_to or \
+            supergetattr(self, "created_by_script.asker.redirect_url", None) or reverse('user_homepage')
 
     def number_non_empty_answers(self):
         return len([i for i in self.answer_set.all().exclude(
             other_variable_name="page_id").exclude(
                 question__q_type="instruction") if i.answer])
-
 
     def finish(self, request):
         """Questionnaire is complete, so finish up."""

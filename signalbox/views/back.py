@@ -47,12 +47,16 @@ if settings.USE_VERSIONING:
 
 
 class ReplyReassignmentDetailForm(forms.ModelForm):
+
     observation = selectable.AutoCompleteSelectField(
         label='Search for observation ID or part of a username to find the correct observation',
         lookup_class=ObservationLookup,
         required=True,
     )
 
+    class Meta:
+        model = Reply
+        fields = ['observation']
 
 class ReplyReassignmentDetail(UpdateView):
     """A view to allow superusers to change which observation a reply refers to.

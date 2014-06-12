@@ -1,0 +1,72 @@
+{% if original %}
+    {% if original.computed_scores %}
+    <h3>Auto-scored answers</h3>
+
+    <table class="table">
+        <tr>
+                <tr><th>Scoresheet</th><th>Score</th><th>Messages</th>  </tr>
+                {% for i in original.computed_scores %}
+                <tr>
+                    <td><a href="{% url 'admin:signalbox_scoresheet_change' i.scoresheet.id %}">{{i.scoresheet}}</a></td>
+                    <td>{{i.score}}</td>
+                    <td>{{i.message}}</td>
+                </tr>
+                {% endfor %}
+        </tr>
+    </table>
+
+    {% endif %}
+
+    <h3>User responses</h3>
+
+    <p>
+        <form class="form">
+        <label class="checkbox">
+            <input type="checkbox" onclick="$('.unanswered').toggle();">Hide questions not attempted</label>
+    </form>
+
+    {% if original.answer_set.all %}
+        <table class="table">
+        <tr>
+        <th>Variable name</th>
+        <th>Label</th>
+        <th width=20%>Response</th>
+        </tr>
+        {% for a in original.answers_ordered_as_per_original_asker %}
+        <tr>
+            <td><code>{{a.variable_name}}</code></td>
+            <td>
+                <div class="" id="lab_{{a.id}}">
+                    {%if a.question.text%}
+                        <pre>{{a.question.text|capfirst}}</pre>
+                    {% endif %}
+
+                    <span class="hide" id="choices_{{a.id}}">
+                        <pre>{{a.possible_choices_json}}</pre>
+                    </span>
+                </div>
+            </td>
+            <td>
+                {% if not a.answer.strip %}<code>Not Answered</code>{% endif %}
+                {% if a.choice_label %}
+                    {{a.choice_label}}
+                    {% if a.possible_choices_json %}
+                    <a class="" id="link{{a.id}}" href="#" onclick="$('#choices_{{a.id}}').show(); return false;">
+                        <i class="icon-info-sign"></i>
+                    </a>
+                    {% endif %}
+                {% endif %}
+                {% if a.upload %}
+                    <a href="{% url user_uploaded_file a.id %}">
+                        {{a.upload.name}}
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        No answers given in this reply.
+    {% endif %}
+
+{% endif %}
