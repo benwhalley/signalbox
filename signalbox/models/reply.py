@@ -68,6 +68,30 @@ class Reply(models.Model, ProcessManager):
 
     '''Organises a set of Answers and tracks Asker completion.'''
 
+    def answers_ordered_as_per_original_asker(self):
+        """Used in place of self.answer_set, mimics ordering of Asker used."""
+        if not self.asker:
+            return self.answer_set.all()
+
+        ordered_questions = [i for i in self.asker.questions()]
+        unordered_anwers = self.answer_set.all()
+        answers_dict = {i.variable_name(): i for i in unordered_anwers}
+
+        # insert 'faked' answers to enable user to see questions which were
+        # not attempted in this reply.
+        ordered_answers = [answers_dict.get(
+            i.variable_name,
+            Answer(question=i)) for i in ordered_questions]
+
+        # add any additional answers - should just be page_id really
+        remaining_variables = set(unordered_anwers) - set(ordered_answers)
+        map(
+            lambda x: ordered_answers.append(
+                answers_dict.get(x.variable_name(), x)),
+            remaining_variables)
+
+        return ordered_answers
+
     def mapping_of_answers_and_scores(self):
         """
         Create a mapping of all answers and summary scores in this Reply

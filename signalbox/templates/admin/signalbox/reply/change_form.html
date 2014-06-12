@@ -13,12 +13,17 @@
 
 
 {% block content %}
+{% if original %}
 <ul class="breadcrumb">
 
+    {% if original.observation.dyad.user %}
     <li>
         <a class='' href='{% url "participant_overview" original.observation.dyad.user.id %}'>{{original.observation.dyad.user.username}}</a>
         <span class="divider">/</span>
     </li>
+    {% endif %}
+
+    {% if original.observation %}
     <li>
         <a class="" href={% url "admin:signalbox_membership_change" original.observation.dyad.id %}>
             {{original.observation.dyad.study}}
@@ -38,7 +43,12 @@
         1 of {{original.observation.reply_set.count}} replies.
         {% endif %}
     </li>
+    {% endif %}
+
 </ul>
+{% endif %}
+
+
 
 
 <ul class="nav nav-tabs" id="usertabs">
@@ -47,7 +57,7 @@
     </li>
     {% if original %}
     <li class="">
-        <a href="#tabanswers" data-toggle="tab">User responses</a>
+        <a href="#tabanswers" data-toggle="tab">User responses ({{original.answer_set.all.count}})</a>
     </li>
     {% endif %}
 </ul>
@@ -63,11 +73,10 @@
             </div>
         </div>
 
-        <div class="tab-pane active" id="tabanswers">
+        <div class="tab-pane" id="tabanswers">
             <div class=row>
                 <div class="span12">
-                    XXX
-
+                    {% include "admin/signalbox/reply/reply_user_answers.html" %}
                 </div>
             </div>
         </div>
