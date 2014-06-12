@@ -33,7 +33,7 @@ from signalbox.utils import pretty_datetime
 from signalbox.allocation import allocate
 from signalbox.models.observation_helpers import *
 
-from signalbox.lookups import UserLookup, MembershipLookup
+from signalbox.lookups import UserLookup, MembershipLookup, ObservationLookup
 from django.contrib.auth.forms import PasswordResetForm
 
 from django.views.generic.detail import SingleObjectMixin
@@ -41,12 +41,50 @@ from download_view import DownloadView
 
 from django.core.exceptions import PermissionDenied
 from signalbox.models.naturaltimes import parse_natural_date
-
-from django.conf import settings
-
+from django.views.generic.edit import UpdateView
 if settings.USE_VERSIONING:
-    from reversion.models import Revision
+    from reversion import revision
 
+
+class ReplyReassignmentDetailForm(forms.ModelForm):
+    observation = selectable.AutoCompleteSelectField(
+        label='Search for observation ID or part of a username to find the correct observation',
+        lookup_class=ObservationLookup,
+        required=True,
+    )
+
+
+class ReplyReassignmentDetail(UpdateView):
+    """A view to allow superusers to change which observation a reply refers to.
+
+    This is useful in the case that therapists enter data against the wrong patient."""
+
+    form_class = ReplyReassignmentDetailForm
+    model = Reply
+    template_name = 'signalbox/reassign_reply_to_observation.html'
+
+    def post(self, *args, **kwargs):
+        if settings.USE_VERSIONING:
+            with reversion.create_revision():
+                reversion.set_comment("Reassigned the observation this reply refers to.")
+                return super(ReplyReassignmentDetail, self).post(*args, **kwargs)
+        else:
+            return super(ReplyReassignmentDetail, self).post(*args, **kwargs)
+
+    def form_valid(self, form):
+        messages.info(self.request,
+            "Link to observation {} was successfully made.".format(self.object.observation.id))
+        return super(ReplyReassignmentDetail, self).form_valid(form)
+
+    def get_object(self, queryset=None):
+        if self.request.user.is_superuser:
+            obj = super(ReplyReassignmentDetail, self).get_object()
+            return obj
+        else:
+            raise Exception("User not permitted to amend Reply/Observation links")
+
+    def get_success_url(self):
+        return reverse('reassign_reply_to_observation', args=(self.object.id, ))
 
 
 class StaffRequiredMixin(object):
@@ -59,7 +97,6 @@ class LoginRequiredMixin(object):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(ViewSpaceIndex, self).dispatch(*args, **kwargs)
-
 
 
 class AnswerFileView(SingleObjectMixin, DownloadView):
@@ -241,7 +278,7 @@ def preview_timings(request, klass="Study", pk=None):
         obj = get_object_or_404(Script, id=pk)
         scripts = [obj]
 
-    datelist = [{'script':script, 'times':
+    datelist = [{'script': script, 'times':
                  script.datetimes_with_natural_syntax()} for script in scripts]
     datelist = itertools.chain(
         *[[(i, j['script']) for i in j['times']] for j in datelist])
@@ -359,7 +396,6 @@ def resend_observation_signal(request, obs_id,):
 class ObservationView(StaffRequiredMixin, ListView):
     """XXX TODO This should be a researcher-only view... update
     when this ticket is fixed: https://code.djangoproject.com/ticket/13879"""
-
 
     model = Observation
     paginate_by = 30

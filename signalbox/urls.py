@@ -91,9 +91,8 @@ adminpatterns = patterns('',
     url(r'^todo/do/$', do_todo, {}, 'do_todo'),
     url(r'^resend/(?P<obs_id>\d+)/$', resend_observation_signal, {}, 'resend_observation_signal'),
 
-
     # have a look at replies
-    url(r'reply/(?P<id>\d+)/preview/$', preview_reply, {}, "preview_reply"),
+    url(r'^reply/(?P<pk>\d+)/reassign/$', ReplyReassignmentDetail.as_view(), {}, 'reassign_reply_to_observation' ),
 
     # resolving duplicate replies
     url(r'^resolve/duplicate/replies/$', resolve_double_entry_conflicts, {}, 'resolve_double_entry_conflicts'),

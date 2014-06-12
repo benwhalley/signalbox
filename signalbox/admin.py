@@ -12,7 +12,7 @@ from django.contrib.auth.models import Permission
 
 import selectable.forms as selectable
 from django.core.exceptions import ValidationError
-from signalbox.lookups import UserLookup
+from signalbox.lookups import UserLookup, MembershipLookup
 from signalbox.utilities.linkedinline import LinkedInline
 from signalbox.models import *
 from signalbox.allocation import *
@@ -128,14 +128,14 @@ class ReplyInline(LinkedInline):
               'originally_collected_on', 'last_submit', 'user']
 
 
-class ObservationDataInline(admin.StackedInline):
+class ObservationDataInline(LinkedInline):
     save_on_top = True
     model = ObservationData
     readonly_fields = ['key', 'value', ]
     max_num = 0
 
 
-class ReplyDataInline(admin.StackedInline):
+class ReplyDataInline(LinkedInline):
     save_on_top = True
     model = ReplyData
     readonly_fields = ['key', 'value', ]
@@ -182,6 +182,7 @@ class ObservationAdmin(ConditionalVersionAdmin):
 
 class MembershipAdminForm(forms.ModelForm):
     user = selectable.AutoCompleteSelectField(lookup_class=UserLookup)
+    relates_to = selectable.AutoCompleteSelectField(lookup_class=MembershipLookup, required=False)
 
     class Meta(object):
         fields = "__all__"
@@ -207,8 +208,12 @@ class MembershipAdmin(admin.ModelAdmin):
     list_editable = ['active']
     readonly_fields = []  # ['date_randomised', ]
     fieldsets = (
+        ("Status", {
+            'fields': ('active',  )
+        }),
+
         ("User", {
-            'fields': ('user', 'active', 'relates_to', 'date_randomised', )
+            'fields': ('user', 'relates_to', 'date_randomised', )
         }),
 
         ("Study and condition", {
@@ -216,7 +221,7 @@ class MembershipAdmin(admin.ModelAdmin):
         }),
     )
 
-    inlines = [ObservationInline]
+    inlines = [ObservationInline,]
     save_on_top = True
 
 
@@ -363,7 +368,7 @@ class ReplyAdmin(ConditionalVersionAdmin):
 
     date_hierarchy = 'last_submit'
     save_on_top = True
-    readonly_fields = ['complete', 'observation', 'user', 'asker',
+    readonly_fields = ['is_preferred_reply', 'number_replies_made_for_observation', 'complete', 'observation', 'user', 'asker',
                     'last_submit', 'started']
     list_display = ['token', 'entry_method', 'user', 'complete',
                     'last_submit', 'observation', 'collector']
@@ -371,11 +376,8 @@ class ReplyAdmin(ConditionalVersionAdmin):
     search_fields = ['token', 'observation__token']
     inlines = [AnswerInline, ReplyDataInline, ]
     fieldsets = (
-        ("Actions", {
-            'fields': ('is_canonical_reply', )
-        }),
         ("Status", {
-            'fields': ('complete', 'last_submit')
+            'fields': ('is_preferred_reply', 'number_replies_made_for_observation', 'complete', 'last_submit')
         }),
 
         ("General", {

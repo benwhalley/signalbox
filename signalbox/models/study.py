@@ -8,7 +8,6 @@ import itertools
 from ask.models import Question
 from contracts import contract
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -19,7 +18,6 @@ from signalbox.models import Reply, Answer
 from signalbox.models.validators import is_24_hour, only_includes_allowed_fields
 from signalbox.utils import incomplete, in_range
 from statlib.stats import chisquare
-
 
 User = settings.AUTH_USER_MODEL
 
@@ -249,10 +247,9 @@ class Study(models.Model):
         """
         conditions = self.studycondition_set.all()
         counts = [i.users.count() for i in conditions]
-        expected =  [i.expected_n() for i in conditions]
+        expected = [i.expected_n() for i in conditions]
 
         return chisquare(counts, expected)
-
 
     def get_absolute_url(self):
         return reverse('study', args=(self.pk,))
@@ -286,11 +283,10 @@ class StudyCondition(models.Model):
                                  help_text="""Relative weights to allocate users to conditions""")
     scripts = models.ManyToManyField('signalbox.Script', blank=True, null=True)
 
-
     def expected_n(self):
         """Return the expected number of participants based on the total currently allocated to the parent study."""
         weights = [i.weight for i in self.study.studycondition_set.all()]
-        w = self.weight/sum(weights)
+        w = self.weight / sum(weights)
         return self.study.membership_set.count() * w
 
     class Meta:

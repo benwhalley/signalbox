@@ -7,8 +7,8 @@ from models import Membership, Observation
 from selectable import registry
 from selectable.base import ModelLookup
 from django.conf import settings
-User = settings.AUTH_USER_MODEL
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class UserLookup(ModelLookup):
     model = User
@@ -53,5 +53,27 @@ class MembershipLookup(ModelLookup):
         return queryset
 
 
+class ObservationLookup(ModelLookup):
+    model = Observation
+
+    def get_query(self, request, term):
+        if not request.user.is_staff:
+            return HttpResponseForbidden()
+        queryset = Observation.objects.filter(
+            Q(dyad__user__username__istartswith=term)
+            | Q(id__istartswith=term)
+        )
+        return queryset
+
+    def get_item_label(self, item):
+        return "Observation #{} (user:{}, {})".format(item.id, item.dyad.user.username, item.label)
+
+    def get_item_value(self, item):
+        return "%s" % (item.id)
+
+
+
+
 registry.registry.register(UserLookup)
+registry.registry.register(ObservationLookup)
 registry.registry.register(MembershipLookup)

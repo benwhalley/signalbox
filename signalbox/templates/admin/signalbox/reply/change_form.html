@@ -1,13 +1,149 @@
 {% extends "signalbox:admin/change_form.html" %}
-{% block sidebar %}
-<div class="span3">
+
+{% block submit_buttons_top %}
+    {{block.super}}
+    &nbsp;
+    <a class="
+    btn btn-warning {% if not request.user.is_superuser %}disabled{%endif%}"
+    href={% if request.user.is_superuser %}"{% url 'reassign_reply_to_observation' original.id %}"{%else%}"javascript:window.alert('You do not habve permission to reassign observations.');"{% endif %}>
+    Reassign to a different observation</a>
+{%endblock%}
+
+{% block breadcrumbs %}
+{% if original %}
+<ul class="breadcrumb">
+
+    <li>
+        User: <a class='' href='{% url "participant_overview" original.observation.dyad.user.id %}'>{{original.observation.dyad.user.username}}</a>
+        <span class="divider">/</span>
+    </li>
+    <li>
+        <a class="" href={% url "admin:signalbox_membership_change" original.observation.dyad.id %}>
+                        #{{original.observation.dyad}}
+        </a>
+        <span class="divider">/</span>
+    </li>
+
+    <li>Observation <a class="" href={% url "admin:signalbox_observation_change" original.observation.id %}>
+                #{{original.observation.id}}
+            </a>
+        <span class="divider">/</span>
+    </li>
+    <li>
+
+        <span class="divider">/</span>
+    </li>
+</ul>
+{% endif %}
+{% endblock %}
+
+
+
+{% block content %}
 
 {% if original %}
-    <h4>Tools:</h4>
-	{% if original.observation %}
-        <p><a class="btn" href={% url 'admin:signalbox_observation_change' original.observation.id %}>Edit observation</a></p>
-        <p><a class='btn' href='{% url 'participant_overview' original.observation.dyad.user.id %}'>Participant overview</a></p>
-    {% endif %}
+<ul class="breadcrumb">
+
+    <li>
+        <a class='' href='{% url "participant_overview" original.observation.dyad.user.id %}'>{{original.observation.dyad.user.username}}</a>
+        <span class="divider">/</span>
+    </li>
+    <li>
+        <a class="" href={% url "admin:signalbox_membership_change" original.observation.dyad.id %}>
+            {{original.observation.dyad.study}}
+        </a>
+        <span class="divider">/</span>
+    </li>
+
+    <li><a class="" href={% url "admin:signalbox_observation_change" original.observation.id %}>
+                {{original.observation.label}} ({{original.observation.n_in_sequence}})
+            </a>
+        <span class="divider">/</span>
+    </li>
+    <li>
+        {% if original.observation.reply_set.count == 1%}
+         Reply #{{original.id}}
+        {% else %}
+        1 of {{original.observation.reply_set.count}} replies.
+        {% endif %}
+    </li>
+</ul>
 {% endif %}
-</div>
+
+{{block.super}}
+
+
+
+{% if original %}
+    {% if original.computed_scores %}
+    <h3>Auto-scored answers</h3>
+
+    <table class="table">
+        <tr>
+                <tr><th>Scoresheet</th><th>Score</th><th>Messages</th>  </tr>
+                {% for i in original.computed_scores %}
+                <tr>
+                    <td><a href="{% url 'admin:signalbox_scoresheet_change' i.scoresheet.id %}">{{i.scoresheet}}</a></td>
+                    <td>{{i.score}}</td>
+                    <td>{{i.message}}</td>
+                </tr>
+                {% endfor %}
+        </tr>
+    </table>
+
+    {% endif %}
+
+    <h3>User responses</h3>
+
+    <p>
+        <form class="form">
+        <label class="checkbox">
+            <input type="checkbox" onclick="$('.unanswered').toggle();">Hide questions not attempted</label>
+    </form>
+
+    {% if original.answer_set.all %}
+        <table class="table">
+        <tr>
+        <th>Variable name</th>
+        <th>Label</th>
+        <th width=20%>Response</th>
+        </tr>
+        {% for a in original.answers_ordered_as_per_original_asker %}
+        <tr>
+            <td><code>{{a.variable_name}}</code></td>
+            <td>
+                <div class="" id="lab_{{a.id}}">
+                    {%if a.question.text%}
+                        <pre>{{a.question.text|capfirst}}</pre>
+                    {% endif %}
+
+                    <span class="hide" id="choices_{{a.id}}">
+                        <pre>{{a.possible_choices_json}}</pre>
+                    </span>
+                </div>
+            </td>
+            <td>
+                {% if not a.answer.strip %}<code>Not Answered</code>{% endif %}
+                {% if a.choice_label %}
+                    {{a.choice_label}}
+                    {% if a.possible_choices_json %}
+                    <a class="" id="link{{a.id}}" href="#" onclick="$('#choices_{{a.id}}').show(); return false;">
+                        <i class="icon-info-sign"></i>
+                    </a>
+                    {% endif %}
+                {% endif %}
+                {% if a.upload %}
+                    <a href="{% url user_uploaded_file a.id %}">
+                        {{a.upload.name}}
+                    </a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        No answers given in this reply.
+    {% endif %}
+
+{% endif %}
 {% endblock %}

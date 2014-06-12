@@ -8,18 +8,21 @@
 {% block left %}
 
 <h2>Additional information about you:</h2>
+<form method=POST>
+{% if form.num_fields %}
 
 <p>This information is needed to take part in the study. We take your privacy very seriously, and will keep this information confidential.</p>
 
 <p>
-
-    <form method=POST>
-
 {{form.as_table}}
+{% else %}
+No additional information required.
+{% endif %}
 {% csrf_token %}
 
+
 <p></p>
-<p><input type=submit class="btn btn-primary" value="Save"></p>
+<p><input type=submit class="btn btn-primary" value="OK"></p>
 </form>
 </form>
 {% endblock %}

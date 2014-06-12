@@ -1,66 +1,78 @@
 {% extends "signalbox:admin/change_form.html" %}
 
+{% block content %}
+{% if original %}
+<ul class="breadcrumb">
+
+    <li>
+        User: <a class='' href='{% url "participant_overview" original.dyad.user.id %}'>{{original.dyad.user.username}}</a>
+        <span class="divider">/</span>
+    </li>
+
+    <li>
+        <a class="" href={% url "admin:signalbox_membership_change" original.dyad.id %}>
+                        {{original.dyad.study}}
+        </a>
+        <span class="divider">/</span>
+    </li>
+
+    <li>Observation
+                #{{original.id}}
+    </li>
 
 
-{% block object-tools-items %}
-<a class='btn btn-mini' href='{% url 'participant_overview' original.dyad.user.id %}'>Participant overview</a>
-
-
-
-{%if original.can_add_answers %}
-<a class='btn btn-primary btn-mini' href='{% url 'start_double_entry' original.token %}?success_url={% url 'admin:signalbox_observation_change' object_id %}'>
-        <i class="icon-chevron-right"></i> Enter Data</a>
+</ul>
 {% endif %}
-{%if original.script_type.sends_message_to_user %}
-<a class='btn btn-danger btn-mini' href='{% url 'resend_observation_signal' object_id %}'>
-    <i class="icon-refresh"></i> Send/Resend message</a>
-{% endif %}
 
 
-{% if original.reply_set.all.count > 1 %}
-<a class="btn btn-mini" href={% url 'resolve_double_entry_conflicts_for_observation' original.id %}>Resolve duplicate replies</a>
-{% endif %}
+<div class="row">
+    <div class="span12">
+        <p class="pull-right">
+        {%if original.can_add_answers %}
+        <a class='btn btn-primary' href='{% url 'start_double_entry' original.token %}?success_url={% url 'admin:signalbox_observation_change' object_id %}'>
+                <i class="icon-chevron-right"></i> Enter Data</a>
+        {% endif %}
+        {%if original.script_type.sends_message_to_user %}
+        <a class='btn btn-danger' href='{% url 'resend_observation_signal' object_id %}'>
+            <i class="icon-refresh"></i> Send/Resend message</a>
+        {% endif %}
+
+
+        {% if original.reply_set.all.count > 1 %}
+        <a class="btn btn-mini" href={% url 'resolve_double_entry_conflicts_for_observation' original.id %}>Resolve duplicate replies</a>
+        {% endif %}
+    </p>
+    </div>
+</div>
+
+
 
 
 {{block.super}}
 {% endblock %}
 
 
+
+
+
+
 {% block sidebar %}
-<div class="span3">
 
-
-
-<h4>Tools</h4>
 
 {% if original and original.dyad %}
-
-
-{% if original.sms_replies %}
-<div class="module" id="tools-module">
-    <h2>SMS Replies:</h2>
-    <ul>
-    {% for i in original.sms_replies %}
-        <li>{{i.timestamp}} <a href="{% url 'admin:signalbox_textmessagecallback_change' i.id %}">details</a></li>
-    {% endfor %}
-    </ul>
-</div>
+<div class="span3">
+    {% if original.sms_replies %}
+    <h4>Tools</h4>
+    <div class="module" id="tools-module">
+        <h2>SMS Replies:</h2>
+        <ul>
+        {% for i in original.sms_replies %}
+            <li>{{i.timestamp}} <a href="{% url 'admin:signalbox_textmessagecallback_change' i.id %}">details</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+    </div>
+    {% endif %}
 {% endif %}
 
-
-
-
-
-
-
-
-</div>
-
-
-
-
-</div>
-
-{% endif %}
-</div>
 {% endblock %}

@@ -1,6 +1,25 @@
 {% extends "signalbox:admin/change_form.html" %}
 
-{% block coltype %}colMS{% endblock %}
+{% block content %}
+{% if original %}
+<ul class="breadcrumb">
+
+    <li>
+        <a class='' href='{% url "participant_overview" original.user.id %}'>{{original.user.username}}</a>
+        <span class="divider">/</span>
+    </li>
+    <li>
+        {{original.study}}
+    </li>
+
+
+</ul>
+{% endif %}
+
+{{block.super}}
+
+{% endblock%}
+
 
 
 {% block object-tools-items %}

@@ -35,7 +35,7 @@ def preview_asker(request, asker_id=None, page_num=None):
     entry_method = page_num and "page_preview" or "preview"
     reply = Reply(asker=a, entry_method=entry_method, user=request.user)
     reply.save()
-    reply.redirect_to = reverse('preview_reply', args=(reply.id, ))
+    reply.redirect_to = reverse('admin:signalbox_reply_change', args=(reply.id, ))
     reply.save()
     url = reverse('show_page', kwargs={'reply_token': reply.token}) + "?page={}".format(page_num)
     return HttpResponseRedirect(url)

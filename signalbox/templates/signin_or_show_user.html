@@ -5,7 +5,7 @@
     >
       {{ request.login_form.username }}
       {{ request.login_form.password }}
-      {% csrf_token %}
+      {% csrf_token %}<input type="hidden" name="next" value="{{ next }}" />
       <button type="submit" class="btn">Sign in</button>
     </form>
 {% else %}

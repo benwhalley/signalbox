@@ -6,11 +6,12 @@
     {% endblock %}
 
     {% block breadcrumbs %}
-    <div class="breadcrumbs">
-    <a href="/admin">Home</a> > <a href="/admin/signalbox">Signalbox</a> >
-    <a href="{% url 'resolve_double_entry_conflicts' %}">Resolve Duplicate Observations</a> >
-    <a href="/admin/signalbox/study/{{study.id}}">{{study.name}}</a>
-    </div>
+    <ul class="breadcrumb">
+        <li><a href="/admin">Home</a><span class="divider">/</span></li>
+        <li><a href="/admin/signalbox">Signalbox</a><span class="divider">/</span></li>
+        <li><a href="{% url resolve_double_entry_conflicts %}">Resolve Duplicate Observation</a><span class="divider">/</span></li>
+        <li><a href="/admin/signalbox/study/{{study.id}}">{{study.name}}</a><span class="divider">/</span></li>
+    </ul>
     {% endblock %}
 
     {% block content_title %}

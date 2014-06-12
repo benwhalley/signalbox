@@ -205,7 +205,7 @@ class UserProfileForm(forms.ModelForm):
         # start with fields everyone must fill in on this installation
         visible_fields = settings.DEFAULT_USER_PROFILE_FIELDS
         visible_fields.extend(request.user.userprofile.get_required_fields_for_studies())
-
+        
         # set fields to be required if needed
         for k in request.user.userprofile.get_required_fields_for_studies():
             setattr(self.fields[k], 'required', True)
@@ -214,6 +214,9 @@ class UserProfileForm(forms.ModelForm):
         for k, v in self.fields.items():
             if k not in visible_fields:
                 del self.fields[k]
+        
+        self.num_fields = len(filter(bool, visible_fields))
+        
 
     class Meta:
         model = UserProfile

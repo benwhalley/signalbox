@@ -28,7 +28,7 @@
         <td class="original">
 
           {% if inline_admin_form.original %}
-          <a class="btn" href="{{inline_admin_form.original.admin_edit_url}}?next={{original.admin_edit_url}}"><strong>Edit</strong></a>
+          <a class="btn" href="{{inline_admin_form.original.admin_edit_url}}"><strong>Edit</strong></a>
           {% endif %}
 
           {% if inline_admin_form.original or inline_admin_form.show_url %}<p>
@@ -37,7 +37,11 @@
 
 
           </p>{% endif %}
-          {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+
+
+          {% if inline_admin_form.needs_explicit_pk_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+          {# Have made sure pk field is always output... see https://github.com/django/django/commit/3aad955ea8db1592fad0012155eaa25b72e50dc5 #}
+
           {{ inline_admin_form.fk_field.field }}
           {% spaceless %}
           {% for fieldset in inline_admin_form %}

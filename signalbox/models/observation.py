@@ -9,7 +9,6 @@ from shortuuidfield import ShortUUIDField
 from django.db import models
 
 from django.contrib.auth.models import AnonymousUser
-from django.contrib.auth import get_user_model
 from django.conf import settings
 User = settings.AUTH_USER_MODEL
 
@@ -173,7 +172,7 @@ class Observation(models.Model):
 
     attempt_count = models.IntegerField(default=0, db_index=True)
 
-    token = ShortUUIDField(auto=True)
+    token = ShortUUIDField()
 
     def add_reminders(self):
         scriptreminders = ScriptReminder.objects.filter(script=self.created_by_script)

@@ -1,3 +1,12 @@
+
+
+
+
+- Rework resolving of duplicate rplies... chekc if Roelie really needs it sorted by questionnaire ordering. Also allow export of callables on models – e.g is_preferred_reply
+which I've added manually on the reframed2 codebase
+
+
+
 # apply s sort to django Users
 # User._meta.ordering = ["username"]
  this stopped working in 1.7

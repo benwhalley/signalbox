@@ -79,7 +79,7 @@ class UserProfile(models.Model):
 
     def get_required_fields_for_studies(self):
         studies = [i.study for i in self.user.membership_set.all()]
-        return set(itertools.chain(*[i.userprofile_fields_dict()['required'] for i in studies]))
+        return set(itertools.chain(*[i.profile_fields_dict()['required'] for i in studies]))
 
     def get_visible_fields_for_studies(self):
         studies = [i.study for i in self.user.membership_set.all()]

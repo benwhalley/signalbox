@@ -31,7 +31,7 @@ class Membership(models.Model):
         help_text="""If deselected, Observations no longer be sent for Membership.""",
         db_index=True)
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, help_text="The person providing data, normally the participant.")
 
     study = models.ForeignKey('signalbox.Study',)
 

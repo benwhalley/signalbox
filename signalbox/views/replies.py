@@ -103,30 +103,3 @@ def use_adhoc_asker(request, membership_id, asker_id):
         entry_method="ad_hoc",)
     reply.save()
     return HttpResponseRedirect(reverse('show_page', args=(reply.token,)))
-
-
-
-@group_required(['Researchers', 'Clinicians', 'Research Assistants', ])
-def preview_reply(request, id):
-    """Display information about a Reply a participant has made.
-
-    NOTE - it is only possible to view replies to scripts designated as for screening
-    purposes in this way - outcome data should not be displayed."""
-
-    reply_exists = Reply.objects.filter(id=id).count() > 0
-
-    reply = reply_exists and get_object_from_queryset_or_404(
-        Reply.objects.authorised(request.user), id=id
-    )
-
-    if reply_exists and not reply:
-        raise PermissionDenied(
-            "Your account doesn't have access to that page. Login as a different user?")
-
-    scoresheets = reply.asker.scoresheets()
-    scores = [(i, i.compute(reply.answer_set.all())) for i in scoresheets]
-
-    return render_to_response('manage/preview_reply.html',
-                              {'reply': reply, 'scores': scores},
-                              context_instance=RequestContext(request)
-                              )

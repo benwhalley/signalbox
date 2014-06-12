@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from django.contrib import messages
 from django.db import models
 
-from django.contrib.auth import get_user_model
 from django.conf import settings
 User = settings.AUTH_USER_MODEL
 
@@ -181,6 +180,10 @@ class Reply(models.Model, ProcessManager):
             return True
         return False
 
+    def number_replies_made_for_observation(self):
+        """Convenience method for use in the admin"""
+        return self.observation.reply_set.all().count()
+
     def is_preferred_reply(self):
         """Returns whether this was the Reply to use for an Observation."""
 
@@ -212,9 +215,6 @@ class Reply(models.Model, ProcessManager):
 
         self.complete = True
         self.save()
-
-    def get_absolute_url(self):
-        return reverse('preview_reply', args=(self.id, ))
 
     class Meta():
         app_label = 'signalbox'

@@ -6,7 +6,7 @@
 
 {% block content_title %}
 <a class="brand">Overview of: {{participant.display_name}} {{participant.username}}</a>
-<a class="btn pull-right" href="{% url "edit_participant" participant.id %}"> Edit user details</a>
+<a class="btn pull-right" href="{% url 'edit_participant' participant.id %}"> Edit user details</a>
 {% endblock %}
 
 
