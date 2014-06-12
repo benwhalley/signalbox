@@ -29,7 +29,7 @@ python-dateutil==2.1
 python-magic>=0.4.3
 PyYAML>=3.10
 shortuuid>=0.4
-statlib==1.1
+-e git+https://github.com/wesm/statlib.git#egg=statlib
 twilio>=3.6.3
 docutils==0.11
 pandas>=0.13
