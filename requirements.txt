@@ -1,3 +1,4 @@
+--allow-all-external
 -e git+https://github.com/django/django.git@1.7b4#egg=django
 Markdown==2.3.1
 Pillow==2.3.1
@@ -29,7 +30,6 @@ python-dateutil==2.1
 python-magic>=0.4.3
 PyYAML>=3.10
 shortuuid>=0.4
---allow-unverified statlib
 statlib==1.1
 twilio>=3.6.3
 docutils==0.11
