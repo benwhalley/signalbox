@@ -29,6 +29,7 @@ python-dateutil==2.1
 python-magic>=0.4.3
 PyYAML>=3.10
 shortuuid>=0.4
+--allow-unverified statlib
 statlib==1.1
 twilio>=3.6.3
 docutils==0.11
