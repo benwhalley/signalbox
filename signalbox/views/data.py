@@ -13,7 +13,6 @@ from signalbox.decorators import group_required
 from signalbox.models import Answer, Study, Reply, Question
 from signalbox.forms import SelectExportDataForm, get_answers
 
-from profiling import profile, Profiler
 
 ANSWER_FIELDS_MAP = dict([
     ('id', 'id'),
@@ -44,7 +43,6 @@ ROW_FIELDS_MAP = dict([
 ])
 
 
-@profile
 @group_required(['Researchers', ])
 def export_data(request):
     with Profiler("makeform"):
@@ -58,7 +56,6 @@ def export_data(request):
 
     if studies:
         answers = get_answers(studies)
-
 
     if questionnaires:
         answers = Answer.objects.filter(reply__asker__in=questionnaires)
@@ -97,9 +94,8 @@ def export_answers(request, answers):
     # write the data as xls not csv to preserve date formatting; requires xlwt
     [j.to_excel(i.name, merge_cells=False, encoding='utf-8') for i, j in zip(tmpfiles, [answerdata, rowmetadata])]
 
-
     makedotmp = get_template('signalbox/stata/make.dotemplate')
-    makedostring = makedotmp.render(Context({'date': datetime.now(), 'request':request}))
+    makedostring = makedotmp.render(Context({'date': datetime.now(), 'request': request}))
 
     # make a syntax file to label everything
     questions = set((i.question for i in answers))
@@ -107,10 +103,9 @@ def export_answers(request, answers):
     syntaxtdotmp = get_template('signalbox/stata/process-variables.dotemplate')
     syntax_dostring = syntaxtdotmp.render(Context({'questions': questions, 'choicesets': choicesets, 'request':request}))
 
-
     # make zip and return bytes
     with ZipFile(NamedTemporaryFile(suffix=".zip").name, 'w') as zipper:
-        [zipper.write(i.name, j+os.path.splitext(i.name)[1]) for i, j in zip(tmpfiles, namesofthingstoexport)]
+        [zipper.write(i.name, j + os.path.splitext(i.name)[1]) for i, j in zip(tmpfiles, namesofthingstoexport)]
         zipper.writestr('make.do', makedostring)
         zipper.writestr('make_labels.do', syntax_dostring)
 
@@ -123,7 +118,6 @@ def export_answers(request, answers):
         return response
 
 
-
 def generate_syntax(template, questions, reference_study=None):
     """Return a string of stata syntax to format exported datafile for a given set of questions."""
 
@@ -132,8 +126,6 @@ def generate_syntax(template, questions, reference_study=None):
         Context({'questions': questions, 'reference_study': reference_study})
     )
     return syntax
-
-
 
 
 def _shifted(obj, datetimefield, delta):
