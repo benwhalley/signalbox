@@ -9,7 +9,6 @@ from signalbox.utilities.linkedinline import admin_edit_url
 from signalbox.utils import proportion
 
 
-
 class MembershipManager(models.Manager):
 
     def authorised(self, user):
@@ -81,7 +80,7 @@ class Membership(models.Model):
         return self.observations().exclude(status=1)
 
     def has_observation_expiring_today(self):
-        return sum([i.expires_today for i in self.observations()])
+        return sum([i.expires_today() for i in self.observations()])
 
     # helper functions to calculate obs of various types
     outcomes = lambda self: self.observations(threshold=50)

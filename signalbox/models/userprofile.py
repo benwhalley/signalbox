@@ -120,7 +120,7 @@ class UserProfile(models.Model):
         return Study.objects.all()
 
     def has_observation_expiring_today(self):
-        return sum([i.has_observation_expiring_today for i in self.current_memberships()])
+        return sum([i.has_observation_expiring_today() for i in self.current_memberships()])
 
     def other_memberships(self):
         memberships = [m for m in self.user.membership_set.all() if not m.is_current()]

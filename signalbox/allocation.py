@@ -1,6 +1,6 @@
 """Functions to allocate Memberships to a StudyCondition"""
 from __future__ import division
-from statlib import stats
+from stats import stats
 from collections import Counter
 from datetime import datetime
 import random

@@ -2,6 +2,13 @@
 Release notes
 -----------------
 
+0.3.4
+
+- More 1.7 fixes
+- Improved display of replies and observations
+- removed statlib dependency, bundling old version of the stats package
+
+
 0.3.0
 
 - Django 1.7 compatibility
