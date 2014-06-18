@@ -33,3 +33,4 @@ twilio>=3.6.3
 docutils==0.11
 pandas>=0.13
 openpyxl==1.8.6
+django-braces==1.4.0
