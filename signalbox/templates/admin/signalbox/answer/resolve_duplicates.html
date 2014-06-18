@@ -19,6 +19,29 @@
 
 {% block content %}
 
+<ul class="breadcrumb">
+
+    <li>
+        User: <a class='' href='{% url "participant_overview" observation.dyad.user.id %}'>{{observation.dyad.user.username}}</a>
+        <span class="divider">/</span>
+    </li>
+
+    <li>
+        <a class="" href={% url "admin:signalbox_membership_change" observation.dyad.id %}>
+                        {{observation.dyad.study}}
+        </a>
+        <span class="divider">/</span>
+    </li>
+
+    <li><a href="{% url "admin:signalbox_observation_change" observation.id %}">Observation {{observation.id}}</a>
+        <span class="divider">/</span>
+    </li>
+
+    <li>Resolve duplicate replies
+    </li>
+
+</ul>
+
 
     <form action="." method="POST">
     {% with observation.variables_which_differ_between_multiple_replies as diffs %}

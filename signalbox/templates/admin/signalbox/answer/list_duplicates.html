@@ -23,17 +23,19 @@
     {% if with_dupes %}
     <table class="table">
         <tr>
-            <th>Observation</th><th>User</th><th>Reply selected</th><th>Actions</th>
+            <th>Observation</th><th>User</th><th>Study</th><th>Reply selected</th><th></th>
         </tr>
 
 
         {% for i in with_dupes %}
         <tr>
-            <td>{{i.id}}</td>
+            <td>{{i.label}} (#{{i.id}})</td>
             <td>{{i.dyad.user}}</td>
-            <td><img src="{{STATIC_URL}}icons/icon-{% if i.has_manually_selected_canonical_reply %}yes{%else%}no{%endif%}.gif">
+            <td>{{i.dyad.study}}</td>
+            <td><img src="{{STATIC_URL}}admin/img/icon-{% if i.has_manually_selected_canonical_reply %}yes{%else%}no{%endif%}.gif">
             </td>
-            <td><a class="btn" href="{% url 'admin:signalbox_observation_change' i.id %}">Edit Observation</a> <a class="btn btn-primary" href="{% url 'resolve_double_entry_conflicts_for_observation' i.id %}">Select a Reply</a></td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'resolve_double_entry_conflicts_for_observation' i.id %}">Select a Reply</a></td>
         </tr>
         {% endfor %}
 

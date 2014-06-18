@@ -17,7 +17,7 @@
     </li>
 
     <li>Observation
-                #{{original.id}}
+                {{original.id}}
     </li>
 
 
@@ -28,8 +28,12 @@
 <div class="row">
     <div class="span12">
         <p class="pull-right">
+        {% if original.reply_set.all.count > 1 %}
+        <a class="btn" href={% url 'resolve_double_entry_conflicts_for_observation' original.id %}>Resolve duplicate replies</a>
+        {% endif %}
+
         {%if original.can_add_answers %}
-        <a class='btn btn-primary' href='{% url 'start_double_entry' original.token %}?success_url={% url 'admin:signalbox_observation_change' object_id %}'>
+        <a class='btn btn-success' href='{% url 'start_double_entry' original.token %}?success_url={% url 'admin:signalbox_observation_change' object_id %}'>
                 <i class="icon-chevron-right"></i> Enter Data</a>
         {% endif %}
         {%if original.script_type.sends_message_to_user %}
@@ -38,9 +42,7 @@
         {% endif %}
 
 
-        {% if original.reply_set.all.count > 1 %}
-        <a class="btn btn-mini" href={% url 'resolve_double_entry_conflicts_for_observation' original.id %}>Resolve duplicate replies</a>
-        {% endif %}
+
     </p>
     </div>
 </div>
