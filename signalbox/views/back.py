@@ -45,6 +45,7 @@ from django.views.generic.edit import UpdateView
 if settings.USE_VERSIONING:
     from reversion import revision
 
+from braces.views import StaffuserRequiredMixin
 
 class ReplyReassignmentDetailForm(forms.ModelForm):
 
@@ -91,18 +92,6 @@ class ReplyReassignmentDetail(UpdateView):
         return reverse('reassign_reply_to_observation', args=(self.object.id, ))
 
 
-class StaffRequiredMixin(object):
-    @method_decorator(staff_member_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ViewSpaceIndex, self).dispatch(*args, **kwargs)
-
-
-class LoginRequiredMixin(object):
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(ViewSpaceIndex, self).dispatch(*args, **kwargs)
-
-
 class AnswerFileView(SingleObjectMixin, DownloadView):
     model = Answer
     use_xsendfile = False
@@ -137,7 +126,7 @@ def send_password_reset(request, user_id):
                                         args=(user.id,)))
 
 if settings.USE_VERSIONING:
-    class VersionView(StaffRequiredMixin, ListView):
+    class VersionView(StaffuserRequiredMixin, ListView):
         model = Revision
         paginate_by = 60
 
@@ -171,6 +160,7 @@ class CreateMembershipForm(forms.ModelForm):
 
 @group_required(['Researchers', 'Clinicians', 'Research Assistants', 'Assessors'])
 def add_participant(request, study_id=None, user_id=None):
+
     data = {}
     if study_id:
         data['study'] = get_object_or_404(Study, id=study_id)
@@ -397,7 +387,7 @@ def resend_observation_signal(request, obs_id,):
         reverse('admin:signalbox_observation_change', args=(str(observation.id),)))
 
 
-class ObservationView(StaffRequiredMixin, ListView):
+class ObservationView(StaffuserRequiredMixin, ListView):
     """XXX TODO This should be a researcher-only view... update
     when this ticket is fixed: https://code.djangoproject.com/ticket/13879"""
 
@@ -430,7 +420,7 @@ class ReplyUpdateAfterDoubleEntryForm(forms.ModelForm):
         fields = ['originally_collected_on']
 
 
-class ReplyUpdateAfterDoubleEntry(StaffRequiredMixin, UpdateView):
+class ReplyUpdateAfterDoubleEntry(StaffuserRequiredMixin, UpdateView):
     """XXX TODO This should be a researcher-only view... update
     when this ticket is fixed: https://code.djangoproject.com/ticket/13879
     """

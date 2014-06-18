@@ -34,7 +34,9 @@ def ad_hoc_scripts(context, participant):
 
     # TODO write a new manager on Script object to restrict access if will
     # break blind
-    return [(m, m.study.ad_hoc_scripts.all()) for m in participant.membership_set.all()]
+    everything = [(m, m.study.ad_hoc_scripts.all(), m.study.ad_hoc_askers.all()) for m in participant.membership_set.all()]
+    justmemswithscroptoraskers = [(m, s, a) for m, s, a in everything if s or a]
+    return justmemswithscroptoraskers
 
 register.assignment_tag(takes_context=True)(ad_hoc_scripts)
 

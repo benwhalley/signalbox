@@ -7,39 +7,37 @@
 <div class="row">
 <div class="span8">
 {% if users %}
-<table border="0" cellspacing="5" cellpadding="5">
+    <table class="table" border="0" cellspacing="5" cellpadding="5">
     <tr><th>User</th><th>Last 3 contact records</th><th></th></tr>
-{% for i in users %}
-    <tr><td><a href="{% url 'participant_overview' i.pk %}">{{i}}</a></td>
-        <td>
-            <ul>
-            {% for r in i.contactrecord_set.all|slice:":3" %}
-                <li>{{r.reason}} {{r.added}}</li>
-            {% endfor %}
-            </ul>
-            </td>
+    {% for i in users %}
+        <tr><td><a href="{% url 'participant_overview' i.pk %}">{{i}}</a></td>
             <td>
-                <a href="{% url 'participant_overview' i.pk %}"><img src="{{STATIC_URL}}icons/icon_changelink.gif"> See details</a>
+                <ul class="media-list ">
+                {% for r in i.contactrecord_set.all|slice:":3" %}
+                    <li><span class="badge">{{r.reason}}</span> {{r.added}}</li>
+                {% endfor %}
+                </ul>
+                </td>
+                <td>
+                    <a  class="btn pull-right" href="{% url 'participant_overview' i.pk %}#tabcontactlog">Contact history</a>
 
 
-            </td>
-        </tr>
-{% endfor %}
-</table>
-
+                </td>
+            </tr>
+    {% endfor %}
+    </table>
 {% else %}
-
-<h3>No users require followup</h3>
-
+    <h3>No users require followup</h3>
 {% endif %}
-
 </div>
 
-
 <div  class="span4">
-<p> This table will list users who have been contacted in a manner for which a response would be expected (e.g. a recruitment letter) but have not yet responded (or, at any rate, a contact record has not been made)</p>
+<div class="alert alert-info">
+    <p>
+        This table will list users who have been contacted in a manner for which a response would be expected (e.g. a recruitment letter) but have not yet responded (or, at any rate, a contact record has not been made.
 
-<p> If you want to remove the participant from this listing, the simplest way would be to add a contact record indicating that no further followup is needed.</p>
+    </p>
+    <p>If you want to remove the participant from this listing, the simplest way would be to add a contact record indicating that no further followup is needed.</p>
 
 </div>
 </div>

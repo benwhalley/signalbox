@@ -195,18 +195,18 @@ legend a:hover {
             </li>
         <li><a href="{% url "admin:signalbox_study_changelist" %}">Studies</a></li>
         <li><a href="{% url "admin:ask_asker_changelist" %}">Questionnaires</a></li>
-
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              Tools
-              <b class="caret"></b>
-            </a>
-            <ul class="dropdown-menu">
-              {% for i in request.admin_menu %}
-                <li><a href="{{i.1}}">{{i.0}}</a></li>
-                {% endfor %}
-            </ul>
-          </li>
+            {% for label, submenu in request.admin_menu%}
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    {{label}}
+                    <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    {% for item in submenu %}
+                      <li><a href="{{item.1}}">{{item.0}}</a></li>
+                    {% endfor %}
+                  </ul>
+            {% endfor %}
         {% endif %}
         </ul>
 

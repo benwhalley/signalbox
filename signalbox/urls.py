@@ -66,7 +66,6 @@ adminpatterns = patterns('',
     url(r'^script/preview/(?P<pk>\d+)/$', preview_timings, {'klass': "Script"}, "preview_script"),
     url(r'^preview/timings/$', preview_timings_as_txt, {}, "preview_timings_as_txt"),
 
-
     # view called via jquery for instant previews of the script message
     url(r'^script/message/preview/$', script_message_preview, {}, "script_message_preview"),
 

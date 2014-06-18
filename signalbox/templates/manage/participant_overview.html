@@ -16,6 +16,12 @@
     {% with participant.tasklist_observations|length as l %}
     <div class="tabbable span12"> <!-- Only required for left/right tabs -->
       <ul class="nav nav-tabs" id="usertabs">
+
+        {% ad_hoc_scripts participant as ad_hoc %}
+        {% if ad_hoc %}
+            <li {%if not l%}class="active"{%endif%}><a href="#tabextradata" data-toggle="tab">Add extra data</a></li>
+        {% endif %}
+
         <li {%if l%}class="active"{%endif%}><a href="#tabtasks" data-toggle="tab">Tasks to do
             {% with participant.tasklist_observations|length as l %}
             <span class="
@@ -25,11 +31,6 @@
             {% endwith %}
         </li>
         <li><a href="#tabmemberships" data-toggle="tab">Study Memberships</a></li>
-
-        {% if participant.userprofile.ad_hoc_scripts_available %}
-            <li {%if not l%}class="active"{%endif%}><a href="#tabextradata" data-toggle="tab">Add extra data</a></li>
-        {% endif %}
-
         <li><a href="#tabmessages" data-toggle="tab">Messages</a></li>
         <li><a href="#tabcontactlog" data-toggle="tab">Contact Log</a></li>
         <li><a href="#tabreplies" data-toggle="tab">Observations & Replies</a></li>
@@ -47,6 +48,7 @@
         <div class="tab-pane" id="tabmemberships">
           {% include "manage/participant_memberships_fragment.html" %}
         </div>
+
 
 
         <div class="tab-pane {%if not l%}active{%endif%}" id="tabextradata">

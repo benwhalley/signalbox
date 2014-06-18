@@ -73,15 +73,17 @@ class Reply(models.Model, ProcessManager):
         if not self.asker:
             return self.answer_set.all()
 
-        ordered_questions = [i for i in self.asker.questions()]
+        ordered_questions = list(self.asker.questions())
         unordered_anwers = self.answer_set.all()
         answers_dict = {i.variable_name(): i for i in unordered_anwers}
 
         # insert 'faked' answers to enable user to see questions which were
         # not attempted in this reply.
+        # note, must enumerate them and add a pk because of this issue:
+        # https://code.djangoproject.com/ticket/18864
         ordered_answers = [answers_dict.get(
             i.variable_name,
-            Answer(question=i)) for i in ordered_questions]
+            Answer(question=i, pk=j)) for j, i in enumerate(ordered_questions)]
 
         # add any additional answers - should just be page_id really
         remaining_variables = set(unordered_anwers) - set(ordered_answers)
@@ -242,6 +244,8 @@ class Reply(models.Model, ProcessManager):
 
     class Meta():
         app_label = 'signalbox'
+        verbose_name = "Participant reply"
+        verbose_name_plural = "Participant replies"
         permissions = (
             ("can_double_enter", "Can add Data for another person"),
             ("can_resolve_duplicate_replies", "Can resolve duplicate replies"))

@@ -36,6 +36,7 @@ def awaiting_followup(user):
 def show_followups_outstanding(request):
     """Display a list of users needing a followup."""
 
+
     # yuck, we query for each user separately, but this isn't a public view
     everyone = [i for i in User.objects.all() if awaiting_followup(i)]
 
@@ -68,7 +69,7 @@ def participant_overview(request, pk):
         rec.added_by = request.user
         rec.save()
         messages.success(request, "Contact note saved")
-        return HttpResponseRedirect(reverse('participant_overview', args=(user.id, )))
+        return HttpResponseRedirect(reverse('participant_overview', args=(user.id, ))+"#tabcontactlog")
 
     return render_to_response('manage/participant_overview.html', {
         'participant': participant,

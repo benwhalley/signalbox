@@ -99,6 +99,8 @@ class ReminderInstance(models.Model):
 
     class Meta:
         app_label = 'signalbox'
+        verbose_name = "Reminder sent"
+        verbose_name_plural = "Reminders sent"
 
     def __unicode__(self):
         return u"%s (reminder) due at %s" % (self.reminder, pretty_datetime(self.due))
@@ -565,6 +567,8 @@ class ObservationData(models.Model):
 
     class Meta:
         app_label = 'signalbox'
+        verbose_name = "Supplementary data"
+        verbose_name_plural = "Supplementary data"
 
     observation = models.ForeignKey('signalbox.Observation')
     key = models.CharField(max_length=255, choices=settings.OB_DATA_TYPES, db_index=True)

@@ -1,65 +1,62 @@
 {% load markup humanize %}
-
-
 {% load signalbox_tags %}
 
-{% if participant.membership_set.all.count %}
-        <div class="row">
-        <div class="span8">
-        <h3> Additional questionnaires which can be started now:</h3>
-        <table class="table table-hover span8">
-            {% for mem in participant.membership_set.all %}
-                {% for asker, last in mem.ad_hoc_askers_and_last_replies %}
-                    <tr>
-                        <td width=1%>
-                            <a class="btn btn-success" href="{% url 'use_adhoc_asker' mem.id asker.id %}">Start</a>
-                        </td>
-                        <td>
-                            <h4>{{asker.name}}</h4>
-                            This questionnaire will take approximately {{asker.approximate_time_to_complete}} minutes
-                        </td>
-                        <td width=25% class='muted'>
-                            {% if last %}Last completed {{last.0.last_submit}}{% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-            {% endfor %}
+{% ad_hoc_scripts participant as ad_hoc %}
+
+{% if ad_hoc %}
+
+
+{% for m, scripts, askers in ad_hoc %}
+    {% if scripts %}
+        <table class="table table-hover">
+        {% for i in scripts %}
+        <tr>
+
+            <td width="30%">
+                {% if m.relates_to.user %}
+                    <span class="badge badge-info">{{m.relates_to.user}}</span>
+                {% endif %}
+                <h4>{{i.name}}</h4>
+                </td>
+                <td>Part of  "{{m.study}}".
+                {% if i.asker %}
+                This questionnaire will take approximately {{i.asker.approximate_time_to_complete}} minutes
+                {% endif %}
+            </td>
+            <td width=1%><a class="btn btn-primary" href="{% url 'use_ad_hoc_script' m.id i.id %}">Start</a>
+            </td>
+        </tr>
+        {% endfor %}
         </table>
-        </div>
-        </div>
+    {% endif %}
 
+    {% if askers %}
+        <table class="table table-hover">
+        {% for i in askers %}
+        <tr>
 
-        {% ad_hoc_scripts participant as ad_hoc %}
-        {% if ad_hox %}
-        <div class="row">
-        <div class="span8">
-        <h3> Additional scripts which can be started now:</h3>
-        {% for m, scripts in ad_hoc %}
-        {% if scripts %}
-            <table class="table table-hover span8">
-            {% for i in scripts %}
-            <tr>
-                <td width=1%><a class="btn btn-success" href="{% url 'use_ad_hoc_script' m.id i.id %}">Start</a>
+           <td width="30%">
+                {% if m.relates_to.user %}
+                    <span class="badge badge-info">{{m.relates_to.user}}</span>
+                {% endif %}
+                <h4>{{i.name}}</h4>
                 </td>
                 <td>
-                    {% if m.relates_to.user %}
-                        <span class="badge badge-info">{{m.relates_to.user}}</span>
-                    {% endif %}
-                    <h4>{{i.name}}</h4>Part of  "{{m.study}}".
-                    {% if i.asker %}
-                    This questionnaire will take approximately {{i.asker.approximate_time_to_complete}} minutes
-                    {% endif %}
-                </td>
-            </tr>
-
-            {% endfor %}
-            </table>
-        {% endif %}
+                Part of  "{{m.study}}".
+                {% if i.asker %}
+                This questionnaire will take approximately {{i.asker.approximate_time_to_complete}} minutes
+                {% endif %}
+            </td>
+            <td width=1%><a class="btn btn-primary" href="{% url 'use_adhoc_asker' m.id i.id %}">Start</a>
+            </td>
+        </tr>
         {% endfor %}
-        </div>
-        </div>
-        {% endif %}
+        </table>
+    {% endif %}
+
+{% endfor %}
+
 {% else %}
-    No additional questionnaires available
+No additional questionnaires available
 {% endif %}
 

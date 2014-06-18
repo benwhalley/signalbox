@@ -45,11 +45,10 @@ ROW_FIELDS_MAP = dict([
 
 @group_required(['Researchers', ])
 def export_data(request):
-    with Profiler("makeform"):
-        form = SelectExportDataForm(request.POST or None)
-        if not form.is_valid():
-            return render_to_response('manage/export_data.html', {'form': form},
-                                  context_instance=RequestContext(request))
+    form = SelectExportDataForm(request.POST or None)
+    if not form.is_valid():
+        return render_to_response('manage/export_data.html', {'form': form},
+                              context_instance=RequestContext(request))
 
     studies = form.cleaned_data['studies']
     questionnaires = form.cleaned_data['questionnaires']
@@ -60,9 +59,8 @@ def export_data(request):
     if questionnaires:
         answers = Answer.objects.filter(reply__asker__in=questionnaires)
 
-    with Profiler("ifqs"):
-        if not answers.exists():
-            raise ValidationError("No data matching filters.")
+    if not answers.exists():
+        raise ValidationError("No data matching filters.")
 
     answers = answers.filter(question__variable_name__isnull=False)
     return export_answers(request, answers)

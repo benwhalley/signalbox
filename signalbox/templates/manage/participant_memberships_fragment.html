@@ -15,7 +15,7 @@
                 <td>{{m.study.name}}
                     {% if m.relates_to %}(relates to {{m.relates_to.user.username}}){% endif %}
                 </td>
-                <td><img src="{{STATIC_URL}}icons/icon-{% if m.randomised %}yes{%else%}no{%endif%}.gif"></td>
+                <td><img src="{{STATIC_URL}}admin/img/icon-{% if m.randomised %}yes{%else%}no{%endif%}.gif"></td>
                 {% if perms.signalbox.can_review %}
                 <td><a class="btn btn-mini" href="{% url 'admin:signalbox_membership_change' m.id %}">Edit</a></td>
                 </td>
