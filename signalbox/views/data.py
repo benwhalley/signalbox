@@ -24,6 +24,7 @@ ANSWER_FIELDS_MAP = dict([
 
 ROW_FIELDS_MAP = dict([
     ('reply__id', 'reply'),
+    ('reply__collector', 'collector'),
     ('reply__observation__id', 'observation'),
     ('reply__entry_method', 'entry_method'),
     ('reply__observation__n_in_sequence', 'observation_index'),
