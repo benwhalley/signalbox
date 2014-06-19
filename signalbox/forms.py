@@ -42,7 +42,10 @@ def get_answers(studies):
 class DateShiftForm(forms.Form):
     """Form to allow researcher to choose a new date, used to shift observations for a Membership.
     """
-    new_randomised_date = forms.DateTimeField(required=True)
+    new_randomised_date = forms.DateTimeField(required=True,
+        help_text="""i.e., the date on which the participant really joined the study.
+        Observations not already complete will be shifted in time to the day/time
+        they would have been created, had the participant joined on this day.""")
 
     def delta(self, current):
         """Return the time difference from ``current`` to new randomised date."""

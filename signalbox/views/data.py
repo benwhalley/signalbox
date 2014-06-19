@@ -4,14 +4,17 @@ from zipfile import ZipFile
 from tempfile import NamedTemporaryFile
 from django.core.exceptions import ValidationError
 import pandas as pd
+from django.contrib import messages
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.template.loader import get_template
 from django.template import Context, Template
 from signalbox.decorators import group_required
-from signalbox.models import Answer, Study, Reply, Question
-from signalbox.forms import SelectExportDataForm, get_answers
+from signalbox.models import Answer, Study, Reply, Question, Membership
+from django.shortcuts import render_to_response, get_object_or_404
+from signalbox.forms import SelectExportDataForm, get_answers, DateShiftForm
 
 
 ANSWER_FIELDS_MAP = dict([
@@ -130,9 +133,12 @@ def _shifted(obj, datetimefield, delta):
     setattr(obj, datetimefield, getattr(obj, datetimefield) + delta)
     return obj
 
+from signalbox.utilities.djangobits import conditional_decorator
+from django.conf import settings
+import reversion
 
 @group_required(['Researchers', ])
-# @conditional_decorator(revision.create_on_success, settings.USE_VERSIONING)
+@conditional_decorator(reversion.create_revision, settings.USE_VERSIONING)
 def dateshift_membership(request, pk=None):
     '''Allows Researchers to shift the time of all observations within a Membership.'''
 
@@ -154,17 +160,14 @@ def dateshift_membership(request, pk=None):
         _ = [i.save() for i in shifted]
 
         if settings.USE_VERSIONING:
-            revision.comment = "Timeshifted observations by %s" % (delta,)
+            revision.comment = "Timeshifted observations by %s days." % (delta.days,)
 
         form = DateShiftForm(
         )  # wipe the form to make it harder to double-submit by accident
         messages.add_message(request, messages.WARNING,
-            """%s observations shifted by %s (read this carefully and thoroughly, it can be
-                confusing).""" % (len(shifted), delta))
+            """{} observations shifted by {} days.""".format(len(shifted), delta.days))
 
-    else:
-        messages.add_message(request, messages.ERROR,
-                             """Be careful with this form!!! Changes are saved as soon as you submit.""")
+        return HttpResponseRedirect(reverse('admin:signalbox_membership_change', args=(membership.pk,)))
 
     return render_to_response('admin/signalbox/dateshift.html',
                               {'form': form, 'membership': membership}, context_instance=RequestContext(request))

@@ -38,7 +38,8 @@ class UserProfile(models.Model):
 
     mobile = phone_field.PhoneNumberField(blank=True, null=True,
         verbose_name="Mobile telephone number",
-        validators=[is_number_from_study_area])
+        validators=[is_number_from_study_area],
+        help_text='mobile phone number, with international prefix')
 
     def formatted_mobile(self):
         return phone_field.international_string(self.mobile)

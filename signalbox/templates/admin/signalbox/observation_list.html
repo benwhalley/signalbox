@@ -1,12 +1,23 @@
 {% extends "signalbox:admin/base_site.html" %}
 
-{% block content_title %}{{block.super}}<a class="btn pull-right" href="{% url 'participant_overview' membership.user.id %}">Participant overview</a>
+
+{% block breadcrumbs %}
+<ul class="breadcrumb">
+    <li>
+    <a class="" href="{% url 'participant_overview' membership.user.id %}">{{membership.user}}</a>
+    <span class="divider">/</span>
+    </li>
+    <li>
+        <a href="">{{membership.study}}</a>
+        <span class="divider">/</span>
+    </li>
+    <li>
+        Observations due
+    </li>
+</ul>
 {% endblock %}
 
 {% block content %}
-
-
-
 
 <table class="table">
 
@@ -17,31 +28,31 @@
             <th>Type</th>
             <th>Status</th>
             <th>Attempts</th>
-            <th>Replies/Answers</th>
+            <th>No. replies</th>
             <th width=25% colspan=2>Actions</th>
         </tr>
     </thead>
     <tbody>
         {% for i in object_list %}
         <tr>
-            <td >{{i.due}}</td>
-            <td>{{i.label}}</td>
-            <td >{{i.script_type}}</td>
-            <td>{{i.status_string}}</td>
+            <td ><a class="" href="{% url 'admin:signalbox_observation_change' i.id %}">{{i.due}}</a></td>
+            <td><a class="" href="{% url 'admin:signalbox_observation_change' i.id %}">{{i.label}}</a></td>
+            <td>{{i.script_type}}</td>
+            <td><span class="badge">{{i.status_string}}</span></td>
             <td>{{i.attempt_count}}</td>
             <td>
-                {{i.reply_set.count}} repl{{i.reply_set.count|pluralize:"y,ies"}}.
+                {{i.reply_set.count}}
             </td>
 
             <td>
                 {% if i.can_add_answers %}
-                <a class="btn  btn-mini" href="{% url 'start_double_entry' i.token %}">Add data</a>
+                <a class="btn  btn-mini btn-success" href="{% url 'start_double_entry' i.token %}">Add data</a>
                 {% endif %}
 
                 {% if i.script_type.sends_message_to_user %}
-                <a class='btn btn-mini {% if i.attempt_count == 0 %}btn-danger{% endif %}' href='{% url 'resend_observation_signal' i.id %}'>
+                <a class='btn btn-mini {% if i.attempt_count == 0 %}btn-danger{%else%}btn-warning{% endif %}' href='{% url 'resend_observation_signal' i.id %}'>
                     {% if i.attempt_count == 0 %}
-                    <i class="icon-share-alt"></i> Send early
+                    <i class="icon-share-alt"></i>Send early
                     {% else %}
                     <i class="icon-refresh"></i> Resend
                     {% endif %}
@@ -49,9 +60,6 @@
                 </a>
                 {% endif %}
 
-            </td>
-            <td>
-                <a  class="btn btn-mini btn-primary" href="{% url 'admin:signalbox_observation_change' i.id %}">Details</a>
             </td>
         </tr>
         {% endfor %}

@@ -36,18 +36,9 @@ class PhoneNumberMultiWidget(forms.MultiWidget):
     def __init__(self, attrs=None):
         _widgets = (
             forms.TextInput(attrs={'size': 3, 'class': 'countrycode'}),
-            forms.TextInput(attrs={'size': 12})
+            forms.TextInput(attrs={'size': 8})
         )
         super(PhoneNumberMultiWidget, self).__init__(_widgets, attrs)
-
-    def format_output(self, rendered_widgets):
-        return """
-        <table cellpadding=10>
-            <tr>
-                <td>+ {}<br/> Country code</td><td>{} <br/>Phone number (exclude leading zero)</td>
-            </tr>
-        </table>
-        """.format(*rendered_widgets)
 
     def decompress(self, value):
         if value:

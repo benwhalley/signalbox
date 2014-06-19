@@ -7,25 +7,20 @@
     <tr>
         <th>Study</th>
         <th>Allocated</th>
-        {% if perms.signalbox.can_review %}<th>Settings</th>{% endif %}
-        <th colspan=2>Observations</th>
+        <th>Responses due</th>
         </tr>
         {% for m in participant_memberships %}
         <tr>
-                <td>{{m.study.name}}
-                    {% if m.relates_to %}(relates to {{m.relates_to.user.username}}){% endif %}
+                <td><a class="" href="{% url 'admin:signalbox_membership_change' m.id %}">{{m.study.name}}
+                    {% if m.relates_to %}(relates to {{m.relates_to.user.username}}){% endif %}</a>
                 </td>
                 <td><img src="{{STATIC_URL}}admin/img/icon-{% if m.randomised %}yes{%else%}no{%endif%}.gif"></td>
-                {% if perms.signalbox.can_review %}
-                <td><a class="btn btn-mini" href="{% url 'admin:signalbox_membership_change' m.id %}">Edit</a></td>
+
                 </td>
-                {% endif %}
+
 
                 <td>
-                    <span class="text-info">{{m.incomplete_observations.count}} observations incomplete</span>
-                </td>
-                <td>
-                    <a class="btn btn-mini" href="{% url 'membership_observations_todo' m.id %}">List</a>
+                    <a class="" href="{% url 'membership_observations_todo' m.id %}">{{m.incomplete_observations.count}} observations incomplete</a>
                 </td>
 
         </tr>

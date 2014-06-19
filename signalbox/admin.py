@@ -27,7 +27,7 @@ if settings.USE_VERSIONING:
 ConditionalVersionAdmin = settings.USE_VERSIONING and VersionAdmin or admin.ModelAdmin
 
 
-class ConditionInline(admin.StackedInline):
+class ConditionInline(LinkedInline):
     model = StudyCondition
     extra = 0
     filter_horizontal = ['scripts']
@@ -109,15 +109,6 @@ class StudyAdmin(admin.ModelAdmin):
             return super(StudyAdmin, self).\
                 formfield_for_manytomany(db_field, request, **kwargs)
 
-
-class ObservationInline(LinkedInline):
-    readonly_fields = [
-        'n_in_sequence', 'script_type', 'ready_to_send', 'due',
-        'due_original', 'last_attempted', 'attempt_count',
-    ]
-    exclude = ['offset', 'label']
-    model = Observation
-    extra = 0
 
 
 class ReplyInline(LinkedInline):
@@ -221,7 +212,6 @@ class MembershipAdmin(admin.ModelAdmin):
         }),
     )
 
-    inlines = [ObservationInline,]
     save_on_top = True
 
 
