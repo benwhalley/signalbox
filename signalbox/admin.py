@@ -185,7 +185,6 @@ class MembershipAdminForm(forms.ModelForm):
     relates_to = selectable.AutoCompleteSelectField(lookup_class=MembershipLookup, required=False)
 
     class Meta(object):
-        fields = ["__all__"]
         model = Membership
 
 
