@@ -65,7 +65,8 @@ STATUS_CHOICES_DICT = {
     -1: "in progress",
     -4: "redirected to external service",
     1: "complete",
-    -99: "failed"
+    -99: "failed",
+    -999: "missing",
 }
 
 STATUS_CHOICES = sorted(zip(STATUS_CHOICES_DICT.keys(), STATUS_CHOICES_DICT.values()), reverse=True)

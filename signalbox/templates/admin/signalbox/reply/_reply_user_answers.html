@@ -19,13 +19,14 @@
 
     <h3>User answers</h3>
 
+    {% if original.answer_set.all %}
     <p>
         <form class="form" >
         <label class="checkbox pull-right" >
             <input type="checkbox" onclick="$('.unanswered').toggle();">Hide questions not attempted</label>
     </form>
 
-    {% if original.answer_set.all %}
+
         <table class="table">
         <tr>
         <th>Variable name</th>

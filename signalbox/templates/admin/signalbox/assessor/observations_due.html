@@ -26,7 +26,12 @@
                 <td>{{observation.label}}</td>
                 <td>{{observation.dyad.user.username}}</td>
                 <td>{{observation.due|naturalday}}</td>
-                <td><a class="btn btn-mini btn-primary pull-right" href="{% url 'start_double_entry' observation.token %}?success_url={% url 'observations_outstanding' %}">Enter data</a></td>
+                <td>
+                    <a class="btn btn-mini btn-primary pull-right" href="{% url 'start_double_entry' observation.token %}?success_url={% url 'observations_outstanding' %}">Enter data</a>
+
+                    <a class="btn btn-mini pull-right" href="{% url 'admin:signalbox_observation_change' observation.pk %}">Edit</a>
+
+                </td>
             </tr>
         {% endfor %}
     </table>

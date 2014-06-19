@@ -41,31 +41,3 @@
     {% endif %}
 
 {% endblock %}
-
-
-{% block sidebar %}
-<div class="span3">
-    {% if original %}
-        <h4>Participant: {{original.user }}</h4>
-        <p><a class="btn btn-info" href="{% url 'participant_overview' original.user.id %}">Overview</a></p>
-        <hr>
-    {% endif %}
-
-    {% if original.study.ad_hoc_scripts.all %}
-    <h4>Add additional observations</h4>
-            <table class="table">
-                {% for i in original.study.ad_hoc_scripts.all %}
-                <tr>
-                    <td>{{i.name}}</td>
-                    <td><a class="btn btn-mini btn-primary" href="{% url 'use_ad_hoc_script' original.id i.id %}">Use script</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-
-            {% endif %}
-</div>
-{% endblock %}
-
-
-
