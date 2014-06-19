@@ -8,30 +8,11 @@
 {% block extrastyle %}{% endblock %}
 
 {% compress css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" type="text/css">
 <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.css" rel="stylesheet">
 <link href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 <link type="text/css" href="{{ STATIC_URL }}css/signalbox.css" rel="stylesheet">
-<link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-1.8.21.custom.css" type="text/css" media="screen">
 <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
-{% endcompress %}
-
-
-<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
-
-{% compress js %}
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.7.1.min.js"></script>
-<script src="{{ STATIC_URL }}js/bootstrap.js"></script>
-<script src="{{ STATIC_URL }}js/underscore-min.js"></script>
-<script src="{{ STATIC_URL }}js/tab_anchor_setter.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui-1.8.21.custom.min.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/mousetrap.min.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery.dj.selectable.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}audiojs/audio.min.js"></script>
-{% endcompress %}
-
-
-
 
 
 <style type="text/css">
@@ -48,69 +29,11 @@ body {
         padding-top: 0;
         padding-bottom: 0px;
     }
-    /*
-    th, td {
-        margin: 0;
-        vertical-align: top;
-    }
-    th {
-        text-align: left;
-    }
-    table {
-        display: block;
-        position: relative;
-        width: 100%;
-    }
-    thead {
-        display: block;
-        float: left;
-    }
-    tbody {
-        display: block;
-        overflow-x: auto;
-        position: relative;
-        white-space: nowrap;
-        width: auto;
-    }
-    thead tr {
-        display: block;
-    }
-    th {
-        display: block;
-        text-align: right;
-    }
-    tbody tr {
-        display: inline-block;
-        vertical-align: top;
-    }
-    td {
-        display: block;
-        min-height: 1.25em;
-        text-align: left;
-    }
-    th {
-        border-bottom: 0 none;
-        border-left: 0 none;
-    }
-    td {
-        border-bottom: 0 none;
-        border-left: 0 none;
-        border-right: 0 none;
-    }
-    tbody tr {
-        border-left: 1px solid #BABCBF;
-    }
-    th:last-child, td:last-child {
-        border-bottom: 1px solid #BABCBF;
-    }
-    */
-}
 .sidebar-nav {
     padding: 9px 0;
 }
 
 .nav-header { color:black; margin-top:1em; border-top: 1px solid grey;}
-
 
 .control-group input[type=text] {
     width: 100%;
@@ -148,8 +71,28 @@ legend a:hover {
 .wide label {
     width: auto !important;
 }
-
 </style>
+
+{% endcompress %}
+
+
+
+
+{% compress js %}
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/tab_anchor_setter.js"></script>
+
+<script type="text/javascript" src="{{STATIC_URL}}js/mousetrap.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}audiojs/audio.min.js"></script>
+
+
+
+
 <script type="text/javascript">
 (function($) {
     $(document).ready(function() {
@@ -157,6 +100,15 @@ legend a:hover {
     });
 }(jQuery));
 </script>
+
+{% endcompress %}
+
+<script type="text/javascript" src="{{ STATIC_URL }}selectable/js/jquery.dj.selectable.js"></script>
+
+
+
+
+
 </head>
 {% load i18n %}
 

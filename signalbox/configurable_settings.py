@@ -33,7 +33,7 @@ DATABASES = {'default': dj_database_url.config(default=DB_URL)}
 
 # amazon files settings
 AWS_STORAGE_BUCKET_NAME = get_env_variable(
-    "AWS_STORAGE_BUCKET_NAME", default="signalboxbucket",
+    "AWS_STORAGE_BUCKET_NAME", default="signalbox",
     warning="Specify an S3 bucket name in which to store uploaded files."
 )
 COMPRESS_ENABLED = get_env_variable('COMPRESS_ENABLED', default=True)

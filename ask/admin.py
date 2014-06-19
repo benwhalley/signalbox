@@ -24,6 +24,7 @@ class ShowIfForm(forms.ModelForm):
 
     class Meta(object):
         model = ShowIf
+        exclude = []
 
 
 class ShowIfAdmin(admin.ModelAdmin):
