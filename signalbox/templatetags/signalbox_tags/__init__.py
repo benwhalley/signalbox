@@ -41,6 +41,16 @@ def ad_hoc_scripts(context, participant):
 register.assignment_tag(takes_context=True)(ad_hoc_scripts)
 
 
+
+def anonymous_asker_url(context, asker):
+    """Shows ad hoc scripts which this user is allowed to see."""
+
+    request = context['request']
+    return request.build_absolute_uri(asker.get_anonymous_url(request))
+
+register.assignment_tag(takes_context=True)(anonymous_asker_url)
+
+
 @register.inclusion_tag('admin/signalbox/_fragments/_visible_replies.html', takes_context=True)
 def replies(context, participant=None):
 

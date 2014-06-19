@@ -1,6 +1,6 @@
 {% extends "signalbox:admin/change_form.html" %}
 {% load compress %}
-
+{% load signalbox_tags %}
 {% block object-tools-items %}
 {% endblock %}
 
@@ -17,7 +17,10 @@
 
     <div class="pull-right">
     {% if object_id %}
-	    <a id="copy-button" href="#" data-clipboard-text="{{ABSOLUTE_ROOT}}{% url "start_anonymous_survey" object_id %}" class='btn btn-mini' >Copy anonymous URL</a>
+
+
+    {% anonymous_asker_url original as anonurl %}
+	    <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini' >Copy anonymous URL</a>
 	   <a class='btn btn-mini' href='{{original.get_absolute_url}}'>Preview</a>
 	    <a class='btn btn-mini' href='{% url 'print_asker' object_id %}'>Print</a>
 	    <a class='btn btn-mini' href='{% url 'show_codebook' object_id %}'>Codebook</a>

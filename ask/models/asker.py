@@ -131,6 +131,10 @@ class Asker(models.Model):
         return reverse('preview_asker',
             kwargs={'asker_id': self.id, 'page_num': 0})
 
+    def get_anonymous_url(self, request):
+        return reverse('start_anonymous_survey',
+                    kwargs={'asker_id': self.id})
+
     def json_export(self):
         """Export Asker and related objects as json.
 
