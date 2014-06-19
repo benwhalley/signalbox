@@ -9,10 +9,10 @@
   <head>
     <link rel="icon" type="image/png" href="http://signalbox.s3.amazonaws.com/static/favicon.ico" />
     <title>{% block title %}Signalbox: Online Research{% endblock title %}</title>
-    <script type="text/javascript" src="{{STATIC_URL}}js/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/jquery.min.js"></script>
     {% compress css %}
-        <link href="{{STATIC_URL}}css/bootstrap.css" rel="stylesheet" media="screen,print">
-        <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-1.8.21.custom.css" type="text/css" media="screen">
+        <link href="{{STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" media="screen,print">
+        <link rel="stylesheet" href="{{STATIC_URL}}css/jquery.ui.css" type="text/css" media="screen">
         <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
         <link rel="stylesheet" href="{{STATIC_URL}}css/signalbox.css" type="text/css" media="screen,print">
     {% endcompress %}
@@ -102,7 +102,7 @@
   </html>
 
   {% addtoblock "js" %}
-  <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui-1.8.21.custom.min.js"></script>
+  <script type="text/javascript" src="{{STATIC_URL}}js/jquery.ui.js"></script>
   <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui-timepicker-addon.js"></script>
   <script type="text/javascript" src="{{STATIC_URL}}js/mousetrap.min.js"></script>
   <script type="text/javascript" src="{{STATIC_URL}}js/bootstrap.min.js"></script>
