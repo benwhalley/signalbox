@@ -89,7 +89,7 @@ class ReplyReassignmentDetail(UpdateView):
             raise Exception("User not permitted to amend Reply/Observation links")
 
     def get_success_url(self):
-        return reverse('reassign_reply_to_observation', args=(self.object.id, ))
+        return reverse('admin:signalbox_reply_change', args=(self.object.pk, ))
 
 
 class AnswerFileView(SingleObjectMixin, DownloadView):
