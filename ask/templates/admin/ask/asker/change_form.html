@@ -18,17 +18,16 @@
     <div class="pull-right">
     {% if object_id %}
 
-
-    {% anonymous_asker_url original as anonurl %}
-	    <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini' >Copy anonymous URL</a>
-	   <a class='btn btn-mini' href='{{original.get_absolute_url}}'>Preview</a>
 	    <a class='btn btn-mini' href='{% url 'print_asker' object_id %}'>Print</a>
 	    <a class='btn btn-mini' href='{% url 'show_codebook' object_id %}'>Codebook</a>
 	    <a class='btn btn-mini' href='{% url 'export_asker' object_id %}'>Export JSON</a>
-	    {% if user.is_superuser %}
-	      <a class='btn btn-mini' href='{% url 'edit_asker_as_text' object_id %}'>Edit in text format</a>
-	    {% endif %}
 
+            {% anonymous_asker_url original as anonurl %}
+                <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini btn-primary' >Copy anonymous URL</a>
+               <a class='btn btn-mini btn-success' href='{{original.get_absolute_url}}'>Preview</a>
+               {% if user.is_superuser %}
+                 <a class='btn btn-mini btn-warning' href='{% url 'edit_asker_as_text' object_id %}'>Edit in text format</a>
+               {% endif %}
 	{% endif %}
 
     <script type="text/javascript" src="{{STATIC_URL}}js/ZeroClipboard.min.js"></script>
@@ -58,23 +57,32 @@
             {% if original %}
 
                 {% if original.used_in_study_conditions %}
-                <h4>Questionnaire used in:</h4>
-
-                    <table class="table">
-
-                    {% for s in original.used_in_study_conditions %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'admin:signalbox_study_change' s.study.id %}">{{s.study.name}}</a> >
-                                <a href="{% url 'admin:signalbox_studycondition_change' s.id %}">{{s.tag}}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-
+                    <h4>Questionnaire used in these studies:</h4>
+                        <table class="table">
+                        {% for s in original.used_in_study_conditions %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'admin:signalbox_study_change' s.study.id %}">{{s.study.name}}</a> >
+                                    <a href="{% url 'admin:signalbox_studycondition_change' s.id %}">{{s.tag}}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </table>
                     {% else %}
-                        <h4>Questionnaire not used currently.</h4>
+                        <h4>Questionnaire not used currently in any studies.</h4>
                     {% endif %}
-                </table>
+
+                    {% if original.anonymous_replies.count %}
+                    <h4>Anonymous replies to this questionnaire:</h4>
+                    <ul>
+                        {% for k, v in original.anonymous_reply_stats.items %}
+                            <li>{{k}}: {{v}}</li>
+                        {% endfor %}
+                    </ul>
+
+                    <a class="btn" href="{%url "admin:signalbox_reply_changelist" %}?asker__id__exact={{original.id}}">List all replies</a>
+
+                    {% endif %}
 
         {% endif %}
     </div>

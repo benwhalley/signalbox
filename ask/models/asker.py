@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import partial
 import functools
 import itertools
@@ -71,6 +71,21 @@ class Asker(models.Model):
             return self.system_audio.get(key, IVR_SYSTEM_MESSAGES.get(key))
         else:
             return IVR_SYSTEM_MESSAGES.get(key, None)
+
+    def anonymous_replies(self):
+        from signalbox.models import Reply
+        return Reply.objects.filter(asker=self)
+
+    def anonymous_reply_stats(self):
+        replies = self.anonymous_replies()
+        return {
+
+            'Complete total': replies.filter(complete=True).count(),
+            'Complete past month': replies.filter(complete=True, last_submit__lt=datetime.now()-timedelta(days=30)).count(),
+            'Incomplete total': replies.filter(complete=False).count(),
+            'Incomplete past month': replies.filter(complete=False, last_submit__lt=datetime.now()-timedelta(days=30)).count(),
+        }
+
 
     def used_in_studies(self):
         from signalbox.models import Study
