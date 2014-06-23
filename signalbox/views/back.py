@@ -126,6 +126,7 @@ def send_password_reset(request, user_id):
                                         args=(user.id,)))
 
 if settings.USE_VERSIONING:
+    from reversion.models import Revision
     class VersionView(StaffuserRequiredMixin, ListView):
         model = Revision
         paginate_by = 60

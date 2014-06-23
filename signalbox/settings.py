@@ -103,3 +103,13 @@ Standard Django template logic can also be used with these variables,
 for example `{% if scores.<scoresheetname>.score %}Show something else
 {% endif %}`.
 </div>"""
+
+
+from django.conf import settings
+if settings.USE_VERSIONING:
+    from reversion import revision
+    import reversion
+    create_revision = reversion.create_revision
+else:
+    create_revision = lambda: None
+

@@ -19,8 +19,10 @@ from twiliobox.models import TwilioNumber
 from contracts import contract
 from twiliobox.settings import *
 
-if settings.USE_VERSIONING:
-    from reversion import revision
+from signalbox.settings import create_revision
+
+from signalbox.utilities.djangobits import conditional_decorator
+from django.conf import settings
 
 
 @csrf_exempt
@@ -54,7 +56,8 @@ def get_question(questions, index):
         return None
 
 
-# @conditional_decorator(revision.create_on_success, settings.USE_VERSIONING)
+
+@conditional_decorator(create_revision, settings.USE_VERSIONING)
 def save_answer(reply, question, querydict):
     """Takes a Reply, a question and the POST dict and returns a (saved) answer."""
 

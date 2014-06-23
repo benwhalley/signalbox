@@ -14,8 +14,9 @@ import ask.validators as valid
 from ask.utils import statify
 from twilio import twiml
 
-if settings.USE_VERSIONING:
-    from reversion import revision
+from signalbox.utilities.djangobits import conditional_decorator
+from django.conf import settings
+from signalbox.settings import create_revision
 
 
 class PageForm(forms.Form):
@@ -65,7 +66,7 @@ class PageForm(forms.Form):
                                                     initial=initialpage)
 
 
-# @revision.create_on_success
+@conditional_decorator(create_revision, settings.USE_VERSIONING)
 def save_question_response(response, reply, page=None, question=None, variable_name=None):
     """Saves response as an Answer, unique within this Reply.
 
