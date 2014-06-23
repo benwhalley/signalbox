@@ -4,7 +4,7 @@ Markdown==2.3.1
 Pillow==2.3.1
 South==0.8.2
 cmsplugin-simple-markdown==1.2
-django-admin-bootstrapped==0.6.5
+django-admin-bootstrapped==1.6.5
 django-admin-tools==0.4.0
 django-apptemplates>=0.0.1
 django-bootstrap-pagination==0.1.10
