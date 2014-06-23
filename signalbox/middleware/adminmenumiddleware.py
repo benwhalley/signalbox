@@ -6,8 +6,6 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse
 from django.contrib import messages
 
-
-
 TASKS = (
     ('export', (('Export data'), reverse('export_data'))),
 
@@ -17,7 +15,8 @@ TASKS = (
 
 REPORTS = (
     ('followups', (('Participants requiring followups'), reverse('show_followups_outstanding'))),
-    ('textmessage_replies', (('SMS replies'), reverse('admin:signalbox_textmessagecallback_changelist') + "?status=received")),
+    ('textmessage_replies', (('SMS replies'),
+        reverse('admin:signalbox_textmessagecallback_changelist') + "?status=received")),
     ('todo', (('Observations currently due to be sent'), reverse('show_todo'))),
     ('observations_outstanding', (('Assessments outstanding'), reverse('observations_outstanding'))),
 )
@@ -26,8 +25,6 @@ if settings.USE_VERSIONING:
     REPORTS = REPORTS + ('view history', ('View revision history', reverse('check_history')))
 
 ADMIN_MENU = (('Tasks', TASKS), ('Reports', REPORTS))
-
-
 
 PER_GROUP_ITEMS = {
     'Researchers': list(itertools.chain(*[[i for i, j in l] for k, l in ADMIN_MENU])),
