@@ -19,9 +19,9 @@ quietly {
 	drop _merge
 	rm ".rowmetadata.dta"
 
-	* numerically encode some metadata variables
+	* numerically encode some metadata variables if not already
 	foreach v of varlist participant condition entry_method study {
-		sencode `v', replace
+		cap: sencode `v', replace
 	}
 }
 

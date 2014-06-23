@@ -15,6 +15,9 @@ from signalbox.decorators import group_required
 from signalbox.models import Answer, Study, Reply, Question, Membership
 from django.shortcuts import render_to_response, get_object_or_404
 from signalbox.forms import SelectExportDataForm, get_answers, DateShiftForm
+from signalbox.utilities.djangobits import conditional_decorator
+from django.conf import settings
+import reversion
 
 
 ANSWER_FIELDS_MAP = dict([
@@ -107,8 +110,8 @@ def export_answers(request, answers):
     # make zip and return bytes
     with ZipFile(NamedTemporaryFile(suffix=".zip").name, 'w') as zipper:
         [zipper.write(i.name, j + os.path.splitext(i.name)[1]) for i, j in zip(tmpfiles, namesofthingstoexport)]
-        zipper.writestr('make.do', makedostring)
-        zipper.writestr('make_labels.do', syntax_dostring)
+        zipper.writestr('make.do', makedostring.encode('utf-8', 'replace'))
+        zipper.writestr('make_labels.do', syntax_dostring.encode('utf-8', 'replace'))
 
         zipper.close()
         zipbytes = open(zipper.filename, 'rb').read()
@@ -133,9 +136,6 @@ def _shifted(obj, datetimefield, delta):
     setattr(obj, datetimefield, getattr(obj, datetimefield) + delta)
     return obj
 
-from signalbox.utilities.djangobits import conditional_decorator
-from django.conf import settings
-import reversion
 
 @group_required(['Researchers', ])
 @conditional_decorator(reversion.create_revision, settings.USE_VERSIONING)

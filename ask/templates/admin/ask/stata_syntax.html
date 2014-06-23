@@ -17,30 +17,39 @@ note observation_index: Scripts can create multiple observations, so this indexe
 
 * Format study dates
 capture: generate double due_date = clock(due,"YMD hms#")
-generate double finished_date = clock(finished, "YMD#hms#")
-generate double started_date = clock(started, "YMD#hms#")
-generate double randomised_date = clock(randomised, "YMD#hms#")
-tostring collected_on, replace
-generate double collected_on_date = clock(collected_on,"YMD#hms#")
+capture: generate double finished_date = clock(finished, "YMD#hms#")
+capture: generate double started_date = clock(started, "YMD#hms#")
+capture: generate double randomised_date = clock(randomised, "YMD#hms#")
+capture: tostring collected_on, replace
+capture: generate double collected_on_date = clock(collected_on,"YMD#hms#")
 
 generate double collected = finished_date
 replace collected = collected_on_date if collected_on_date != .
 label variable collected "Date"
 note collected: Definitive date for this datapoint
 
-drop due finished started randomised collected_on_date
-format due_date started_date randomised_date collected %tc
+drop due
+drop finished
+drop started
+drop randomised
+drop collected_on_date
 
-label variable randomised_date "Randomisation date"
-note randomised_date: "Date user was randomised to THIS study (may not be the reference study)."
-
-label variable due_date "Date scheduled"
-note due_date: This is the date the observation was due to occur
-
-label variable finished_date "Date captured"
-note finished_date: This is when the data were captured by the system
+format due_date  %tc
+format started_date  %tc
+format randomised_date  %tc
+format collected %tc
 
 
+capture: label variable randomised_date "Randomisation date"
+capture: note randomised_date: "Date user was randomised to THIS study (may not be the reference study)."
+
+capture: label variable due_date "Date scheduled"
+capture: note due_date: This is the date the observation was due to occur
+
+capture: label variable finished_date "Date captured"
+capture: note finished_date: This is when the data were captured by the system
+
+capture {
 // calculate days in study, days in reference study
 bysort username study: egen double _dayzero = min(randomised_date) if is_reference_study == 1
 bysort username (_dayzero): gen double dayzero = _dayzero[1]
@@ -58,6 +67,8 @@ note day_in_trial: "Days offset from the date the user entered the REFERENCE stu
 
 label variable day_in_study "Day in substudy"
 note day_in_study: "Days offset from the date the user entered THIS study"
+
+}
 
 
 // label other vars
