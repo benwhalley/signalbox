@@ -19,7 +19,7 @@ Participants can provide self-report data via email, telephone, or SMS message. 
 
 A simple demo of the participant interface to SignalBox is available at:
 
-- [http://www.thesignalbox.net/](http://www.thesignalbox.net/studies/1/)
+- [http://www.thesignalbox.net/](http://live.thesignalbox.net/studies/1/)
 
 You can signup for a demonstration study, enter your mobile phone number and start entering data.
 
