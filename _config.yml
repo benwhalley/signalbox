@@ -5,6 +5,10 @@ permalink: /:categories/:year/:month/:day/:title
 exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
 highlighter: pygments
 
+gems:
+  - jekyll-redirect-from
+
+
 # Themes are encouraged to use these universal variables
 # so be sure to set them if your theme uses them.
 #
@@ -129,3 +133,11 @@ JB :
   #   ./_includes/custom/[HELPER]
   # where [HELPER] is the name of the helper you are overriding.
 
+timezone:    Europe/London
+markdown:    kramdown
+kramdown:
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  use_coderay: false

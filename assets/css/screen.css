@@ -24,18 +24,16 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-size: 100%;
+  margin-top: 1em;
 }
 
-h1 {
-  margin-bottom: 1em;
-}
 
 p {
   margin: 1em 0;
 }
 
 a {
-  color: #00a;
+  color: #5a9cff;
 }
 
 a:hover {
@@ -43,7 +41,7 @@ a:hover {
 }
 
 a:visited {
-  color: #a0a;
+  color: #a6d1ff;
 }
 
 table {
@@ -195,3 +193,11 @@ ul.posts {
   #related h2 {
     margin-bottom: 1em;
   }
+
+
+blockquote {
+  font-size: 2em;
+  font-weight: 300;
+  line-height:1.1em;
+  text-align: left;
+}
