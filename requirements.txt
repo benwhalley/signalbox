@@ -29,7 +29,7 @@ python-dateutil==2.1
 python-magic>=0.4.3
 PyYAML>=3.10
 shortuuid>=0.4
-twilio>=3.6.3
+twilio>=3.6.6
 docutils==0.11
 pandas>=0.13
 openpyxl==1.8.6

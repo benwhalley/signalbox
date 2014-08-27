@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import models
 from twilio.rest import TwilioRestClient
-from twilio import TwilioRestException
+import twilio
 from ask.models import Asker
 
 
@@ -47,7 +47,7 @@ class TwilioNumber(models.Model):
             if not self.phone_number:
                 self.phone_number = self.get_caller_id_from_twilio_account_details()
                 # could send admin user a message here if we wanted...
-        except TwilioRestException as e:
+        except twilio.TwilioRestException as e:
             raise ValidationError("Twilio credentials incorrect: {}".format(e))
 
         super(TwilioNumber, self).clean(*args, **kwargs)
