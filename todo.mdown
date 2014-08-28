@@ -1,3 +1,4 @@
+- fix study images to aws or in db
 
 
 
