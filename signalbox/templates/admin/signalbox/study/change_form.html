@@ -30,10 +30,10 @@ Study Dashboard: {{original.name}}
 
 <div class="tab-content">
     {% if original %}
-        <div class="tab-pane active" id="tabsummary">    
+        <div class="tab-pane active" id="tabsummary">
             <div class=row>
                 <div class="span6">
-                    
+
                     <h4>Study participants</h4>
 
                     {% if not original.membership_set.all %}
@@ -68,7 +68,7 @@ Study Dashboard: {{original.name}}
                                 {% if original.observations_with_duplicate_replies %}
                                     <a class="btn btn-small" href="{% url 'resolve_double_entry_conflicts_for_study' original.id %}">Manage duplicate data</a>
                                 {% else %}
-                                
+
                                     <a class="btn btn-small disabled"  title="Good news: no duplicated replies made as part of this study yet." href="#">Manage duplicate data</a>
                                 {% endif %}
                             </td>
@@ -77,8 +77,8 @@ Study Dashboard: {{original.name}}
 
                     {% endif %}
 
-                    
-                    
+
+
                     <h4>Allocation</h4>
 
                     <table class="table">
@@ -90,7 +90,7 @@ Study Dashboard: {{original.name}}
                         <tr>
                             <td>
                                Script: <a href="{% url 'admin:signalbox_script_change' j.id %}">{{j.name}}</a>
-                                    {% if j.asker %}uses <a href="{% url 'admin:ask_asker_change' j.id %}">{{j.asker}}</a> 
+                                    {% if j.asker %}uses <a href="{% url 'admin:ask_asker_change' j.asker.id %}">{{j.asker}}</a>
                                     at the following times:{% else %}makes observations at the following times:{% endif %}
                         <code>{% for k in j.datetimes_with_natural_syntax %}{{k.syntax}}{% endfor %}</code>
                             </td>
@@ -100,12 +100,12 @@ Study Dashboard: {{original.name}}
                     </table>
 
 
-                    
+
                     <h4>Data collection</h4>
-                    
-                    
+
+
                     <table class="table">
-                        
+
                         {% if original.ad_hoc_askers.all %}
                         <tr>
                             <th>
@@ -123,7 +123,7 @@ Study Dashboard: {{original.name}}
                                 </td>
                         {%endfor%}
                         {% endif %}
-                        
+
                         {% if original.createifs.all %}
                         <tr>
                             <th>
@@ -146,9 +146,9 @@ Study Dashboard: {{original.name}}
                         {% endfor %}
                         {% endif %}
                     </table>
-                
+
                 </div>
-        
+
                 <div class="span4">
                     <h4>Study settings</h4>
                     <table>
