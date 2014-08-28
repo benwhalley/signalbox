@@ -31,22 +31,6 @@ DB_URL = get_env_variable('DATABASE_URL', required=False, default="postgres://lo
 DATABASES = {'default': dj_database_url.config(default=DB_URL)}
 
 
-# amazon files settings
-AWS_STORAGE_BUCKET_NAME = get_env_variable(
-    "AWS_STORAGE_BUCKET_NAME", default="signalbox",
-    warning="Specify an S3 bucket name in which to store uploaded files."
-)
-COMPRESS_ENABLED = get_env_variable('COMPRESS_ENABLED', default=True)
-AWS_QUERYSTRING_AUTH = get_env_variable('AWS_QUERYSTRING_AUTH', default=False)
-
-# keep these secret
-SECRET_KEY = get_env_variable('SECRET_KEY', default=shortuuid.uuid())
-AWS_ACCESS_KEY_ID = get_env_variable('AWS_ACCESS_KEY_ID', default="")
-AWS_SECRET_ACCESS_KEY = get_env_variable('AWS_SECRET_ACCESS_KEY', default="")
-TWILIO_ID = get_env_variable('TWILIO_ID', required=False)
-TWILIO_TOKEN = get_env_variable('TWILIO_TOKEN', required=False)
-
-
 # security-related settings
 # see https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = get_env_variable('ALLOWED_HOSTS', default="127.0.0.1;.herokuapp.com").split(";")
