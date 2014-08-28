@@ -80,14 +80,6 @@ TTS_VOICE = get_env_variable('TTS_VOICE', default='female')
 TTS_LANGUAGE = get_env_variable('TTS_LANGUAGE', default='en-gb')
 
 
-##### EMAIL #####
-
-# TODO: allow for non-mailgun backend
-EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
-EMAIL_HOST = get_env_variable('MAILGUN_SMTP_SERVER', required=False, warning="Set an smtp hostname.")
-EMAIL_PORT = int(get_env_variable('MAILGUN_SMTP_PORT', required=False, default="465", warning="SMTP port defaulting to 465."))
-EMAIL_HOST_USER = get_env_variable('MAILGUN_SMTP_LOGIN', required=False, )
-EMAIL_HOST_PASSWORD = get_env_variable('MAILGUN_SMTP_PASSWORD', required=False, )
 
 
 # DO SOME EXTRA SETUP BASED ON THESE VALUES
