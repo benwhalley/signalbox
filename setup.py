@@ -9,7 +9,7 @@ scripts = ['bin/heroku_install_signalbox', ]
 
 setup(
     name='signalbox',
-    version='0.3.4.4',
+    version='0.3.4.5',
     author='Ben Whalley',
     author_email='benwhalley@gmail.com',
     packages=find_packages(),
