@@ -172,10 +172,3 @@ if settings.USE_VERSIONING:
     # checking revisions
     urlpatterns += (url(r'^history/$', VersionView.as_view(), {}, "check_history"),)
 
-
-# this is only done for simplicity of deploying on heroku, plus we don't serve a
-# lot of static files so it works fine. If serving high volumes use an Amazon S3 bucket
-if settings.DEBUG is False:   #if DEBUG is True it would be served automatically
-    urlpatterns += patterns('',
-            url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
-    )
