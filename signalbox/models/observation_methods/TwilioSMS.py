@@ -1,4 +1,5 @@
 import twilio
+from twilio import TwilioException
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import Context, Template
@@ -40,7 +41,7 @@ def do(self, test=False):
 
         self.add_data(key="external_id", value=result.sid)
 
-    except twilio.TwilioException as e:
+    except TwilioException as e:
         success = -1
         result = str(e)
         self.add_data(key="failure", value=result)

@@ -1,6 +1,7 @@
 import random
 import itertools
 import twilio
+from twilio import TwilioException
 
 from django.contrib import messages
 from django.db.models import Q
@@ -94,7 +95,7 @@ class ReminderInstance(models.Model):
 
             return (True, str(result.sid))
 
-        except twilio.TwilioException as e:
+        except TwilioException as e:
             return (False, str(e))
 
     class Meta:
