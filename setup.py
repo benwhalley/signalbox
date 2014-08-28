@@ -12,7 +12,6 @@ setup(
     author_email='benwhalley@gmail.com',
     packages=find_packages(),
     include_package_data=True,
-    scripts=scripts,
     url='http://pypi.python.org/pypi/signalbox/',
     license='LICENSE.txt',
     description='Run longitudinal studies and randomised trials over the web and telephone.',
