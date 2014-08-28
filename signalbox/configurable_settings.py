@@ -8,7 +8,9 @@ from signalbox.utilities.get_env_variable import get_env_variable
 from twilio.rest import TwilioRestClient
 
 
-DEBUG = get_env_variable('DEBUG', required=False, default=False)
+# Env var can be set as "true" or "false" but not "True"/"False"
+DEBUG = bool(get_env_variable('DEBUG', required=False, default=False, as_yaml=True))
+
 LOG_DATABASE_QUERIES = get_env_variable('LOG_DATABASE_QUERIES', required=False, default=False)
 
 BRAND_NAME = get_env_variable('BRAND_NAME', default="SignalBox")

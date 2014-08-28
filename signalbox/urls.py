@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from django.conf.urls import patterns, url, include
 from django.contrib.auth.views import logout
 from django.http import HttpResponseForbidden
@@ -170,3 +171,9 @@ urlpatterns = urlpatterns + patterns('',
 if settings.USE_VERSIONING:
     # checking revisions
     urlpatterns += (url(r'^history/$', VersionView.as_view(), {}, "check_history"),)
+
+
+if settings.DEBUG is False:   #if DEBUG is True it will be served automatically
+    urlpatterns += patterns('',
+            url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+    )
