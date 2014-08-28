@@ -9,7 +9,7 @@ scripts = ['bin/heroku_install_signalbox', ]
 
 setup(
     name='signalbox',
-    version='0.3.4.3',
+    version='0.3.4.4',
     author='Ben Whalley',
     author_email='benwhalley@gmail.com',
     packages=find_packages(),
@@ -20,10 +20,4 @@ setup(
     description='Run longitudinal studies and randomised trials over the web and telephone.',
     long_description=open('README.txt').read(),
     install_requires=install_reqs,
-    entry_points={
-            'console_scripts': [
-                'make_s3_bucket = signalbox.utilities.bootstrap:make_s3_bucket',
-                'make_secret_key = signalbox.utilities.bootstrap:make_secret_key',
-            ]
-    }
 )
