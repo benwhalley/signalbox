@@ -66,14 +66,6 @@ TTS_LANGUAGE = get_env_variable('TTS_LANGUAGE', default='en-gb')
 
 
 
-# DO SOME EXTRA SETUP BASED ON THESE VALUES
-# setup twilio based on settings above
-if TWILIO_ID and TWILIO_TOKEN:
-    TWILIOCLIENT = TwilioRestClient(TWILIO_ID, TWILIO_TOKEN)
-else:
-    TWILIOCLIENT = None
-
-
 try:
     TESTING = 'test' == sys.argv[1]
 except IndexError:
