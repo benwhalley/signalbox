@@ -5,8 +5,6 @@ from setuptools import setup, find_packages
 reqs = parse_requirements("requirements.txt")
 install_reqs = filter(bool,[str(ir.req) for ir in reqs])
 
-scripts = ['bin/heroku_install_signalbox', ]
-
 setup(
     name='signalbox',
     version='0.3.4.5',
