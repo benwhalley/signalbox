@@ -47,7 +47,7 @@ class TwilioNumber(models.Model):
             if not self.phone_number:
                 self.phone_number = self.get_caller_id_from_twilio_account_details()
                 # could send admin user a message here if we wanted...
-        except twilio.TwilioRestException as e:
+        except twilio.exceptions.TwilioRestException as e:
             raise ValidationError("Twilio credentials incorrect: {}".format(e))
 
         super(TwilioNumber, self).clean(*args, **kwargs)

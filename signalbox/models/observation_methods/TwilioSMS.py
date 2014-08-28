@@ -1,4 +1,4 @@
-from twilio import TwilioException
+from twilio.exceptions import TwilioException
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.template import Context, Template
