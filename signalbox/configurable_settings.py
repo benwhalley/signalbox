@@ -64,7 +64,7 @@ TTS_VOICE = get_env_variable('TTS_VOICE', default='female')
 TTS_LANGUAGE = get_env_variable('TTS_LANGUAGE', default='en-gb')
 
 
-
+SECRET_KEY = get_env_variable('SECRET_KEY', default=shortuuid.uuid())
 
 try:
     TESTING = 'test' == sys.argv[1]
