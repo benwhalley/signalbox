@@ -1,4 +1,3 @@
-import twilio
 from twilio import TwilioException
 from django.conf import settings
 from django.core.urlresolvers import reverse

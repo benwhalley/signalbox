@@ -1,6 +1,5 @@
 import random
 import itertools
-import twilio
 from twilio import TwilioException
 
 from django.contrib import messages
