@@ -8,12 +8,12 @@ permalink: /deploy/
 {% include JB/setup %}
 
 
-# Deploy Signalbox on Heroku for free!
+> You can deploy of Signalbox on Heroku in about 15 minites, for free.
 
 
 Signalbox has been built for easy deployment on modern [software-as-a-service](http://en.wikipedia.org/wiki/Software_as_a_service) type platforms, including [Heroku](http://heroku.com). This means it's easy to deploy a copy of the software without developers or database experts on hand to manage it day-to-day.
 
-It takes abotu 15 minutes to deploy a copy of Signalbox on Heroku, using their pushbutton deploy service. Before starting the setup you will need to:
+It takes about 15 minutes to deploy a copy of Signalbox on Heroku, using their pushbutton deploy service. Before starting the setup you will need to:
 
 - Register with [Twilio.com](https://www.twilio.com) and [get an access key and password](https://www.twilio.com/help/faq/twilio-basics/what-is-the-auth-token-and-how-can-it-be-reset)
 
@@ -21,7 +21,7 @@ As part of the setup you will
 
 - Choose a name for your installation
 - Set an administrator password and email address
-- Register with Heroku and provide a credit card to validate your account (the defult setup is free however)
+- Register with Heroku and provide a credit card to validate your account (the default setup remains free, however)
 
 
 During the setup, Heroku will
@@ -29,7 +29,6 @@ During the setup, Heroku will
 - Create your own copy of the code
 - Setup a database and configure daily backups
 - Create a new administrative user and set the password you select
-- Create a free account on [Mailgun](http://www.mailgun.com) for sending email
 - Start a single web process running your site
 
 
@@ -38,32 +37,15 @@ Get started now:
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/puterleat/signalbox-example-project/tree/master)
 
 
+
+
 ### Final setup tasks
 
-One task remains after the automatic setp: you must configure the scheduled tasks which periodically send emails, SMS messages and make telephone calls. Go to your [Heroku dashboard page](https://dashboard-next.heroku.com/apps/), select your new app and click on the button marked: ![](/assets/images/scheduledtasks.png)
-
-Add two new tasks, entering the following commands:
-
-<code>python app/manage.py send</code>
-
-and
-
-<code>python app/manage.py send</code>
-
-You can set these to either hourly or every 10 minutes, depending on your needs.
+Once the install is complete, there is one [final task to complete the process](/deploy/final-setup.html)
 
 
 
 
-### Custom domain names
-
-You can add your own domain name to the app, but see
-
-
-
-### Limitations
-
-...
 
 
 

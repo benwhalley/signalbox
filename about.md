@@ -8,6 +8,9 @@ permalink: /about/
 {% include JB/setup %}
 
 
+
+> Signalbox was designed to replace the numerous, ad-hoc systems which have been developed by research groups, providing a flexible, secure, and well-tested system.
+
 # About SignalBox
 
 SignalBox is a web application application designed to make it easy to run clinical and other studies. Signalbox makes it easy to recruit, take consent from, and follow-up large numbers of participants, using a customisable assessment schedule.
@@ -29,6 +32,8 @@ You can signup for a demonstration study, enter your mobile phone number and sta
 ## Key features
 
 
+- [15 minute setup procedure](/deploy/)
+- [Well documented](http://signalbox.readthedocs.org/en/latest/)
 - Supports longitudinal studies and long term followup
 - Web, SMS and telephone based data collection
 - Secure administrative interface to manage studies

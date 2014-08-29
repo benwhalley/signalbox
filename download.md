@@ -13,6 +13,8 @@ permalink: /download/
 SignalBox is released under a permissive open source [license](https://github.com/puterleat/signalbox/blob/master/LICENSE.txt), for you to use in your own work.
 
 
+The quickest way to get started is to use the [push-button deploy process on Heroku](/deploy/). If you want to run Signalbox on your own servers:
+
 - [Find out how to install SignalBox](http://signalbox.readthedocs.org/en/latest/install.html)
 - [Download the latest source code (via Github)](https://github.com/puterleat/signalbox)
 
