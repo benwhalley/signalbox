@@ -13,10 +13,12 @@ Signalbox makes it easy to recruit, take consent from, and follow-up large numbe
 
 Participants can provide self-report data via email, telephone, or SMS message. Study coordinators can login to a secure administration website to manage studies and check participation.
 
-SignalBox is released under a permissive open source [license](https://github.com/puterleat/signalbox/blob/master/LICENSE.txt), for you to use in your own work.
+SignalBox is released under a permissive open source [license](https://github.com/puterleat/signalbox/blob/master/LICENSE.txt), for you to use in your own work. You can even [deploy a copy on a managed host in less than 15 minutes](/deploy/).
 
-- [Find out more about SignalBox](/about/){: .btn}
+
+- [Find out more about SignalBox](/about/)
 - [Studies using SignalBox](/about/#studies)
+
 
 - [Deploy a copy of Signalbox on Heroku now for free](/deploy/)
 - [Read detailed technical documentation](http://signalbox.readthedocs.org/en/latest/)
