@@ -2,26 +2,9 @@ Installation
 ============================================
 
 
-
-To run Signalbox you will need some kind of Unix with python 2.7 available. Ubuntu 12.04 LTS is currently recommended, but OS X is fine too for development.
-
-To get up and running quickly, the easiest way is currently to use Heroku_ . Heroku have a free plan which is capable enough for even quite large studies, although self-hosting is also straightforward.
+There are two main ways to use Signalbox: install it on your own server, or use the automated installer to set up a free instance running on Heroku.
 
 
-
-
-
-Prerequisites
-----------------
-
-For hosted installations, you just need python, and pip.
-
-For local development, on Ubuntu 12.04, you can install everything you need for a development machine like this::
-
-	sudo apt-get install -y python-dev postgresql-server-dev-9.1 libjpeg-dev virtualenvwrapper libmagic-dev git mercurial zlib1g-dev libfreetype6 libfreetype6-dev
-	export WORKON_HOME=~/Envs
-	mkdir -p $WORKON_HOME
-	source /usr/local/bin/virtualenvwrapper.sh
 
 
 
@@ -44,32 +27,6 @@ To get Signalbox running on Heroku's free plan (which is ideal for normal sized 
 
 Installation
 ~~~~~~~~~~~~~~~~~
-
-Install the heroku command line program and authenticate::
-
-	wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
-	ssh-keygen
-	heroku keys:add
-
-
-Clone the example project::
-
-	git clone GITHUBREPO newname
-	cd newname
-	pip install -r requirements.txt
-
-
-The run the install script::
-
-	heroku_install_signalbox
-
-At this point, your installation should be up and running on heroku::
-
-	heroku open
-
-But you need to create the first user to login to the admin site::
-
-	heroku run app/manage.py createsuperuser
 
 
 Scheduled tasks
@@ -118,6 +75,7 @@ Version control
 Signalbox can use ``django_reversion`` to keep track of changes to Answer, Reply and Observation objects to provide an audit trail for a trial. It's not enabled by default, but to turn it on you can set an environment variable::
 
 	heroku config:set USE_VERSIONING=1
+
 
 
 
