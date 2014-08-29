@@ -1,4 +1,5 @@
 - fix study images to aws or in db
+- fixtures for basic study
 
 
 
@@ -51,8 +52,6 @@ check what happens with duplicate scores when exporting data to labels
 # factor away choicesets and choices altogether?
 
 
-
-# IOS app to do reminders?
 
 
 
