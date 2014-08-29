@@ -17,6 +17,7 @@ SignalBox is released under a permissive open source [license](https://github.co
 
 - [Find out more about SignalBox](/about/){: .btn}
 - [Studies using SignalBox](/about/#studies)
+
+- [Deploy a copy of Signalbox on Heroku now for free](/deploy/)
 - [Read detailed technical documentation](http://signalbox.readthedocs.org/en/latest/)
-- [Find out how to install SignalBox](http://signalbox.readthedocs.org/en/latest/install.html)
 - [Download the latest source code (via Github)](https://github.com/puterleat/signalbox)
