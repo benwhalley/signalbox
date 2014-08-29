@@ -101,8 +101,8 @@ EMAIL_HOST_PASSWORD = get_env_variable('EMAIL_HOST_PASSWORD', required=False, )
 # Amazon file storage #
 
 AWS_STORAGE_BUCKET_NAME = get_env_variable('AWS_STORAGE_BUCKET_NAME', default="signalbox")
-AWS_ACCESS_KEY_ID = get_env_variable('AWS_ACCESS_KEY_ID', )
-AWS_SECRET_ACCESS_KEY = get_env_variable('AWS_SECRET_ACCESS_KEY', )
+AWS_ACCESS_KEY_ID = get_env_variable('AWS_ACCESS_KEY_ID', required=False,)
+AWS_SECRET_ACCESS_KEY = get_env_variable('AWS_SECRET_ACCESS_KEY', required=False)
 
 
 # TWILIO #
