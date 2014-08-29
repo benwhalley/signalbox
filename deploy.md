@@ -8,21 +8,23 @@ permalink: /deploy/
 {% include JB/setup %}
 
 
-> You can deploy Signalbox on Heroku in about 15 minites, for free.
-
+> You can deploy Signalbox on Heroku in about 15 minutes, for free.
 
 Signalbox has been built for easy deployment on modern [software-as-a-service](http://en.wikipedia.org/wiki/Software_as_a_service) type platforms, including [Heroku](http://heroku.com). This means it's easy to deploy a copy of the software without developers or database experts on hand to manage it day-to-day.
 
 It takes about 15 minutes to deploy a copy of Signalbox on Heroku, using their pushbutton deploy service. Before starting the setup you will need to:
 
-- Register with [Twilio.com](https://www.twilio.com) and [get an access key and password](https://www.twilio.com/help/faq/twilio-basics/what-is-the-auth-token-and-how-can-it-be-reset)
+As part of the setup you will:
 
-As part of the setup you will
-
-- Choose a name for your installation
 - Set an administrator password and email address
 - Register with Heroku and provide a credit card to validate your account (the default setup remains free, however)
-- Optionally, enter an [Amazon AWS access key](http://aws.amazon.com/iam/) to allow for users to upload files. Read an [introduction to Amazon S3 here](http://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html).
+
+
+Optionally, can call also
+
+- If you wish to use SMS messages and/or automated telephone calls, register with [Twilio.com](https://www.twilio.com) and [get an api access key and password](https://www.twilio.com/help/faq/twilio-basics/what-is-the-auth-token-and-how-can-it-be-reset)
+- If you would like to display images on your study pages, you should register for Amazon's AWS service and [get an access key](http://aws.amazon.com/iam/).[^You can read an [introduction to Amazon S3 here](http://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html).]
+
 
 
 During the setup, Heroku will
