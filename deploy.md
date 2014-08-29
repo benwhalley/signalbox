@@ -22,14 +22,15 @@ As part of the setup you will
 - Choose a name for your installation
 - Set an administrator password and email address
 - Register with Heroku and provide a credit card to validate your account (the default setup remains free, however)
+- Optionally, enter an [Amazon AWS access key](http://aws.amazon.com/iam/) to allow for users to upload files. Read an [introduction to Amazon S3 here](http://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html).
 
 
 During the setup, Heroku will
 
 - Create your own copy of the code
-- Setup a database and configure daily backups
+- Setup a [managed postgres database](https://www.heroku.com/postgres) and [configure daily backups](https://devcenter.heroku.com/articles/pgbackups)
 - Create a new administrative user and set the password you select
-- Start a single web process running your site
+- Start a single [web process (dyno)](https://devcenter.heroku.com/articles/how-heroku-works) running your site
 
 
 Get started now:
