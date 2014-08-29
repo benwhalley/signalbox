@@ -28,7 +28,6 @@ if bool('test' in sys.argv):
 # yaml setting - can be set as "true" or "false" but not "True"/"False"
 DEBUG = bool(get_env_variable('DEBUG', required=False, default=False, as_yaml=True))
 
-LOG_DATABASE_QUERIES = get_env_variable('LOG_DATABASE_QUERIES', default=False)
 
 
 

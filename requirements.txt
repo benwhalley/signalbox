@@ -3,7 +3,6 @@ https://www.djangoproject.com/download/1.7c3/tarball/
 Markdown==2.3.1
 Pillow==2.3.1
 South==0.8.2
-cmsplugin-simple-markdown==1.2
 django-admin-bootstrapped==1.6.5
 django-admin-tools==0.4.0
 django-apptemplates>=0.0.1
@@ -29,7 +28,7 @@ python-dateutil==2.1
 python-magic>=0.4.3
 PyYAML>=3.10
 shortuuid>=0.4
-twilio>=3.6.6
+twilio==3.6.7
 docutils==0.11
 pandas>=0.13
 openpyxl==1.8.6
