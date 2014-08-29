@@ -153,6 +153,11 @@ The admin interface works best in a recent webkit browser (Safari or Chrome) but
 
 
 
+Custom domain names
+~~~~~~~~~~~~~~~~~~~~~~~
+
+You can add your own domain name to the app, but you will need to update the ALLOWED_HOSTS environment variable. See `<https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts>`_ and `<https://devcenter.heroku.com/articles/config-vars>`_.
+
 
 Reference for all user-configurable environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
