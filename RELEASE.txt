@@ -2,6 +2,15 @@
 Release notes
 -----------------
 
+0.3.5
+
+- Push button install on Heroku
+- Defaults to using mailgun (for simpler Heroku installs)
+- Defaults to serving static files with dj-static
+- AWS used only for user-submitted uploads (answer and study models)
+- Cleaning up settings and env var handling
+
+
 0.3.4
 
 - More 1.7 fixes

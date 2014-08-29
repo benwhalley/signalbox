@@ -7,7 +7,7 @@ from django.conf import settings
 from signalbox.utilities.djangobits import supergetattr
 from ask.models import fields
 from signalbox.exceptions import SignalBoxException
-
+from storages.backends.s3boto import S3BotoStorage
 
 def upload_file_name(instance, filename):
     return '/'.join(['userdata', instance.reply.token, filename])
@@ -17,9 +17,9 @@ class Answer(models.Model):
     """Stores user questionnaire data."""
 
     def save(self, force_save=False, *args, **kwargs):
-        if (not force_save) and (not settings.USE_VERSIONING) and self.pk:
-            raise SignalBoxException(
-                "Editing answers is not allowed unless you enable version control")
+        # if (not force_save) and (not settings.USE_VERSIONING) and self.pk:
+        #     raise SignalBoxException(
+        #         "Editing answers is not allowed unless you enable version control")
         super(Answer, self).save(*args, **kwargs)
 
     def __iter__(self):
@@ -45,7 +45,10 @@ class Answer(models.Model):
     answer = models.TextField(blank=True, null=True)
 
     upload = models.FileField(blank=True, null=True,
-        storage=settings.USER_UPLOAD_STORAGE_BACKEND,
+        storage=S3BotoStorage(
+            acl='private',
+            querystring_auth=True,
+            querystring_expire=300), # 5 min timeout
         upload_to=upload_file_name)
 
     reply = models.ForeignKey('signalbox.Reply', blank=True, null=True)

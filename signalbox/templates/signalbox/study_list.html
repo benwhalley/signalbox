@@ -8,9 +8,11 @@
 
     <h1> Current studies</h1>
 
+
     {% if object_list %}
         <ul class="thumbnails">
             {% for s in object_list %}
+            {{s.study_image}}
               <li class="span4">
                   <div class="thumbnail">
                     {% if s.study_image %}
