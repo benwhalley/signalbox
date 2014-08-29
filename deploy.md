@@ -8,7 +8,7 @@ permalink: /deploy/
 {% include JB/setup %}
 
 
-> You can deploy of Signalbox on Heroku in about 15 minites, for free.
+> You can deploy Signalbox on Heroku in about 15 minites, for free.
 
 
 Signalbox has been built for easy deployment on modern [software-as-a-service](http://en.wikipedia.org/wiki/Software_as_a_service) type platforms, including [Heroku](http://heroku.com). This means it's easy to deploy a copy of the software without developers or database experts on hand to manage it day-to-day.
