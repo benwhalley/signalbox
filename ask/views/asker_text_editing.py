@@ -23,6 +23,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 import floppyforms as forms
+from signalbox.exceptions import SignalBoxException
 from signalbox.decorators import group_required
 from signalbox.models import Reply, ScoreSheet, Answer
 from signalbox.settings import SCORESHEET_FUNCTION_NAMES, SCORESHEET_FUNCTION_LOOKUP
@@ -128,10 +129,15 @@ class TextEditForm(forms.Form):
         questionsbypage_obs = [[get_or_modify(Question, {'variable_name': q['variable_name']}, q)[0] for q in page] for page in questionsbypage_d]
 
         # save everything
+        # error handling here is ropey --- need to validate per-question and
+        # send responses back to the form
+        try:
+            [[i.full_clean() for i in p] for p in questionsbypage_obs]
+            [[i.save() for i in p] for p in questionsbypage_obs]
+            [[i.choiceset.save() for i in p if i.choiceset] for p in questionsbypage_obs]
 
-        [[i.clean() for i in p] for p in questionsbypage_obs]
-        [[i.save() for i in p] for p in questionsbypage_obs]
-        [[i.choiceset.save() for i in p if i.choiceset] for p in questionsbypage_obs]
+        except Exception as e:
+            raise SignalBoxException(e)
 
         # add scoresheets back in
         [[add_scoresheet_to_question(question, parseresult)
