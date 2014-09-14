@@ -43,7 +43,6 @@ class TextEditForm(forms.Form):
         self.locked = kwargs.pop('locked')
         super(TextEditForm, self).__init__(*args, **kwargs)
 
-
     def clean(self):
         cleaned_data = super(TextEditForm, self).clean()
         try:
@@ -54,13 +53,13 @@ class TextEditForm(forms.Form):
             raise forms.ValidationError(
                 "There was a problem parsing the text:\n\n {}".format(e))
 
-        asker, _ = get_or_modify(Asker, {"id":self.asker.id}, asker_yaml )
+        asker, _ = get_or_modify(Asker, {"id": self.asker.id}, asker_yaml)
 
         # check variable names are valid and not used in other questionnaires
         variable_names = [i.iden for i in filter(isnotpage, blocks)]
 
         invalid_names = [i for i in variable_names if any(
-            (   (not vals.first_char_is_alpha(i)),
+            ((not vals.first_char_is_alpha(i)),
                 vals._contains_illegal_chars(i),
             )
         )]
@@ -73,7 +72,6 @@ class TextEditForm(forms.Form):
             raise forms.ValidationError(
                 "Some variable names are already in use by other questionnaires ({})".format(
                     ", ".join([i.variable_name for i in naughtyquestions])))
-
 
         # check all variables specified in scoresheets can be found
         for i in blocks:
@@ -88,13 +86,12 @@ class TextEditForm(forms.Form):
 
         # update the form with some parsed data
         self.cleaned_data.update({
-                "asker": asker,
-                "asker_yaml": asker_yaml,
-                "blocks": blocks
-            })
+            "asker": asker,
+            "asker_yaml": asker_yaml,
+            "blocks": blocks
+        })
 
         return self.cleaned_data
-
 
     def save(self):
 
@@ -115,8 +112,8 @@ class TextEditForm(forms.Form):
         # pad to make sure we have enough pages (e.g. if first questions are specified without a page)
         pages_d = padleft(pages_d, len(questionsbypage), {})
 
-        [j.update({'asker':asker, 'order': i}) for i, j in enumerate(pages_d)]
-        pages_obs = [get_or_modify(AskPage, {'asker':asker, 'order':i['order']}, i)[0] for i in pages_d]
+        [j.update({'asker': asker, 'order': i}) for i, j in enumerate(pages_d)]
+        pages_obs = [get_or_modify(AskPage, {'asker': asker, 'order': i['order']}, i)[0] for i in pages_d]
 
         questionsbypage_d = [[make_question_dict(i) for i in j]
             for j in questionsbypage]
@@ -126,7 +123,8 @@ class TextEditForm(forms.Form):
             for plist, p in zip(questionsbypage_d, pages_obs)]
 
         # make question objects
-        questionsbypage_obs = [[get_or_modify(Question, {'variable_name': q['variable_name']}, q)[0] for q in page] for page in questionsbypage_d]
+        questionsbypage_obs = [[get_or_modify(Question, {'variable_name': q['variable_name']}, q)[0]
+            for q in page] for page in questionsbypage_d]
 
         # save everything
         # error handling here is ropey --- need to validate per-question and
@@ -141,13 +139,12 @@ class TextEditForm(forms.Form):
 
         # add scoresheets back in
         [[add_scoresheet_to_question(question, parseresult)
-            for question, parseresult in zip(pageq, pagep)] for
-                pageq, pagep in zip(questionsbypage_obs, questionsbypage)]
+            for question, parseresult in zip(pageq, pagep)]
+            for pageq, pagep in zip(questionsbypage_obs, questionsbypage)]
 
         asker.save()
 
         return asker
-
 
 
 @never_cache
@@ -155,9 +152,9 @@ class TextEditForm(forms.Form):
 def edit_asker_as_text(request, asker_id):
     asker = Asker.objects.get(id=asker_id)
     asker.reply_set.filter(entry_method="preview").delete()
-    nreplies = asker.reply_set.all().count()>0
+    nreplies = asker.reply_set.all().count() > 0
     form = TextEditForm(request.POST or None, asker=asker, locked=nreplies,
-        initial={'text':asker.as_markdown()})
+        initial={'text': asker.as_markdown()})
 
     if form.is_valid():
         form.save()
@@ -166,4 +163,3 @@ def edit_asker_as_text(request, asker_id):
     return render_to_response(
         'admin/ask/text_asker_edit.html', {'form': form, 'asker': asker},
         context_instance=RequestContext(request))
-
