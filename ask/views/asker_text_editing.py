@@ -13,7 +13,6 @@ from collections import defaultdict
 
 from ask import validators as vals
 from ask.models import Asker, ChoiceSet, Question, AskPage, Choice, ShowIf
-from ask.models import question
 from ask.yamlextras import yaml
 import ast
 from contracts import contract
