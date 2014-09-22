@@ -8,7 +8,6 @@ import ast
 from django import http
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.loading import get_model
 from django.forms.models import model_to_dict
@@ -106,15 +105,15 @@ class Question(models.Model):
 
     def dict_for_yaml(self):
         d = {
-                "text": self.text,
-                "q_type": self.q_type,
-                "choiceset": supergetattr(self, "choiceset.name", None),
-                "required": self.required,
-                }
+            "text": self.text,
+            "q_type": self.q_type,
+            "choiceset": supergetattr(self, "choiceset.name", None),
+            "required": self.required,
+        }
         return {self.variable_name: {k: v for k, v in d.items() if v}}
 
     page = models.ForeignKey('ask.AskPage', null=True, blank=True)
-    scoresheet = models.ForeignKey('signalbox.ScoreSheet',  blank=True, null=True)
+    scoresheet = models.ForeignKey('signalbox.ScoreSheet', blank=True, null=True)
 
     objects = QuestionManager()
 
@@ -177,7 +176,7 @@ class Question(models.Model):
         """
 
         templ_header = r"""{% load humanize %}"""  # include these templatetags in render context
-        templ = Template(templ_header+self.text)
+        templ = Template(templ_header + self.text)
         context = {
             'reply': reply,
             'user': supergetattr(reply, 'observation.dyad.user', default=None),
@@ -297,7 +296,7 @@ class Question(models.Model):
 
     def as_markdown(self):
 
-        iden = "#"+self.variable_name
+        iden = "#" + self.variable_name
         if self.extra_attrs:
             classes = self.extra_attrs.pop('classes', {})
             classesstring = " ".join([".{}".format(k) for k, v in classes.items() if v])
@@ -343,10 +342,13 @@ class Question(models.Model):
             self.order = 1 + self.page.question_set.all().count()
 
         if self.q_type in "slider" and not self.widget_kwargs:
-            errors['widget_kwargs'] = ["""No default settings for slider added (need min, max, value). E.g. {"value":50,"min":0,"max":100}"""]
+            errors['widget_kwargs'] = ["""No default settings for slider added
+            (need min, max, value). E.g. {"value":50,"min":0,"max":100}"""]
 
         if "range-slider" in self.q_type and not self.widget_kwargs:
-            errors['widget_kwargs'] = ["""Default settings for slider added (need values [a,b], min, max). E.g. {"values":[40,60],"min":0,"max":100}. Optional extra attributes: {"units":"%" } """]
+            errors['widget_kwargs'] = ["""Default settings for slider added
+            (need values [a,b], min, max). E.g. {"values":[40,60],"min":0,"max":100}.
+            Optional extra attributes: {"units":"%" } """]
 
         if (not fieldclass.has_choices) and self.choiceset:
             errors['choiceset'] = ["You don't need a choiceset for this type of question."]
@@ -393,7 +395,8 @@ class Choice(models.Model):
 
     score = models.IntegerField(help_text="This is the value saved in the DB")
 
-    mapped_score = models.IntegerField(blank=True, null=True, help_text="The value to be used when computing scoresheets. Does not affect what is stored or exported.")
+    mapped_score = models.IntegerField(blank=True, null=True,
+        help_text="""The value to be used when computing scoresheets. Does not affect what is stored or exported.""")
 
     def __unicode__(self):
         return u'%s (%s)' % (self.label, self.score)
@@ -424,8 +427,8 @@ class ChoiceSet(models.Model):
 
     def dict_for_yaml(self):
         sd = {i.order:
-            {'score': i.score,  'label': i.label, 'is_default_value': i.is_default_value}
-                for i in self.get_choices()}
+            {'score': i.score, 'label': i.label, 'is_default_value': i.is_default_value}
+            for i in self.get_choices()}
         # comprehension to filter out null values to make things clearer to edit by hand
         sd = {k: {a: b for a, b in v.items() if b is not None} for k, v in sd.items()}
         return {self.name: sd}
@@ -456,7 +459,8 @@ class ChoiceSet(models.Model):
 
     def as_markdown(self):
         if not self.yaml:
-            self.yaml = {i: d for i, d in enumerate([{'score': x.score, 'isdefault': x.is_default_value, 'label': x.label} for x in self.get_choices()])}
+            self.yaml = {i: d for i, d in enumerate(
+                [{'score': x.score, 'isdefault': x.is_default_value, 'label': x.label} for x in self.get_choices()])}
 
         def _formatmappedscore(c):
             score = c['score']
@@ -465,13 +469,13 @@ class ChoiceSet(models.Model):
 
         return "\n".join([
             self.MARKDOWN_FORMAT.format(**{
-                    'isdefault': c.get('isdefault', "") and "*" or "",
-                    'score': c['score'],
-                    'mapped_score': _formatmappedscore(c),
-                    'label': c['label'],
-                    }
-                )
-                for i, c in self.yaml.items()])
+                'isdefault': c.get('isdefault', "") and "*" or "",
+                'score': c['score'],
+                'mapped_score': _formatmappedscore(c),
+                'label': c['label'],
+            }
+            )
+            for i, c in self.yaml.items()])
 
     # synonym in case we want to change display
     choices_as_string = lambda self: self.as_markdown()
@@ -481,14 +485,18 @@ class ChoiceSet(models.Model):
         "returns: A sorted list of Choice objects
         :rtype: list(a)
 
-        # this is transitional... choicesets are nor specified as Yaml rather than via
+        # this is transitional... choicesets are now specified as Yaml rather than via
         # db-saved Choice objects, but we recreate them by hand to avoid editing code elsewhere
         """
 
         if self.yaml:
             try:
-                return sorted([Choice(choiceset=self, score=choice.get('score'), mapped_score=choice.get('mapped_score', choice.get('score')), is_default_value=choice.get('isdefault', False), label=choice.get('label', ''), order=i)
-                    for i, choice in self.yaml.items()], key=lambda x: x.order)
+                return sorted(
+                    [Choice(choiceset=self, score=choice.get('score'),
+                    mapped_score=choice.get('mapped_score', choice.get('score')),
+                    is_default_value=choice.get('isdefault', False), label=choice.get('label', ''), order=i)
+                    for i, choice in self.yaml.items()],
+                    key=lambda x: x.order)
             except:
                 return []
         else:
@@ -586,7 +594,8 @@ class ShowIf(models.Model):
             possibles = set(self.previous_question.choiceset.allowed_responses())
             vals = set(filter(bool, map(valid.is_int, self.values.split(","))))
             if not vals.issubset(possibles):
-                raise ValidationError("""Valid choices for the selected question are: %s""" % ("; ".join(map(str, possibles)), ))
+                raise ValidationError("""Valid choices for the selected question are: %s""" % (
+                    "; ".join(map(str, possibles)), ))
 
         if self.previous_question and self.summary_score:
             raise ValidationError("""You can hide/show this item based on a previous question value
@@ -622,10 +631,10 @@ class ShowIf(models.Model):
     def operator_as_string(self):
         workouttypeofshowif = tuple(map(bool,
             [
-            self.less_than,
-            self.more_than,
-            self.values,
-            bool(self.values and len(self.values.split(",")) > 1)
+                self.less_than,
+                self.more_than,
+                self.values,
+                bool(self.values and len(self.values.split(",")) > 1)
             ]
         ))
 
