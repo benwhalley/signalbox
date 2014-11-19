@@ -135,8 +135,9 @@ class Question(models.Model):
         :type mapping_of_answers: dict
         :rtype: bool
         """
+
         try:
-            condition = self.field_kwargs.get('if', None)
+            condition = self.extra_attrs.get('if', None)
         except AttributeError:
             condition = None
 

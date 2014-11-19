@@ -33,9 +33,14 @@ def parse_conditional(condition, mapping_of_answers, SHOW_IF_NO_INFORMATION=True
     expression = OneOrMore((subexpression + boolean_operator) | subexpression)
     expression.setParseAction(lambda x: eval(" ".join(map(str, x))))
 
+
     try:
         return expression.parseString(condition)[0]
     except NameError as e:
+        print "Error parsing conditional showif for question:"
+        print condition, mapping_of_answers
+        print e
+
         # if we are missing one of the variables shown we default to showing the question
         return SHOW_IF_NO_INFORMATION
     except ParseException as e:
