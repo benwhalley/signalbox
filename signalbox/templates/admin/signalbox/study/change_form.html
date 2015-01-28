@@ -92,7 +92,7 @@ Study Dashboard: {{original.name}}
                                Script: <a href="{% url 'admin:signalbox_script_change' j.id %}">{{j.name}}</a>
                                     {% if j.asker %}uses <a href="{% url 'admin:ask_asker_change' j.asker.id %}">{{j.asker}}</a>
                                     at the following times:{% else %}makes observations at the following times:{% endif %}
-                        <code>{% for k in j.datetimes_with_natural_syntax %}{{k.syntax}}{% endfor %}</code>
+                        <code>{% for k in j.datetimes_with_natural_syntax %}{{k.syntax}}<br>{% endfor %}</code>
                             </td>
                         </tr>
                         {% endfor %}
