@@ -110,11 +110,12 @@ class ObservationManager(models.Manager):
     """A manager to ensure user roles are respected when querying observations."""
 
     def personalised(self, user, due_now=False):
-        allobs = super(ObservationManager, self).get_query_set().order_by('-due')
-
+        
         if not user.is_authenticated():
             raise DataProtectionException("User not authenticated.")
 
+        allobs = super(ObservationManager, self).get_query_set().order_by('-due')
+        
         if not user.is_staff:
             # only show your own
             return allobs.filter(dyad__user__pk=user.id)
