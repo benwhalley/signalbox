@@ -26,6 +26,3 @@ SignalBox is released under a permissive open source [license](https://github.co
 
 
 
-
-
-<a href="https://heapanalytics.com/?utm_source=badge"><img style="width:108px;height:41px" src="//heapanalytics.com/img/badge.png" alt="Heap | Mobile and Web Analytics" /></a>
