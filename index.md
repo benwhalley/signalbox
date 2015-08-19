@@ -23,3 +23,9 @@ SignalBox is released under a permissive open source [license](https://github.co
 - [Deploy a copy of Signalbox on Heroku now for free](/deploy/)
 - [Read detailed technical documentation](http://signalbox.readthedocs.org/en/latest/)
 - [Download the latest source code (via Github)](https://github.com/puterleat/signalbox)
+
+
+
+
+
+<a href="https://heapanalytics.com/?utm_source=badge"><img style="width:108px;height:41px" src="//heapanalytics.com/img/badge.png" alt="Heap | Mobile and Web Analytics" /></a>
