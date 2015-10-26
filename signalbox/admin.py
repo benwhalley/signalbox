@@ -31,6 +31,7 @@ class ConditionInline(LinkedInline):
     model = StudyCondition
     extra = 1
     filter_horizontal = ['scripts']
+    fields = ['tag', 'metadata', 'weight', 'scripts']
 
 
 class StudyAdminForm(forms.ModelForm):
