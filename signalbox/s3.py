@@ -4,9 +4,10 @@
 from storages.backends.s3boto import S3BotoStorage
 from django.utils.functional import SimpleLazyObject
 from django.core.files.storage import get_storage_class
+from django.utils.deconstruct import deconstructible
 
 
-
+@deconstructible
 class CustomS3BotoStorage(S3BotoStorage):  # pragma: no cover
     """
     S3 storage backend that saves the files locally, too.

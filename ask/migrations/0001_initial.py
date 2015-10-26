@@ -1,253 +1,144 @@
 # -*- coding: utf-8 -*-
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import ask.validators
+import signalbox.process
+import yamlfield.fields
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'QuestionAsset'
-        db.create_table(u'ask_questionasset', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('question', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ask.Question'])),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50)),
-            ('asset', self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True, blank=True)),
-            ('template', self.gf('django.db.models.fields.CharField')(max_length=255)),
-        ))
-        db.send_create_signal('ask', ['QuestionAsset'])
+    dependencies = [
+        ('signalbox', '0004_auto_20151026_1641'),
+    ]
 
-        # Adding model 'Question'
-        db.create_table(u'ask_question', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('page', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ask.AskPage'], null=True, blank=True)),
-            ('instrument', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ask.Instrument'], null=True, blank=True)),
-            ('order', self.gf('django.db.models.fields.IntegerField')(default=-1)),
-            ('allow_not_applicable', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('required', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('showif', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ask.ShowIf'], null=True, blank=True)),
-            ('text', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('variable_name', self.gf('django.db.models.fields.SlugField')(default='', unique=True, max_length=32)),
-            ('choiceset', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ask.ChoiceSet'], null=True, blank=True)),
-            ('display_instrument', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='display_instrument', null=True, to=orm['ask.Instrument'])),
-            ('score_mapping', self.gf('jsonfield.fields.JSONField')(null=True, blank=True)),
-            ('help_text', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('audio', self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True, blank=True)),
-            ('q_type', self.gf('django.db.models.fields.CharField')(default='instruction', max_length=100)),
-            ('widget_kwargs', self.gf('jsonfield.fields.JSONField')(default={}, blank=True)),
-            ('field_kwargs', self.gf('jsonfield.fields.JSONField')(default={}, blank=True)),
-        ))
-        db.send_create_signal('ask', ['Question'])
-
-        # Adding model 'Choice'
-        db.create_table(u'ask_choice', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('choiceset', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ask.ChoiceSet'], null=True, blank=True)),
-            ('is_default_value', self.gf('django.db.models.fields.BooleanField')(default=False, db_index=True)),
-            ('order', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
-            ('label', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
-            ('score', self.gf('django.db.models.fields.IntegerField')()),
-        ))
-        db.send_create_signal('ask', ['Choice'])
-
-        # Adding unique constraint on 'Choice', fields ['choiceset', 'score']
-        db.create_unique(u'ask_choice', ['choiceset_id', 'score'])
-
-        # Adding model 'ChoiceSet'
-        db.create_table(u'ask_choiceset', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=64)),
-        ))
-        db.send_create_signal('ask', ['ChoiceSet'])
-
-        # Adding model 'ShowIf'
-        db.create_table(u'ask_showif', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('previous_question', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='previous_question', null=True, to=orm['ask.Question'])),
-            ('summary_score', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['signalbox.ScoreSheet'], null=True, blank=True)),
-            ('values', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-            ('more_than', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-            ('less_than', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('ask', ['ShowIf'])
-
-        # Adding model 'Instrument'
-        db.create_table(u'ask_instrument', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
-            ('citation', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('usage_information', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('ask', ['Instrument'])
-
-        # Adding unique constraint on 'Instrument', fields ['name']
-        db.create_unique(u'ask_instrument', ['name'])
-
-        # Adding model 'AskPage'
-        db.create_table(u'ask_askpage', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('asker', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['ask.Asker'])),
-            ('order', self.gf('django.db.models.fields.FloatField')(default=0)),
-            ('submit_button_text', self.gf('django.db.models.fields.CharField')(default='Continue', max_length=255)),
-            ('step_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-        ))
-        db.send_create_signal('ask', ['AskPage'])
-
-        # Adding unique constraint on 'AskPage', fields ['order', 'asker']
-        db.create_unique(u'ask_askpage', ['order', 'asker_id'])
-
-        # Adding model 'Asker'
-        db.create_table(u'ask_asker', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=128)),
-            ('success_message', self.gf('django.db.models.fields.TextField')(default='Questionnaire complete.')),
-            ('redirect_url', self.gf('django.db.models.fields.CharField')(default='/accounts/profile/', max_length=128)),
-            ('show_progress', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('step_navigation', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('steps_are_sequential', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('hide_menu', self.gf('django.db.models.fields.BooleanField')(default=True)),
-        ))
-        db.send_create_signal('ask', ['Asker'])
-
-        # Adding M2M table for field scoresheets on 'Asker'
-        m2m_table_name = db.shorten_name(u'ask_asker_scoresheets')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('asker', models.ForeignKey(orm['ask.asker'], null=False)),
-            ('scoresheet', models.ForeignKey(orm['signalbox.scoresheet'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['asker_id', 'scoresheet_id'])
-
-
-    def backwards(self, orm):
-        # Removing unique constraint on 'AskPage', fields ['order', 'asker']
-        db.delete_unique(u'ask_askpage', ['order', 'asker_id'])
-
-        # Removing unique constraint on 'Instrument', fields ['name']
-        db.delete_unique(u'ask_instrument', ['name'])
-
-        # Removing unique constraint on 'Choice', fields ['choiceset', 'score']
-        db.delete_unique(u'ask_choice', ['choiceset_id', 'score'])
-
-        # Deleting model 'QuestionAsset'
-        db.delete_table(u'ask_questionasset')
-
-        # Deleting model 'Question'
-        db.delete_table(u'ask_question')
-
-        # Deleting model 'Choice'
-        db.delete_table(u'ask_choice')
-
-        # Deleting model 'ChoiceSet'
-        db.delete_table(u'ask_choiceset')
-
-        # Deleting model 'ShowIf'
-        db.delete_table(u'ask_showif')
-
-        # Deleting model 'Instrument'
-        db.delete_table(u'ask_instrument')
-
-        # Deleting model 'AskPage'
-        db.delete_table(u'ask_askpage')
-
-        # Deleting model 'Asker'
-        db.delete_table(u'ask_asker')
-
-        # Removing M2M table for field scoresheets on 'Asker'
-        db.delete_table(db.shorten_name(u'ask_asker_scoresheets'))
-
-
-    models = {
-        'ask.asker': {
-            'Meta': {'object_name': 'Asker'},
-            'hide_menu': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True'}),
-            'redirect_url': ('django.db.models.fields.CharField', [], {'default': "'/accounts/profile/'", 'max_length': '128'}),
-            'scoresheets': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['signalbox.ScoreSheet']", 'null': 'True', 'blank': 'True'}),
-            'show_progress': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '128'}),
-            'step_navigation': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'steps_are_sequential': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'success_message': ('django.db.models.fields.TextField', [], {'default': "'Questionnaire complete.'"})
-        },
-        'ask.askpage': {
-            'Meta': {'ordering': "['order']", 'unique_together': "(['order', 'asker'],)", 'object_name': 'AskPage'},
-            'asker': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ask.Asker']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'order': ('django.db.models.fields.FloatField', [], {'default': '0'}),
-            'step_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
-            'submit_button_text': ('django.db.models.fields.CharField', [], {'default': "'Continue'", 'max_length': '255'})
-        },
-        'ask.choice': {
-            'Meta': {'ordering': "['order']", 'unique_together': "(('choiceset', 'score'),)", 'object_name': 'Choice'},
-            'choiceset': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ask.ChoiceSet']", 'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_default_value': ('django.db.models.fields.BooleanField', [], {'default': 'False', 'db_index': 'True'}),
-            'label': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'order': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'}),
-            'score': ('django.db.models.fields.IntegerField', [], {})
-        },
-        'ask.choiceset': {
-            'Meta': {'ordering': "['name']", 'object_name': 'ChoiceSet'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '64'})
-        },
-        'ask.instrument': {
-            'Meta': {'ordering': "['name']", 'unique_together': "(['name'],)", 'object_name': 'Instrument'},
-            'citation': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
-            'usage_information': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
-        },
-        'ask.question': {
-            'Meta': {'ordering': "['order']", 'object_name': 'Question'},
-            'allow_not_applicable': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'audio': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'choiceset': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ask.ChoiceSet']", 'null': 'True', 'blank': 'True'}),
-            'display_instrument': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'display_instrument'", 'null': 'True', 'to': "orm['ask.Instrument']"}),
-            'field_kwargs': ('jsonfield.fields.JSONField', [], {'default': '{}', 'blank': 'True'}),
-            'help_text': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'instrument': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ask.Instrument']", 'null': 'True', 'blank': 'True'}),
-            'order': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
-            'page': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ask.AskPage']", 'null': 'True', 'blank': 'True'}),
-            'q_type': ('django.db.models.fields.CharField', [], {'default': "'instruction'", 'max_length': '100'}),
-            'required': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'score_mapping': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
-            'showif': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ask.ShowIf']", 'null': 'True', 'blank': 'True'}),
-            'text': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'variable_name': ('django.db.models.fields.SlugField', [], {'default': "''", 'unique': 'True', 'max_length': '32'}),
-            'widget_kwargs': ('jsonfield.fields.JSONField', [], {'default': '{}', 'blank': 'True'})
-        },
-        'ask.questionasset': {
-            'Meta': {'object_name': 'QuestionAsset'},
-            'asset': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'question': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['ask.Question']"}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
-            'template': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        },
-        'ask.showif': {
-            'Meta': {'object_name': 'ShowIf'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'less_than': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'more_than': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'previous_question': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'previous_question'", 'null': 'True', 'to': "orm['ask.Question']"}),
-            'summary_score': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['signalbox.ScoreSheet']", 'null': 'True', 'blank': 'True'}),
-            'values': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
-        },
-        'signalbox.scoresheet': {
-            'Meta': {'object_name': 'ScoreSheet'},
-            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'function': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'minimum_number_of_responses_required': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '80', 'blank': 'True'}),
-            'variables': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'varsinscoresheet'", 'symmetrical': 'False', 'to': "orm['ask.Question']"})
-        }
-    }
-
-    complete_apps = ['ask']
+    operations = [
+        migrations.CreateModel(
+            name='Asker',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255, null=True)),
+                ('slug', models.SlugField(help_text=b'To use in URLs etc', unique=True, max_length=128, verbose_name=b'Reference code')),
+                ('success_message', models.TextField(default=b'Questionnaire complete.', help_text=b'Message which appears in banner on users screen on completion of the  questionnaire.')),
+                ('redirect_url', models.CharField(default=b'/profile/', help_text=b'"URL to redirect to when Questionnaire is complete.', max_length=128)),
+                ('show_progress', models.BooleanField(default=False, help_text=b'Show a\n            progress field in the header of each page.')),
+                ('finish_on_last_page', models.BooleanField(default=False, help_text=b'Mark the reply as complete\n        when the user gets to the last page. NOTE this implies there should be not questions\n        requiring input on the last page, or these values will never be saved.')),
+                ('step_navigation', models.BooleanField(default=True, help_text=b'Allow navigation\n        to steps.')),
+                ('steps_are_sequential', models.BooleanField(default=True, help_text=b"Each page\n        in the questionnaire must be completed before the next; if unchecked\n        then respondents can skip around within the questionnaire and complete\n        the pages 'out of order'.")),
+                ('hide_menu', models.BooleanField(default=True)),
+                ('system_audio', yamlfield.fields.YAMLField(help_text=b'A mapping of slugs to text strings or\n        urls which store audio files, for the system to play on errors etc. during IVR calls', blank=True)),
+            ],
+            options={
+                'ordering': ['name'],
+                'verbose_name': 'Questionnaire',
+                'permissions': (('can_preview', 'Can preview surveys'),),
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='AskPage',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('order', models.FloatField(default=0)),
+                ('submit_button_text', models.CharField(default=b'Continue', max_length=255)),
+                ('step_name', models.CharField(max_length=255, null=True, blank=True)),
+                ('randomise_questions', models.BooleanField(default=False)),
+                ('asker', models.ForeignKey(to='ask.Asker')),
+            ],
+            options={
+                'ordering': ['order'],
+                'verbose_name': 'Page',
+            },
+            bases=(models.Model, signalbox.process.Step),
+        ),
+        migrations.CreateModel(
+            name='Choice',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('is_default_value', models.BooleanField(default=False, help_text=b'Indicates whether the value will be checked by default.', db_index=True)),
+                ('order', models.IntegerField(help_text=b'Order in which the choices are displayed.', db_index=True)),
+                ('label', models.CharField(max_length=200, null=True, verbose_name='Label', blank=True)),
+                ('score', models.IntegerField(help_text=b'This is the value saved in the DB')),
+                ('mapped_score', models.IntegerField(help_text=b'The value to be used when computing scoresheets. Does not affect what is stored or exported.', null=True, blank=True)),
+            ],
+            options={
+                'ordering': ['order'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ChoiceSet',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.SlugField(unique=True, max_length=64)),
+                ('yaml', yamlfield.fields.YAMLField(default=b"\n1:\n  label: 'One'\n  score: 1\n2:\n  is_default_value: true\n  label: 'Two'\n  score: 2\n3:\n  label: 'More than two'\n  score: 2\n    ", blank=True, validators=[ask.validators.checkyamlchoiceset])),
+            ],
+            options={
+                'ordering': ['name'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Question',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('order', models.IntegerField(default=-1, help_text=b'The order in which items will apear in the page.', verbose_name=b'Page order')),
+                ('allow_not_applicable', models.BooleanField(default=False)),
+                ('required', models.BooleanField(default=False)),
+                ('text', models.TextField(help_text='<p>The text displayed for this question.\n<a href="#" onClick="$(\'.questiontexthelp\').show();$(this).hide();return false;">\nSyntax help</a>\n<div class="questiontexthelp hide">\nAs part of instruction questions it\'s now possible to\ninclude variables representing summary scores (ScoreSheets) attached to\nthe Asker, or previous question responses.</p>\n<p>This is done by including Django template syntax in the <code>text</code> attribute\nof the question.</p>\n<p>Summary scores can be accessed as: <code>{{scores.&lt;scoresheetname&gt;.score}}</code>\nand computation messages as <code>{{scores.&lt;scoresheetname&gt;.message}}</code>.</p>\n<p>Previous answers can be displayed using <code>{{answers.&lt;variable_name&gt;}}</code>.</p>\n<p>Standard Django template logic can also be used with these variables,\nfor example <code>{% if scores.&lt;scoresheetname&gt;.score %}Show something else\n{% endif %}</code>.\n</div></p>', null=True, blank=True)),
+                ('variable_name', models.SlugField(default=b'', max_length=32, validators=[ask.validators.first_char_is_alpha, ask.validators.illegal_characters, ask.validators.is_lower], help_text=b'Variable names can use characters a-Z,\n            0-9 and underscore (_), and must be unique within the system.', unique=True)),
+                ('help_text', models.TextField(null=True, blank=True)),
+                ('q_type', models.CharField(default=b'instruction', max_length=100, choices=[(b'instruction', b'instruction'), (b'likert', b'likert'), (b'likert-list', b'likert-list'), (b'pulldown', b'pulldown'), (b'required-checkbox', b'required-checkbox'), (b'checkboxes', b'checkboxes'), (b'long-text', b'long-text'), (b'open', b'open'), (b'short-text', b'short-text'), (b'integer', b'integer'), (b'decimal', b'decimal'), (b'slider', b'slider'), (b'range-slider', b'range-slider'), (b'date', b'date'), (b'date-time', b'date-time'), (b'time', b'time'), (b'hangup', b'hangup'), (b'upload', b'upload'), (b'webcam', b'webcam')])),
+                ('extra_attrs', yamlfield.fields.YAMLField(help_text=b'A YAML representation of a python dictionary of\n        attributes which, when deserialised, is passed to the form widget when the questionnaire is\n        rendered. See django-floppyforms docs for options.', blank=True)),
+                ('choiceset', models.ForeignKey(blank=True, to='ask.ChoiceSet', null=True)),
+                ('page', models.ForeignKey(blank=True, to='ask.AskPage', null=True)),
+                ('scoresheet', models.ForeignKey(blank=True, to='signalbox.ScoreSheet', null=True)),
+            ],
+            options={
+                'ordering': ['order'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='QuestionAsset',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('slug', models.SlugField(help_text=b'A name to refer to this asset\n        with in the question_text field. To display an image or media\n        player within the question, include the text {{SLUG}} in the\n        question_text field of the question.')),
+                ('asset', models.FileField(help_text=b'Can be an image (.jpg, .png, or .gif), audio file (.m4a, .mp4, or .mp3) or\n        movie (.mp4 only) for display as part of the question text.', null=True, upload_to=b'questionassets', blank=True)),
+                ('template', models.CharField(max_length=255, choices=[(b'image.html', b'image'), (b'movie.html', b'movie'), (b'audio.html', b'audio')])),
+                ('question', models.ForeignKey(to='ask.Question')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ShowIf',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('values', models.CharField(help_text=b'CASE INSENSITIVE values to match, comma separated. The question is shown if\n        any value matches', max_length=255, null=True, blank=True)),
+                ('more_than', models.IntegerField(help_text=b'Previous question response\n        or summary score must be more than this value.', null=True, blank=True)),
+                ('less_than', models.IntegerField(help_text=b'Previous question response\n        or summary score must be less than this value.', null=True, blank=True)),
+                ('previous_question', models.ForeignKey(related_name=b'previous_question', blank=True, to='ask.Question', help_text=b'For previous values, enter the name of the question which\n        will already have been answered in this survey (technically, within this Reply)', null=True)),
+                ('summary_score', models.ForeignKey(blank=True, to='signalbox.ScoreSheet', help_text=b'A summary score to be calculated based on answer already entered in the current\n        Reply.', null=True)),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='choice',
+            name='choiceset',
+            field=models.ForeignKey(blank=True, to='ask.ChoiceSet', null=True),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='choice',
+            unique_together=set([('choiceset', 'score')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='askpage',
+            unique_together=set([('order', 'asker')]),
+        ),
+    ]

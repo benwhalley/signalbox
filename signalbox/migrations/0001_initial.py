@@ -20,7 +20,6 @@ class Migration(migrations.Migration):
     dependencies = [
         ('twiliobox', '__first__'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('ask', '__first__'),
     ]
 
     operations = [

@@ -13,6 +13,8 @@ from django.utils.encoding import smart_unicode
 import ask.validators as valid
 from ask.utils import statify
 from twilio import twiml
+from django.utils.safestring import mark_safe
+
 
 from signalbox.utilities.djangobits import conditional_decorator
 from django.conf import settings
@@ -61,6 +63,9 @@ class PageForm(forms.Form):
             initialpage = page.index()
         else:
             initialpage = 0
+
+        extrajs = "\n".join([str(i.javascript) for i in filter(bool, self.questions_to_show)])
+        self.page.javascript = mark_safe(extrajs)
 
         self.fields['page_id'] = forms.IntegerField(required=True, widget=forms.HiddenInput,
                                                     initial=initialpage)

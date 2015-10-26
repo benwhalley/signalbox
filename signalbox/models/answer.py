@@ -7,7 +7,7 @@ from django.conf import settings
 from signalbox.utilities.djangobits import supergetattr
 from ask.models import fields
 from signalbox.exceptions import SignalBoxException
-from storages.backends.s3boto import S3BotoStorage
+from signalbox.s3 import CustomS3BotoStorage
 
 def upload_file_name(instance, filename):
     return '/'.join(['userdata', instance.reply.token, filename])
@@ -45,7 +45,7 @@ class Answer(models.Model):
     answer = models.TextField(blank=True, null=True)
 
     upload = models.FileField(blank=True, null=True,
-        storage=S3BotoStorage(
+        storage=CustomS3BotoStorage(
             acl='private',
             querystring_auth=True,
             querystring_expire=300), # 5 min timeout

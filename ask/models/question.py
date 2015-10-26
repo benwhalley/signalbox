@@ -156,6 +156,8 @@ class Question(models.Model):
     choiceset = models.ForeignKey('ask.ChoiceSet', null=True, blank=True)
 
     help_text = models.TextField(blank=True, null=True)
+    javascript = models.TextField(blank=True, null=True)
+    
 
     @contract
     def show_as_image_data_url(self):

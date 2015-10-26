@@ -189,9 +189,9 @@ class QuestionAdmin(admin.ModelAdmin):
         }),
 
         ("Advanced", {
-        'classes': ('collapse',),
+        'classes': (),
         'fields': (
-            'extra_attrs',
+            'extra_attrs', 'javascript'
         )
         }
     ))

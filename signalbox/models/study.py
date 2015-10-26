@@ -18,7 +18,7 @@ from signalbox.models import Reply, Answer
 from signalbox.models.validators import is_24_hour, only_includes_allowed_fields
 from signalbox.utils import incomplete, in_range
 from stats.stats import chisquare
-from storages.backends.s3boto import S3BotoStorage
+from signalbox.s3 import CustomS3BotoStorage
 
 User = settings.AUTH_USER_MODEL
 
@@ -102,7 +102,7 @@ class Study(models.Model):
         information displayed on the studies listing page.""")
 
     study_image = models.ImageField(blank=True, null=True,
-        storage=S3BotoStorage(),
+        storage=CustomS3BotoStorage(),
         upload_to="study/images/")
 
     briefing = models.TextField(blank=True, null=True,
