@@ -176,6 +176,11 @@ Other variables available as the text is rendered are:
 - The Reply object (e.g. `You started this reply at: {{reply.started}}`).
 - The User object (e.g. `Your name is {{user.first_name}}`).
 
+You could also access indirectly things like the study condition:
+
+- {{reply.observation.membership.condition.metadata.SOME_ATTRIBUTE}}
+  
+
 
 
 
