@@ -2,7 +2,7 @@ import os
 from pip.req import parse_requirements
 from setuptools import setup, find_packages
 
-reqs = parse_requirements("requirements.txt")
+reqs = parse_requirements("requirements.txt", session=False)
 install_reqs = filter(bool,[str(ir.req) for ir in reqs])
 
 setup(
