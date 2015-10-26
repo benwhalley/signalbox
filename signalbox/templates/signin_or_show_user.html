@@ -11,15 +11,18 @@
 {% else %}
     <p class="navbar-text pull-right">
 
-        Welcome back
-        <a href="{% url "user_homepage" %}">{{request.user.username|title}}</a>.
-
-        (Not {{request.user.username|title}}? <a href="{% url 'logout' %}">Logout here </a>)
-
       {% if not hideprofilebutton%}
-
-          <a class="btn btn-mini btn-primary" style="display:inline;" href="{% url "user_homepage" %}">Check tasks</a>
-
+          <a class="btn btn-mini btn-primary"  href="{% url "user_homepage" %}">{{request.user.username|title}}'s Tasks</a>
       {% endif %}
+
+      {% if request.user.is_staff %}
+      {% if not hideprofilebutton%}
+      <p class="navbar-text pull-right">
+        <a class="btn btn-mini" href="/admin/"> Admin site</a>
+      </p>
+      {% endif %}
+      {% endif %}
+
+
     </p>
 {% endif %}
