@@ -235,7 +235,7 @@ class Observation(models.Model):
 
     @property
     def user(self):
-        return self.dyad.user
+        return self.dyad and self.dyad.user or None
 
     def script(self):
         if self.created_by_script:
