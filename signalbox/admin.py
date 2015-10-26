@@ -29,7 +29,7 @@ ConditionalVersionAdmin = settings.USE_VERSIONING and VersionAdmin or admin.Mode
 
 class ConditionInline(LinkedInline):
     model = StudyCondition
-    extra = 0
+    extra = 1
     filter_horizontal = ['scripts']
 
 
