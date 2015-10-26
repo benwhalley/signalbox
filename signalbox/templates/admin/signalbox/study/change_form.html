@@ -32,7 +32,7 @@ Study Dashboard: {{original.name}}
     {% if original %}
         <div class="tab-pane active" id="tabsummary">
             <div class=row>
-                <div class="span6">
+                <div class="span8">
 
                     <h4>Study participants</h4>
 
@@ -81,47 +81,37 @@ Study Dashboard: {{original.name}}
 
                     <h4>Allocation</h4>
 
-                    <table class="table">
                     {% for i in original.studycondition_set.all %}
-                    <tr>
-                        <th>Condition: '{{i.tag}}'</th>
-                    </tr>
+                    
                         {% for j in i.scripts.all %}
-                        <tr>
-                            <td>
+                        <div class="well span3">
+                                <h4>Condition: '{{i.tag}}'</h4>
                                Script: <a href="{% url 'admin:signalbox_script_change' j.id %}">{{j.name}}</a>
                                     {% if j.asker %}uses <a href="{% url 'admin:ask_asker_change' j.asker.id %}">{{j.asker}}</a>
                                     at the following times:{% else %}makes observations at the following times:{% endif %}
                         <code>{% for k in j.datetimes_with_natural_syntax %}{{k.syntax}}<br>{% endfor %}</code>
-                            </td>
-                        </tr>
+                        </div>
                         {% endfor %}
                     {% endfor %}
-                    </table>
 
 
 
-                    <h4>Data collection</h4>
 
+                    <h4 class="span8">Extra data collection</h4>
+                    <div class="well span8">
+                        <p>Questionnaires available to participants for ad-hoc use:</p>
 
-                    <table class="table">
-
+                
                         {% if original.ad_hoc_askers.all %}
-                        <tr>
-                            <th>
-                                Questionnaires available to participants for ad-hoc use
-                            </th>
-                            <th>
-                            </th>
-                        </tr>
+                        <ul>
                         {% for i in original.ad_hoc_askers.all %}
-                            <tr>
-                                <td>{{i}}
-                                </td>
-                                <td>
+                        <li>
+                        {{i}}
+                        
                                     <a class="btn btn-small" href="{% url 'admin:ask_asker_change' i.id %}">Edit</a>
-                                </td>
+                            </li>
                         {%endfor%}
+                        </ul>
                         {% endif %}
 
                         {% if original.createifs.all %}
@@ -145,7 +135,7 @@ Study Dashboard: {{original.name}}
                                </tr>
                         {% endfor %}
                         {% endif %}
-                    </table>
+                    </div>
 
                 </div>
 
