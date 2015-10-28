@@ -27,7 +27,7 @@ if settings.USE_VERSIONING:
 ConditionalVersionAdmin = settings.USE_VERSIONING and VersionAdmin or admin.ModelAdmin
 
 
-class ConditionInline(LinkedInline):
+class ConditionInline(admin.StackedInline):
     model = StudyCondition
     extra = 1
     filter_horizontal = ['scripts']

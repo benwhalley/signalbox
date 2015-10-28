@@ -6,11 +6,13 @@ import signalbox.utilities.mixins
 import django_fsm.db.fields.fsmfield
 import jsonfield.fields
 import shortuuidfield.fields
+import signalbox.s3
 import signalbox.models.validators
-import django.utils.timezone
+import signalbox.models.answer
+import django.db.models.deletion
 import signalbox.process
 import signalbox.phone_field
-import django.db.models.deletion
+import django.utils.timezone
 from django.conf import settings
 import phonenumber_field.modelfields
 
@@ -20,6 +22,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('twiliobox', '__first__'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('ask', '0001_initial'),
     ]
 
     operations = [
@@ -57,7 +60,7 @@ class Migration(migrations.Migration):
                 ('other_variable_name', models.CharField(max_length=256, null=True, blank=True)),
                 ('choices', models.TextField(help_text='JSON representation of the options the user could select from,\n        at the time the answer was saved.', null=True, blank=True)),
                 ('answer', models.TextField(null=True, blank=True)),
-                ('upload', models.FileField(storage=b'signalbox.s3.PrivateRootS3BotoStorage', null=True, upload_to='not required', blank=True)),
+                ('upload', models.FileField(storage=signalbox.s3.CustomS3BotoStorage(querystring_expire=300, querystring_auth=True, acl='private'), null=True, upload_to=signalbox.models.answer.upload_file_name, blank=True)),
                 ('last_modified', models.DateTimeField(auto_now=True, db_index=True)),
                 ('created', models.DateTimeField(auto_now_add=True, db_index=True)),
                 ('meta', models.TextField(help_text='Additional data as python dict serialised to JSON.', null=True, blank=True)),
@@ -198,7 +201,7 @@ class Migration(migrations.Migration):
                 ('complete', models.BooleanField(default=False, db_index=True)),
                 ('token', shortuuidfield.fields.ShortUUIDField(max_length=22, editable=False, blank=True)),
                 ('external_id', models.CharField(help_text=b'Reference for external API, e.g. Twilio', max_length=100, null=True, blank=True)),
-                ('entry_method', models.CharField(blank=True, max_length=100, null=True, choices=[(b'ad_hoc', b'Ad-hoc use of questionnaire'), (b'answerphone', b'Answerphone message'), (b'participant', b'Participant via the web interface'), (b'twilio', b'Twilio'), (b'double_entry', b'Double entry by an administrator'), (b'preview', b'Preview'), (b'anonymous', b'Anonymous survey response'), (b'ad_hoc_script', b'Data entered after ad-hoc script use')])),
+                ('entry_method', models.CharField(blank=True, max_length=100, null=True, choices=[(b'participant_ad_hoc', b'Data entered after ad-hoc script use'), (b'ad_hoc', b'DEPRECATED NAME (Ad-hoc use of questionnaire)'), (b'double_entry', b'Double entry by an administrator'), (b'twiliocall', b'Twilio telephone call'), (b'twiliosms', b'Twilio SMS conversation'), (b'anonymous', b'Anonymous survey response'), (b'participant', b'Participant via the web interface'), (b'answerphone', b'Answerphone message'), (b'preview', b'Preview'), (b'twilio', b'DEPRECATED NAME (Twilio telephone call)'), (b'ad_hoc_script', b'DEPRECATED NAME (Data entered after ad-hoc script use)')])),
                 ('notes', models.TextField(null=True, blank=True)),
                 ('collector', models.SlugField(null=True, blank=True)),
                 ('asker', models.ForeignKey(blank=True, to='ask.Asker', null=True)),
@@ -225,6 +228,7 @@ class Migration(migrations.Migration):
                 ('reply', models.ForeignKey(to='signalbox.Reply')),
             ],
             options={
+                'get_latest_by': 'modified',
                 'verbose_name': 'Reply meta data',
                 'verbose_name_plural': 'Reply meta data',
             },
@@ -321,7 +325,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=200)),
                 ('study_email', models.EmailField(help_text=b'The return email address for all mailings/alerts.', max_length=75)),
                 ('blurb', models.TextField(help_text=b'Snippet of\n        information displayed on the studies listing page.', null=True, blank=True)),
-                ('study_image', models.ImageField(storage=b'signalbox.s3.PrivateRootS3BotoStorage', null=True, upload_to=b'not required', blank=True)),
+                ('study_image', models.ImageField(storage=signalbox.s3.CustomS3BotoStorage(), null=True, upload_to=b'study/images/', blank=True)),
                 ('briefing', models.TextField(help_text=b'Key information displayed to participants before joining\n        the study.', null=True, blank=True)),
                 ('consent_text', models.TextField(help_text=b'User must agree to this before entering study.', null=True, blank=True)),
                 ('welcome_text', models.TextField(default=b'Welcome to the study', help_text=b'Text user sees in a message box when they signup for the\n        the study. Note his message is not needed if participants will be\n        added to studies by the experimenter, rather than through the\n        website.', null=True, blank=True)),

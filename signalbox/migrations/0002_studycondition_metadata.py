@@ -8,7 +8,7 @@ import yamlfield.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('signalbox', '0004_auto_20151026_1641'),
+        ('signalbox', '0001_initial'),
     ]
 
     operations = [
