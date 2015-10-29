@@ -114,11 +114,12 @@
 <p class="help_text">Click save, or press ctrl+enter to save your answers.</p>
 </div>
 
+{% if page.javascript %}
 <script class="text/javascript">
 {{page.javascript}}
 </script>
+{% endif %}
 {% endblock %}
-
 
 
 
