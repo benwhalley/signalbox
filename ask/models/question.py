@@ -183,6 +183,7 @@ class Question(models.Model):
         templ = Template(templ_header + self.text)
         context = {
             'reply': reply,
+            'condition': supergetattr(reply, "observation.dyad.condition"),
             'user': supergetattr(reply, 'observation.dyad.user', default=None),
             'page': self.page,
             'scores': {},
