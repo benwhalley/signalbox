@@ -64,8 +64,8 @@ class PageForm(forms.Form):
         else:
             initialpage = 0
 
-        extrajs = "\n".join([str(i.javascript) for i in filter(bool, self.questions_to_show)])
-        self.page.javascript = mark_safe(extrajs)
+        extrajs = "\n".join([i.javascript for i in self.questions_to_show if i.javascript])
+        self.page.javascript = extrajs and mark_safe(extrajs) or ""
 
         self.fields['page_id'] = forms.IntegerField(required=True, widget=forms.HiddenInput,
                                                     initial=initialpage)
