@@ -86,6 +86,14 @@ Study Dashboard: {{original.name}}
                         {% for j in i.scripts.all %}
                         <div class="well span3">
                                 <h4>Condition: '{{i.tag}}'</h4>
+                                
+                                {% if i.metadata %}
+                                <p>Metadata:
+                                <code>{{i.metadata}}
+                                </code>
+                                </p>
+                                {% endif %}
+
                                Script: <a href="{% url 'admin:signalbox_script_change' j.id %}">{{j.name}}</a>
                                     {% if j.asker %}uses <a href="{% url 'admin:ask_asker_change' j.asker.id %}">{{j.asker}}</a>
                                     at the following times:{% else %}makes observations at the following times:{% endif %}
@@ -100,15 +108,11 @@ Study Dashboard: {{original.name}}
                     <h4 class="span8">Extra data collection</h4>
                     <div class="well span8">
                         <p>Questionnaires available to participants for ad-hoc use:</p>
-
-                
                         {% if original.ad_hoc_askers.all %}
                         <ul>
                         {% for i in original.ad_hoc_askers.all %}
                         <li>
-                        {{i}}
-                        
-                                    <a class="btn btn-small" href="{% url 'admin:ask_asker_change' i.id %}">Edit</a>
+                        <a href="{% url 'admin:ask_asker_change' i.id %}">{{i}}</a>
                             </li>
                         {%endfor%}
                         </ul>
