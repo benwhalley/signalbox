@@ -19,6 +19,7 @@ from signalbox.models.validators import is_24_hour, only_includes_allowed_fields
 from signalbox.utils import incomplete, in_range
 from stats.stats import chisquare
 from signalbox.s3 import CustomS3BotoStorage
+from yamlfield.fields import YAMLField
 
 User = settings.AUTH_USER_MODEL
 
@@ -284,6 +285,9 @@ class StudyCondition(models.Model):
     weight = models.IntegerField(default=1,
                                  help_text="""Relative weights to allocate users to conditions""")
     scripts = models.ManyToManyField('signalbox.Script', blank=True, null=True)
+    metadata = YAMLField(blank=True, null=True, 
+        help_text="""YAML meta data available describing this condition. Can be used on Questionnaires, 
+        e.g. to conditionally display questions.""")
 
     def expected_n(self):
         """Return the expected number of participants based on the total currently allocated to the parent study."""
