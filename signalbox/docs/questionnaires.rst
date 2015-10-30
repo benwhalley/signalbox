@@ -92,7 +92,7 @@ In the example above, a level-1 heading (Demographic information) is inserted, a
 Defining a list of choices
 ..............................
 
-Some questions require users to select from a restrcited range of choices, for example a likert-type scale. To specify the choices, specify a choiceset attribute on the question, and define the choiceset in a second, separate block::
+Some questions require users to select from a restricted range of choices, for example a likert-type scale. To specify the choices, specify a choiceset attribute on the question, and define the choiceset in a second, separate block::
 
 
     ~~~{#howhappyareyou .likert}
@@ -103,6 +103,21 @@ Some questions require users to select from a restrcited range of choices, for e
     ~~~
 
 Here the possible options are listed following ">>>" on separate lines, in the form `score=label`. Scores must be integers, and are the values saved when the user provides an answer.
+
+
+
+Require a response
+....................
+
+
+Simply add `.required` to the question block:
+
+    ~~~{#howhappyareyou .likert .required}
+    How happy are you?
+    >>>
+    1=Very happy
+    2=Miserable
+    ~~~
 
 
 
@@ -124,7 +139,7 @@ To mark one option to be selected by default, insert a star in front of the valu
 
 
 Calculating and displaying summary scores from participant responses
-.....................
+..........................................................................
 
 For instruction questions, in place of a list of choices, it is possible to specify a score which will be computed from previous participant responses (a ScoreSheet). For example::
 
@@ -137,6 +152,87 @@ For instruction questions, in place of a list of choices, it is possible to spec
 This question will compute the sum of variable1, 2 and 3, and display it where the `{{totalscore}}` marker is, within the question text. Again markdown formatting can be applied to scores.
 
 Note: because answers must be saved in the database before being available for summary scores, be sure to specify this type of question on a page which comes after the variables to be used.
+
+
+
+Inline html
+................
+
+If needed, arbitrary html can be included in the body of a question, for example:
+
+    ~~~{#summaryscoreexample .instruction}
+    Choose one of the following:
+
+    <ul class="randomfruit">
+        <li>Apple</li>
+        <li>Orange</li>
+        <li>Banana</li>
+    </ul>
+    ~~~
+
+
+
+
+
+Custom javascript
+............................
+
+
+All questions can contain javascript which might be used for various purposes — for example to hide/show options randomly.
+
+Several javascript libraries are included by default including:
+
+- jQuery_.
+- Chancejs_. (for randomisation)
+- Mousetrap_. (can trap key presses)
+
+
+.. _jQuery: http://jquery.com
+
+.. _Chancejs: http://chancejs.com
+
+.. _Mousetrap: https://craig.is/killing/mice
+
+
+For example, a question might contain the following to display a different number of fruit depending on meta data attached to the participant's StudyCondition:
+
+
+    ~~~{#jsexample .instruction}
+    Choose one of the following:
+
+    <ul class="randomfruit">
+        <li>Apple</li>
+        <li>Orange</li>
+        <li>Banana</li>
+    </ul>
+
+    <script type="text/javascript">
+        // initialise a random number generator, seeding to make sure
+        // choice is consistent if the user refreshes the page
+        var rng = new Chance("{{reply.token}}");
+        shuffledelements = rng.shuffle($(".flowers").toArray())
+    
+        //hide some of the choices
+        $(shuffledelements.slice(0, Number({{condition.metadata.n_to_hide}}))).hide()
+    </script>
+    ~~~
+
+Or this to show an alert when the 'k' key is pressed:
+
+    ~~~{#jsexample .instruction  }
+    <script type="text/javascript">
+    $(document).ready(function(){
+        Mousetrap.bind('k', function(e) {
+            alert("You pressed k");
+        });
+    });
+    </script>
+
+    ~~~
+
+
+
+
 
 
 
