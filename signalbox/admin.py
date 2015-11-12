@@ -360,7 +360,7 @@ class ReplyAdmin(ConditionalVersionAdmin):
     date_hierarchy = 'last_submit'
     save_on_top = True
     readonly_fields = ['is_preferred_reply', 'number_replies_made_for_observation', 'complete', 'observation', 'user', 'asker',
-                    'last_submit', 'started']
+                    'last_submit', 'started', 'token']
     list_display = ['token', 'entry_method', 'user', 'complete',
                     'last_submit', 'observation', 'collector']
     list_filter = ['asker', 'complete', 'observation__dyad__study', 'entry_method', 'collector']
