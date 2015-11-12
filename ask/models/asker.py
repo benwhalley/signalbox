@@ -66,6 +66,8 @@ class Asker(models.Model):
     system_audio = YAMLField(blank=True, help_text="""A mapping of slugs to text strings or
         urls which store audio files, for the system to play on errors etc. during IVR calls""")
 
+    width = models.PositiveIntegerField(default=12)
+
     def get_phrase(self, key):
         if self.system_audio:
             return self.system_audio.get(key, IVR_SYSTEM_MESSAGES.get(key))
@@ -198,7 +200,7 @@ class Asker(models.Model):
         """
 
         _fields = "slug name steps_are_sequential redirect_url finish_on_last_page \
-            show_progress success_message step_navigation system_audio".split()
+            show_progress success_message step_navigation system_audio width".split()
 
         metayaml = yaml.safe_dump({i: getattr(self, i) for i in _fields},
             default_flow_style=False)

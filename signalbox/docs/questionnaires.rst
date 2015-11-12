@@ -37,6 +37,10 @@ The `name` and `slug` attributes identify the questionnaire — the `slug` being
 `redirect_url`
    The page the user is sent to when the questionnaire is complete
 
+
+`width`
+    The width of the main column with questionnaires in. Min 2, max 12. Defaults to 12.
+
 `success_message`
    If the user is redirected to page within the signalbox site, an extra message which will appear in a banner at the head of the page after completion.
 
