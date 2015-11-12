@@ -53,7 +53,6 @@ class TextEditForm(forms.Form):
                 "There was a problem parsing the text:\n\n {}".format(e))
 
         asker, _ = get_or_modify(Asker, {"id": self.asker.id}, asker_yaml)
-
         # check variable names are valid and not used in other questionnaires
         variable_names = [i.iden for i in filter(isnotpage, blocks)]
 
@@ -151,8 +150,8 @@ class TextEditForm(forms.Form):
 def edit_asker_as_text(request, asker_id):
     asker = Asker.objects.get(id=asker_id)
     asker.reply_set.filter(entry_method="preview").delete()
-    nreplies = asker.reply_set.all().count() > 0
-    form = TextEditForm(request.POST or None, asker=asker, locked=nreplies,
+    # nreplies = asker.reply_set.all().count() > 0
+    form = TextEditForm(request.POST or None, asker=asker, locked=False,
         initial={'text': asker.as_markdown()})
 
     if form.is_valid():
