@@ -1,34 +1,15 @@
-{% extends "signalbox:admin/change_form.html" %}
+{% extends "admin/change_form.html" %}
 
 {% block content %}
-{% if original %}
-<ul class="breadcrumb">
 
-    <li>
-        User: <a class='' href='{% url "participant_overview" original.dyad.user.id %}'>{{original.dyad.user.username}}</a>
-        <span class="divider">/</span>
-    </li>
+{{block.super}}
+{% endblock %}
 
-    <li>
-        <a class="" href={% url "admin:signalbox_membership_change" original.dyad.id %}>
-                        {{original.dyad.study}}
-        </a>
-        <span class="divider">/</span>
-    </li>
-
-    <li>Observation
-                {{original.id}}
-    </li>
-
-
-</ul>
-{% endif %}
-
-
-<div class="row">
-    <div class="span12">
-        <p class="pull-right">
-        {% if original.reply_set.all.count > 1 %}
+{% block submit_buttons_top %}
+{{block.super}}
+<hr>
+<div class="pull-right">
+    {% if original.reply_set.all.count > 1 %}
         <a class="btn" href={% url 'resolve_double_entry_conflicts_for_observation' original.id %}>Resolve duplicate replies</a>
         {% endif %}
 
@@ -40,17 +21,7 @@
         <a class='btn btn-danger' href='{% url 'resend_observation_signal' object_id %}'>
             <i class="icon-refresh"></i> Send/Resend message</a>
         {% endif %}
-
-
-
-    </p>
-    </div>
 </div>
-
-
-
-
-{{block.super}}
 {% endblock %}
 
 
@@ -59,8 +30,6 @@
 
 
 {% block sidebar %}
-
-
 {% if original and original.dyad %}
 <div class="span3">
     {% if original.sms_replies %}

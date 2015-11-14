@@ -16,7 +16,7 @@
 
 
 {% block content_title %}
-<a href="{%url 'admin:signalbox_membership_change' membership.id%}"  class="brand">Date-shifting observations for: {{membership}}</a>
+<a href="{%url 'admin:signalbox_membership_change' membership.id%}"  class="navbar-brand">Date-shifting observations for: {{membership}}</a>
 {% endblock %}
 
 
@@ -24,12 +24,10 @@
 <ul class="breadcrumb">
     <li>
         Participant: <a class='' href='{% url "participant_overview" membership.user.id %}'>{{membership.user.username}}</a>
-        <span class="divider">/</span>
     </li>
     <li>
         Member of: <a class='' href='{% url "admin:signalbox_membership_change" membership.pk %}'>
           {{membership.study}}</a>
-          <span class="divider">/</span>
     </li>
     <li> Shifting randomisation and observation dates </li>
 </ul>
@@ -37,15 +35,15 @@
 
 
 {% block content %}
-
+<div class="container">
 <div class="row">
 
 {% if not membership.observations %}
-    <div class="span4">
+    <div class="col-md-4">
       <h3>No observations available to shift</h3>
     </div>
 {% else %}
-    <div class="span4">
+    <div class="col-md-4">
         <h4>Current randomisation date: {{membership.date_randomised|naturalday}}</h4>
                     <form action="." method="POST" >
                         {% csrf_token %}
@@ -53,7 +51,7 @@
                         <p><input type="submit" value="Shift &rarr;"></p>
                     </form>
     </div>
-    <div class="span4">
+    <div class="col-md-4">
         <h4>Observations affected:</h4>
         <ul>
              {% for i in membership.observations %}
@@ -76,7 +74,7 @@
 {% endif %}
 
 
-<div class="span4">
+<div class="col-md-4">
    <div class="alert">
    <h4>Information on date shifting</h4>
       <ul>
@@ -95,6 +93,6 @@
 </script>
 
 </div>
-
+</div>
 {% endblock %}
 

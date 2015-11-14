@@ -114,7 +114,7 @@ class ObservationManager(models.Manager):
         if not user.is_authenticated():
             raise DataProtectionException("User not authenticated.")
 
-        allobs = super(ObservationManager, self).get_query_set().order_by('-due')
+        allobs = super(ObservationManager, self).get_queryset().order_by('-due')
         
         if not user.is_staff:
             # only show your own

@@ -1,9 +1,10 @@
+{% extends "django_admin_bootstrapped/admin/base.html" %}
 {% load compress %}
 {% load admin_static bootstrapped_goodies_tags %}
-<!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
-<head>
-<title>{% block title %}{% endblock %}</title>
+
+
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery.min.js"></script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% block extrastyle %}{% endblock %}
 
@@ -13,67 +14,8 @@
 <link href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 <link type="text/css" href="{{ STATIC_URL }}css/signalbox.css" rel="stylesheet">
 <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
-
-
-<style type="text/css">
-a:active,
-a:focus {
-    outline: none;
-}
-body {
-    padding-top: 60px;
-    padding-bottom: 40px;
-}
-@media (max-width: 980px) {
-    body {
-        padding-top: 0;
-        padding-bottom: 0px;
-    }
-.sidebar-nav {
-    padding: 9px 0;
-}
-
-.nav-header { color:black; margin-top:1em; border-top: 1px solid grey;}
-
-.control-group input[type=text] {
-    width: 100%;
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box;         /* Opera/IE 8+ */
-    height: 28px;
-}
-.control-group select {
-    width: 100%;
-    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-    box-sizing: border-box;         /* Opera/IE 8+ */
-}
-.selector .selector-filter label {
-    display: none;
-}
-.selector h2 {
-    font-size: 100%;
-    margin: 0;
-}
-.checkbox label {
-    margin-bottom: -20px;
-}
-fieldset.collapse {
-    height: inherit;
-}
-.add-row {
-    margin-bottom: 20px;
-}
-legend a:hover {
-    text-decoration: none;
-}
-
-.wide label {
-    width: auto !important;
-}
-</style>
-
 {% endcompress %}
+
 
 
 
@@ -81,7 +23,6 @@ legend a:hover {
 {% compress js %}
 <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
 
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>

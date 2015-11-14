@@ -1,13 +1,73 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
 {% load admin_static bootstrapped_goodies_tags %}
+{% load compress %}
 
-{% block title %}{% render_with_template_if_exist cl.opts.app_label|lower|add:"/admin_app_name.html" cl.opts.app_label|default:"Django administration" %} | {% trans 'Django site admin' %}{% endblock %}
+{% compress css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.ui.css" type="text/css">
+<link href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+<link type="text/css" href="{{ STATIC_URL }}css/signalbox.css" rel="stylesheet">
+<link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
+{% endcompress %}
+
+
+
+<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+
+<script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/tab_anchor_setter.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/mousetrap.min.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}audiojs/audio.min.js"></script>
+
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function() {
+        $('input[type="submit"]').addClass('btn');
+    });
+}(jQuery));
+</script>
+
+
+
+
+
 
 {% block branding %}
-<a class="brand" href="{% url 'admin:index' %}">{% trans 'Signalbox' %}</a>
+<a class="navbar-brand" href="{% url 'admin:index' %}">{% trans 'Signalbox' %}</a>
 {% endblock %}
 
-{% block nav-global %}{% endblock %}
+{% block nav-global %}
+
+{% load signalbox_tags %}
+
+    <li class="navbar-form">
+      <!-- {% find_participant %} -->
+    </li>
+    
+
+
+	{% if user.is_authenticated %}
+        <li>
+            <a href="/admin"><i class="icon-home icon-white"></i></a>
+        </li>
+        <li><a href="{% url "admin:signalbox_study_changelist" %}">Studies</a></li>
+        <li><a href="{% url "admin:ask_asker_changelist" %}">Questionnaires</a></li>
+	    {% for label, submenu in request.admin_menu%}
+	        <li class="dropdown">
+	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+	            {{label}}
+	            <b class="caret"></b>
+	          </a>
+	          <ul class="dropdown-menu">
+	            {% for item in submenu %}
+	              <li><a href="{{item.1}}">{{item.0}}</a></li>
+	            {% endfor %}
+	          </ul>
+	    {% endfor %}
+        {% endif %}
+    	</li>
+{% endblock %}
+
 
 

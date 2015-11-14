@@ -1,90 +1,93 @@
-{% extends "admin/base.html" %}
+{% extends "admin/change_form.html" %}
 {% load markup %}
 {% load humanize %}
 {% load floppyforms %}
 
-{% block breadcrumbs %}{% endblock %}
 
-{% block content_title %}<span class="brand">{{asker.name}}</span>
 
+{% block content_title %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <a href="#" class="navbar-brand">{{asker.name}}</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block breadcrumbs %}
+{% endblock %}
+
+{% block content %}
+   <div class="container">
     <form action="." method="POST" accept-charset="utf-8">
 
+<div class="row">
+    <div class="col-md-12">
     <a class='btn btn-primary pull-right' style="margin-left:.5em;" href='{% url "preview_asker" asker.id 0 %}'>Preview</a>
 
     <input type="submit" class="btn btn-danger pull-right" style="margin-left:.5em;" value="Save changes"/>
 
     <a class='btn pull-right' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details</a>
-{% endblock %}
+    </div>
+    &nbsp;
+</div>
 
-
-{% block content %}
-    <style>
+<style>
     #id_text {width:98%; font-family:"inconsolata", "menlo", monospace;}
     .scores { font-family:"inconsolata", "menlo", monospace; white-space: pre;}
-    </style>
-    <script>
+</style>
+<script>
     $(document).ready(function() {
         var $abc = $("#id_yaml");
         $abc.css("height", $abc.attr("scrollHeight"));
     })
-    </script>
+</script>
 
 {%if form %}
-    <div class="container">
+  <div class="row">
+      {% csrf_token %}
 
-    <div class="navbar navbar-fixed-top navbar-inverse">
-
-        <div class="container" >
-        <div class="navbar-header" id="topbar">
-
-     </div>
-     <div id="fader">
+    <div class="col-md-7">
+        {% if form.errors %}
+            {% for e in form.non_field_errors %}
+                <div class="alert warning">{{e}}</div>
+            {% endfor %}
+        {% endif %}
+        {% if not form.locked %}{{form.text}}
+        {% else %}
+        <div class="alert">Locked for editing because Replies have already been made <a class="btn" href="{% url "admin:signalbox_reply_changelist" %}?asker={{asker.id}}">Delete previous replies</a>
+        </div>
+        <p><pre>{{form.fields.text.initial|markdown}}</pre>
+        {% endif %}
     </div>
- </div>
-     </div>
 
-<div class="row">
 
-        {% csrf_token %}
 
-<div class="span7">
-    {% if form.errors %}
-        {% for e in form.non_field_errors %}
-            <div class="alert warning">{{e}}</div>
+    <div class="col-md-5">
+    {% for i in asker.askpage_set.all %}
+
+        <div class="control-group">
+        <h4>{{i.step_name}}</h4>
+        </div>
+
+        {% for j in i.get_questions %}
+            <div >
+                <code><a href="{% url "admin:ask_question_change" j.id %}">#{{j.variable_name}}</a>{% if j.required %}*{% endif %}</code> {% if j.extra_attrs.if %}if {{j.extra_attrs.if}}{% endif %} <span class="muted pull-right">({{j.q_type}})</span>
+            <p>{{j.text}}</p>
+            <div class="scores">
+            {% if j.choiceset %}{{j.choiceset.choices_as_string}}{% endif %}
+            {% if j.scoresheet %}
+            {{j.scoresheet.as_markdown}}{% endif %}
+            </div>
+
+            </div>
+            <hr>
         {% endfor %}
-    {% endif %}
-    {% if not form.locked %}{{form.text}}
-    {% else %}
-    <div class="alert">Locked for editing because Replies have already been made <a class="btn" href="{% url "admin:signalbox_reply_changelist" %}?asker={{asker.id}}">Delete previous replies</a>
+    {% endfor %}
     </div>
-    <p><pre>{{form.fields.text.initial|markdown}}</pre>
-    {% endif %}
-</div>
-
-<div class="span5">
-{% for i in asker.askpage_set.all %}
-
-<div class="control-group">
-<h4>{{i.step_name}}</h4>
-</div>
-
-{% for j in i.get_questions %}
-<div >
-    <code><a href="{% url "admin:ask_question_change" j.id %}">#{{j.variable_name}}</a>{% if j.required %}*{% endif %}</code> {% if j.extra_attrs.if %}if {{j.extra_attrs.if}}{% endif %} <span class="muted pull-right">({{j.q_type}})</span>
-<p>{{j.text}}</p>
-<div class="scores">
-{% if j.choiceset %}{{j.choiceset.choices_as_string}}{% endif %}
-{% if j.scoresheet %}
-{{j.scoresheet.as_markdown}}{% endif %}
-</div>
-
-</div>
-<hr>
-{% endfor %}
-{% endfor %}
-</div>
-
-</div>
 </div>
 </form>
 
@@ -102,5 +105,5 @@
 
 {% endif %}
 
-
+</div>
 {% endblock %}

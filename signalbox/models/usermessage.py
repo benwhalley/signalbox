@@ -53,7 +53,7 @@ class UserMessage(models.Model):
     message_to = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="to",
         verbose_name="To", blank=False)
     message_from = models.ForeignKey(settings.AUTH_USER_MODEL, blank=False,
-        null=False, related_name="from")
+        null=False, related_name="from+")
     subject = models.CharField(blank=True, null=True, max_length=200)
     message = models.TextField(blank=True)
     state = FSMField(default='pending')

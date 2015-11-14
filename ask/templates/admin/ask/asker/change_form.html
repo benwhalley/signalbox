@@ -1,4 +1,4 @@
-{% extends "signalbox:admin/change_form.html" %}
+{% extends "admin/change_form.html" %}
 {% load compress %}
 {% load signalbox_tags %}
 {% block object-tools-items %}
@@ -23,11 +23,11 @@
 	    <a class='btn btn-mini' href='{% url 'export_asker' object_id %}'>Export JSON</a>
 
             {% anonymous_asker_url original as anonurl %}
-                <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini btn-primary' >Copy anonymous URL</a>
-               <a class='btn btn-mini btn-success' href='{{original.get_absolute_url}}'>Preview</a>
+                <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini' >Copy anonymous URL</a>
+               <a class='btn btn-mini btn-primary' href='{{original.get_absolute_url}}'>Preview</a>
 
                {% if user.is_superuser %}
-                 <a class='btn btn-mini btn-warning' href='{% url 'edit_asker_as_text' object_id %}'>Edit in text format</a>
+                 <a class='btn btn-mini btn-success' href='{% url 'edit_asker_as_text' object_id %}'>Edit in text format</a>
                {% endif %}
 	{% endif %}
 

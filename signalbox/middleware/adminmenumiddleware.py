@@ -8,7 +8,6 @@ from django.contrib import messages
 
 TASKS = (
     ('export', (('Export data'), reverse('export_data'))),
-
     ('add_participant', (('New partcipant'), reverse('new_participant'))),
     ('add_staff', (('New staff member'), reverse('admin:auth_user_add'))),
 )
@@ -22,7 +21,7 @@ REPORTS = (
 )
 
 if settings.USE_VERSIONING:
-    REPORTS = REPORTS + ('view history', ('View revision history', reverse('check_history')))
+    REPORTS = REPORTS + (('view history', (('View revision history'), reverse('check_history'))), )
 
 ADMIN_MENU = (('Tasks', TASKS), ('Reports', REPORTS))
 

@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Count
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.template import Context, loader
 from signalbox.models import Reply, Answer
 from signalbox.models.validators import is_24_hour, only_includes_allowed_fields
@@ -79,12 +79,12 @@ class Study(models.Model):
     twilio_number = models.ForeignKey('twiliobox.TwilioNumber', blank=True, null=True)
 
     ad_hoc_askers = models.ManyToManyField(
-        'ask.Asker', blank=True, null=True,
+        'ask.Asker', blank=True,
         help_text="""Questionnaires which can be completed ad-hoc.""",
         verbose_name="Questionnaires available ad-hoc")
 
     ad_hoc_scripts = models.ManyToManyField(
-        'signalbox.Script', blank=True, null=True,
+        'signalbox.Script', blank=True,
         help_text="""Scripts which can be initiated by users on an ad-hoc basis.
         IMPORTANT. Scripts selected here will appear on the 'add extra data' tab
         of participants' profile pages, and will display the name of the study,
@@ -94,7 +94,7 @@ class Study(models.Model):
         verbose_name="""scripts allowed on an ad-hoc basis""")
 
     createifs = models.ManyToManyField(
-        'signalbox.ObservationCreator', null=True, blank=True,
+        'signalbox.ObservationCreator', blank=True,
         help_text="""Rules by which new observations might be made in response
         to participant answers.""", verbose_name="""Rules to create new
         observations based on user responses""")
@@ -218,7 +218,7 @@ class Study(models.Model):
         return list(set(questions))
 
     def observations_with_duplicate_replies(self):
-        Observation = get_model('signalbox', 'Observation')
+        Observation = apps.get_model('signalbox', 'Observation')
         obs = Observation.objects.filter(dyad__study=self)
         dupes = obs.annotate(
             num_replies=Count('reply')).filter(num_replies__gt=1)
@@ -231,7 +231,7 @@ class Study(models.Model):
         return unresolved
 
     def observations(self):
-        Observation = get_model('signalbox', 'Observation')
+        Observation = apps.get_model('signalbox', 'Observation')
         return Observation.objects.filter(dyad__study=self)
 
     class Meta:
@@ -284,7 +284,7 @@ class StudyCondition(models.Model):
         condition in an experimental session without breaking a blind.""", )
     weight = models.IntegerField(default=1,
                                  help_text="""Relative weights to allocate users to conditions""")
-    scripts = models.ManyToManyField('signalbox.Script', blank=True, null=True)
+    scripts = models.ManyToManyField('signalbox.Script', blank=True)
     metadata = YAMLField(blank=True, null=True, 
         help_text="""YAML meta data available describing this condition. Can be used on Questionnaires, 
         e.g. to conditionally display questions.""")

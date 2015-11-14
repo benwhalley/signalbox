@@ -46,7 +46,7 @@
 
             <td>
                 {% if i.can_add_answers %}
-                <a class="btn  btn-mini btn-success" href="{% url 'start_double_entry' i.token %}">Add data</a>
+                <a class="btn  btn-mini btn-primary" href="{% url 'start_double_entry' i.token %}">Add data</a>
                 {% endif %}
 
                 {% if i.script_type.sends_message_to_user %}

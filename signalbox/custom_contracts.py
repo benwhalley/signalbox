@@ -1,5 +1,4 @@
 from contracts import contract, new_contract
-from django.db.models.loading import get_model
 import signalbox
 import ask
 import django

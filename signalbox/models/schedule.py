@@ -221,7 +221,7 @@ class Script(models.Model):
 
     script_type = models.ForeignKey('signalbox.ScriptType',
         help_text="""IMPORTANT: This type attribute determines the
-        interpretation of some fields below.""")
+        interpretation of some fields below.""", blank=False, null=False)
 
     asker = models.ForeignKey('ask.Asker', blank=True, null=True,
         help_text="""Survey which the participant will complete for the
@@ -492,10 +492,12 @@ will not result in an error, but won't produce any output either. """))
                 raise ValidationError("The last question of a telephone call needs to be a 'hangup' type (currently {})".format(last_q.q_type))
 
 
-        if self and self.script_type and self.script_type.name == "TwilioSMS":
-            if len(self.script_body) > 160:
+        try:
+            if len(self.script_body) > 160 and self.script_type.name == "TwilioSMS":
                 raise ValidationError(
                     "Messages must be < 160 characters long.")
+        except AttributeError:
+            raise
 
     def __unicode__(self):
         return u'(%s) %s' % (self.reference, self.name)

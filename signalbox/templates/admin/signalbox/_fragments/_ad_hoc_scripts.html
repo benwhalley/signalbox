@@ -4,14 +4,11 @@
 {% ad_hoc_scripts participant as ad_hoc %}
 
 {% if ad_hoc %}
-
-
 {% for m, scripts, askers in ad_hoc %}
     {% if scripts %}
         <table class="table table-hover">
         {% for i in scripts %}
         <tr>
-
             <td width="30%">
                 {% if m.relates_to.user %}
                     <span class="badge badge-info">{{m.relates_to.user}}</span>
@@ -23,7 +20,7 @@
                 This questionnaire will take approximately {{i.asker.approximate_time_to_complete}} minutes
                 {% endif %}
             </td>
-            <td width=1%><a class="btn btn-primary" href="{% url 'use_ad_hoc_script' m.id i.id %}">Start</a>
+            <td width=1%><a class="btn btn-primary" href="{% url 'use_ad_hoc_script' m.id i.id %}">Add data</a>
             </td>
         </tr>
         {% endfor %}
@@ -34,20 +31,23 @@
         <table class="table table-hover">
         {% for i in askers %}
         <tr>
-
            <td width="30%">
                 {% if m.relates_to.user %}
                     <span class="badge badge-info">{{m.relates_to.user}}</span>
                 {% endif %}
-                <h4>{{i.name}}</h4>
+                <p>{{i.name}}</p>
                 </td>
+                
                 <td>
+                
+                <p>
                 Part of  "{{m.study}}".
                 {% if i.asker %}
                 This questionnaire will take approximately {{i.asker.approximate_time_to_complete}} minutes
                 {% endif %}
+                </p>
             </td>
-            <td width=1%><a class="btn btn-primary" href="{% url 'use_adhoc_asker' m.id i.id %}">Start</a>
+            <td width=1%><a class="btn btn-mini btn-primary" href="{% url 'use_adhoc_asker' m.id i.id %}">Add data</a>
             </td>
         </tr>
         {% endfor %}

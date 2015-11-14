@@ -1,4 +1,11 @@
 from stats import stats
+from django.contrib import messages
+
+MESSAGE_TAGS = {
+            messages.SUCCESS: 'alert-success success',
+            messages.WARNING: 'alert-warning warning',
+            messages.ERROR: 'alert-danger error'
+}
 
 SCORESHEET_FUNCTION_NAMES = "sum mean min max stdev median".split(" ")
 
@@ -105,11 +112,14 @@ for example `{% if scores.<scoresheetname>.score %}Show something else
 </div>"""
 
 
+
+#  TODO XXX FIXME see
+# http://django-reversion.readthedocs.org/en/latest/api.html
+
 from django.conf import settings
 if settings.USE_VERSIONING:
-    from reversion import revision
-    import reversion
-    create_revision = reversion.create_revision
+    from reversion import revisions
+    create_revision = lambda x: None #revisions.create_revision
 else:
-    create_revision = lambda: None
+    create_revision = lambda x: None
 

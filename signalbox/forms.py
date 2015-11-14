@@ -6,7 +6,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import messages
 
-from django.contrib.formtools.wizard.views import CookieWizardView
+from formtools.wizard.views import CookieWizardView
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q

@@ -153,7 +153,7 @@ urlpatterns = urlpatterns + patterns('',
     url(r'^profile/membership/(?P<pk>\d+)$',
         MembershipDetail.as_view(), {}, name='membership_home', ),
 
-    url(r'^accounts/profile/$', RedirectView.as_view(url='/profile/')),
+    url(r'^accounts/profile/$', RedirectView.as_view(url='/profile/', permanent=True)),
     url(r'^profile/?$', user_homepage, name='user_homepage'),
 
     url(r'^logout/?$', logout, {'next_page': '/'}, name='logout'),

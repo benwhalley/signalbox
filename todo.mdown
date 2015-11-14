@@ -1,11 +1,28 @@
+- versioing now broken with django 1.8
+
+- fix datepicker in dateshift template
+
+- add dashboard for recently completed anonymous questionnaires. 
+
+- check that varname + option is not > 32 chars for checkbox questions to avoid problems in Stata later
+- sort replies by number of answers when resolving, and make columns rather than repeating sideways
+
 - fix study images to aws or in db
 - fixtures for basic study
 
+- add http://chancejs.com/chance.min.js??
 
+- fix stata output of checkbox fields
+- integrate changes to date formatting from RF live
+- fix stata output of date fields
+
+
+- fix codebook page - column showng question visibility is incrrect see json storage of conditionality
 
 
 - Allow export of callables on models – e.g is_preferred_reply
-which I've added manually on the reframed2 codebase
+which I've added manually on the reframed2 codebase - perhaps use django-rest-framework for
+serialisation of this.
 
 
 

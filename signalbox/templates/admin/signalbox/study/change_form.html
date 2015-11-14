@@ -1,4 +1,4 @@
-{% extends "signalbox:admin/change_form.html" %}
+{% extends "admin/change_form.html" %}
 {% load humanize%}
 
 
@@ -8,8 +8,9 @@ Study Dashboard: {{original.name}}
 {% endblock %}
 
 {% block content_title %}
-<a class="brand">Change Study: <strong>{{original.name}}</strong>
+<a class="navbar-brand">Change Study: <strong>{{original.name}}</strong>
 {% endblock %}
+
 
 {% endif %}
 
@@ -32,7 +33,7 @@ Study Dashboard: {{original.name}}
     {% if original %}
         <div class="tab-pane active" id="tabsummary">
             <div class=row>
-                <div class="span8">
+                <div class="col-md-8">
 
                     <h4>Study participants</h4>
 
@@ -105,8 +106,8 @@ Study Dashboard: {{original.name}}
 
 
 
-                    <h4 class="span8">Extra data collection</h4>
-                    <div class="well span8">
+                    <h4 class="col-md-8">Extra data collection</h4>
+                    <div class="well col-md-8">
                         <p>Questionnaires available to participants for ad-hoc use:</p>
                         {% if original.ad_hoc_askers.all %}
                         <ul>
@@ -143,7 +144,7 @@ Study Dashboard: {{original.name}}
 
                 </div>
 
-                <div class="span4">
+                <div class="col-md-4">
                     <h4>Study settings</h4>
                     <table>
                         <tr><td>slug: <code>{{original.slug}}</code></td></tr>

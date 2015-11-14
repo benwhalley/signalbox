@@ -6,7 +6,6 @@ import phonenumbers
 from django.db import models
 from django import forms
 from django.conf import settings
-from south.modelsinspector import add_introspection_rules
 from phonenumbers import PhoneNumber
 from phonenumbers.phonenumberutil import NumberParseException
 
@@ -105,4 +104,3 @@ class PhoneNumberField(models.Field):
             return self.get_default()
 
 
-add_introspection_rules([], ["^signalbox\.phone_field\.PhoneNumberField"])

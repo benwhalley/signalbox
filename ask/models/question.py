@@ -9,13 +9,11 @@ from django import http
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.loading import get_model
 from django.forms.models import model_to_dict
 from django.template import Context, Template
 from django.template.loader import get_template
 
 import fields
-from jsonfield import JSONField
 import markdown
 
 from signalbox.exceptions import DataProtectionException

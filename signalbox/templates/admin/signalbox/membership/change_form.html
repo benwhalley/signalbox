@@ -1,28 +1,10 @@
-{% extends "signalbox:admin/change_form.html" %}
+{% extends "admin/change_form.html" %}
 
 
-{% block content_title %}
-<a class="brand">Editing: {{original}}</a>
-{% endblock%}
-
-{% block breadcrumbs %}
-
-{% if original %}
-<ul class="breadcrumb">
-
-    <li>
-        Participant: <a class='' href='{% url "participant_overview" original.user.id %}'>{{original.user.username}}</a>
-        <span class="divider">/</span>
-    </li>
-    <li>
-        Membership of: <a href="{% url "admin:signalbox_study_change" original.study.pk %}">{{original.study}}</a>
-    </li>
-
-
-</ul>
-{% endif %}
+{% block navbar %}
 
 {% endblock%}
+
 
 
 
@@ -53,24 +35,20 @@
     <li class="{%if not original %}active{% else %}{% if not hasobs %}active{%endif%} {% endif %}">
         <a href="#tabmain" data-toggle="tab">Edit details</a>
     </li>
-
+    {% if original %}
+        <a class='btn btn-default pull-right' href='{% url 'dateshift_membership' object_id %}'>Shift observation times</a>
+        {% endif %}
 </ul>
 
 
 <div class="tab-content">
 
 <div class="tab-pane {% if hasobs %}active{% endif %}" id="tabobs">
-        {% if original %}
-        <a class='btn' href='{% url 'dateshift_membership' object_id %}'>Shift observation times</a>
-        <hr>
-        {% endif %}
-
-        <p>Observations created as part of this membership:</p>
+        <h4>Observations created as part of this membership:</h4>
         <table class="table">
 
             <thead>
                 <tr>
-                    <th></th>
                     <th>Due</th>
                     <th>Label</th>
                     <th>Type</th>
@@ -83,8 +61,7 @@
             <tbody>
                 {% for i in original.observation_set.all %}
                 <tr>
-                    <td><a class="btn btn-mini" href="{% url 'admin:signalbox_observation_change' i.id %}">Edit</a></td>
-                    <td >{{i.due}}</td>
+                    <td><a href="{% url 'admin:signalbox_observation_change' i.id %}">{{i.due}}</a></td>
                     <td>{{i.label}}</td>
                     <td>{{i.script_type}}</td>
                     <td><span class="badge
@@ -97,11 +74,11 @@
 
                     <td>
                         {% if i.can_add_answers %}
-                        <a class="btn  btn-mini btn-primary" href="{% url 'start_double_entry' i.token %}">Add data</a>
+                        <a class="btn btn-sm btn-primary" href="{% url 'start_double_entry' i.token %}">Add data</a>
                         {% endif %}
 
                         {% if i.script_type.sends_message_to_user %}
-                        <a class='btn btn-mini {% if i.attempt_count == 0 %}btn-danger{%else%}btn-warning{% endif %}' href='{% url 'resend_observation_signal' i.id %}'>
+                        <a class='btn btn-sm {% if i.attempt_count == 0 %}btn-danger{%else%}btn-warning{% endif %}' href='{% url 'resend_observation_signal' i.id %}'>
                             {% if i.attempt_count == 0 %}
                             <i class="icon-share-alt"></i>Send early
                             {% else %}

@@ -4,7 +4,7 @@
 {% load markup humanize %}
 
 {% block content_title %}
-<a class="brand">Observations for
+<a class="navbar-brand">Observations for
         <strong>{% if form.cleaned_data.participant %}{{form.cleaned_data.participant.username}}{% else %}Everyone{% endif%}</strong></a>
 {% endblock %}
 

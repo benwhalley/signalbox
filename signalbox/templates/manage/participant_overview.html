@@ -3,18 +3,16 @@
 {% load signalbox_tags %}
 {% load markup humanize %}
 
-
 {% block content_title %}
-<a class="brand">Overview of: {{participant.display_name}} {{participant.username}}</a>
-<a class="btn pull-right" href="{% url 'edit_participant' participant.id %}"> Edit user details</a>
+<a class="navbar-brand">Overview of: {{participant.display_name}} {{participant.username}}</a>
 {% endblock %}
 
 
 {% block content %}
-
+<div class="container">
 <div class="row">
     {% with participant.tasklist_observations|length as l %}
-    <div class="tabbable span12"> <!-- Only required for left/right tabs -->
+    <div class="tabbable col-md-12"> <!-- Only required for left/right tabs -->
       <ul class="nav nav-tabs" id="usertabs">
 
         {% ad_hoc_scripts participant as ad_hoc %}
@@ -34,6 +32,8 @@
         <li><a href="#tabmessages" data-toggle="tab">Messages</a></li>
         <li><a href="#tabcontactlog" data-toggle="tab">Contact Log</a></li>
         <li><a href="#tabreplies" data-toggle="tab">Observations & Replies</a></li>
+        <a class="btn pull-right" href="{% url 'edit_participant' participant.id %}"> Edit user details</a>
+
       </ul>
 
       <div class="tab-content">
@@ -52,6 +52,7 @@
 
 
         <div class="tab-pane {%if not l%}active{%endif%}" id="tabextradata">
+            <h3>Add extra data on behalf of this user</h3>
             {% include "admin/signalbox/_fragments/_ad_hoc_scripts.html" %}
         </div>
 
@@ -70,7 +71,7 @@
       </div>
     </div>
     {% endwith %}
+  </div>
 </div>
-
 {% endblock %}
 
