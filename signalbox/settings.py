@@ -1,11 +1,6 @@
 from stats import stats
-from django.contrib import messages
 
-MESSAGE_TAGS = {
-            messages.SUCCESS: 'alert-success success',
-            messages.WARNING: 'alert-warning warning',
-            messages.ERROR: 'alert-danger error'
-}
+
 
 SCORESHEET_FUNCTION_NAMES = "sum mean min max stdev median".split(" ")
 
