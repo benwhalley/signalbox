@@ -20,7 +20,10 @@
 
 	    <a class='btn btn-mini' href='{% url 'print_asker' object_id %}'>Print</a>
 	    <a class='btn btn-mini' href='{% url 'show_codebook' object_id %}'>Codebook</a>
-	    <a class='btn btn-mini' href='{% url 'export_asker' object_id %}'>Export JSON</a>
+	    {% if user.is_superuser %}
+            <a class='btn btn-mini' href='{% url 'export_asker' object_id %}'>Export JSON</a>
+        {% endif %}
+        
 
             {% anonymous_asker_url original as anonurl %}
                 <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini' >Copy anonymous URL</a>
