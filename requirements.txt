@@ -15,9 +15,9 @@ django-localflavor==1.0
 django-phonenumber-field>=0.2a3
 django-reversion==1.9.3
 django-sekizai==0.8.2
-django-selectable==0.8
+django-selectable==0.9
 django-shortuuidfield>=0.1.2
-django-tastypie==0.9.15
+django-tastypie==0.12.2
 django-yamlfield>=0.5
 envoy==0.0.3
 parsedatetime==1.1.2
@@ -36,3 +36,5 @@ babel==1.3
 django-menus==1.1.2
 django-formtools==1.0
 django-mathfilters==0.3.0
+djangorestframework
+django-debug-toolbar
