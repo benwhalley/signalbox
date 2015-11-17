@@ -12,7 +12,7 @@ from django.db import models
 from django.forms.models import model_to_dict
 from django.template import Context, Template
 from django.template.loader import get_template
-
+from collections import defaultdict
 import fields
 import markdown
 
@@ -177,7 +177,8 @@ class Question(models.Model):
         """
 
 
-        templ_header = r"""{% load humanize %}"""  # include these templatetags in render context
+        templ_header = r"""{% load humanize %}{% load mathfilters %}"""  # include these templatetags
+        # in render context
         templ = Template(templ_header + self.text)
         context = {
             'reply': reply,
@@ -185,7 +186,7 @@ class Question(models.Model):
             'user': supergetattr(reply, 'observation.dyad.user', default=None),
             'page': self.page,
             'scores': {},
-            'answers': {},
+            'answers': defaultdict(None),
             'answers_label': {}
         }
 
