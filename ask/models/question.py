@@ -201,8 +201,11 @@ class Question(models.Model):
 
         for i in self.questionasset_set.all():
             context[i.slug] = unicode(i)
-
-        return markdown.markdown(templ.render(Context(context)))
+        from django.template.base import VariableDoesNotExist
+        try:
+            return markdown.markdown(templ.render(Context(context)))
+        except VariableDoesNotExist:
+            return markdown.markdown(self.text)
 
     q_type = models.CharField(choices=[(i, i) for i in FIELD_NAMES],
         blank=False, max_length=100, default="instruction")
