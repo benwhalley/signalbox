@@ -16,6 +16,9 @@
 {% if original %}
 <ul class="breadcrumb">
 
+    {% if original.asker %}
+        In response to: <a href="{% url 'admin:ask_asker_change' original.asker.id %}">{{original.asker}}</a>
+    {% endif %}
     {% if original.observation.dyad.user %}
     <li>
         <a class='' href='{% url "participant_overview" original.observation.dyad.user.id %}'>{{original.observation.dyad.user.username}}</a>
