@@ -39,7 +39,7 @@
             <td>
                 <div class="" id="lab_{{a.id}}">
                     {%if a.question.text%}
-                        <pre>{{a.question.text|capfirst}}</pre>
+                        <pre style="white-space:pre-wrap;">{{a.question.text|capfirst}}</pre>
                     {% endif %}
 
                     <span class="hide" id="choices_{{a.id}}">
