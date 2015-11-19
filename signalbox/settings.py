@@ -13,13 +13,9 @@ SCORESHEET_FUNCTION_LOOKUP = {
     'median': lambda x: round(stats.lmedian(x), 0),
 }
 
-DATE_INPUT_FORMATS = ('%Y-%m-%d', '%d/%m/%Y', '%d-%m-%Y', '%b %d %Y',
-                      '%b %d, %Y', '%d %b %Y', '%d %b, %Y', '%B %d %Y',
-                      '%B %d, %Y', '%d %B %Y', '%d %B, %Y')
+DATE_INPUT_FORMATS = ('%d/%m/%Y', )
 
-DATETIME_INPUT_FORMATS = ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M', '%Y-%m-%d',
-                          '%d/%m/%Y %H:%M:%S', '%d/%m/%Y %H:%M', '%d/%m/%Y',
-                          '%d/%m/%y %H:%M:%S', '%d/%m/%y %H:%M', '%d/%m/%y')
+DATETIME_INPUT_FORMATS = ('%d/%m/%Y %H:%M', )
 
 
 # SIGNALBOX

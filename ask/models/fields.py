@@ -345,6 +345,7 @@ class DateTime(SignalboxField, floppyforms.DateTimeField):
     """Presents an html datetime-picker object. Degrades to text input."""
 
     widget = floppyforms.widgets.TextInput
+    input_formats = settings.DATETIME_INPUT_FORMATS
     has_choices = False
     extra_attrs = {'attrs': {'class': 'datetimepicker'}}
 
