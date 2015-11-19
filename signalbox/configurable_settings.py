@@ -9,6 +9,17 @@ from twilio.exceptions import TwilioException
 from twilio.rest import TwilioRestClient
 
 
+
+# String of space separated email addresses to be sent notifications when 
+DATA_ADMINS = get_env_variable("DATA_ADMINS", default="", required=False).split()
+
+
+# Disable pycontracts in production for performance reasons.
+CONTRACTS_ENABLED = get_env_variable('CONTRACTS_ENABLED', default=False)
+if not CONTRACTS_ENABLED:
+    contracts.disable_all()
+
+
 #### VERSIONING ###
 
 # Determines whether the Reversion machinery is employed to keep logs

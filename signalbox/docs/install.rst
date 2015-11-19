@@ -101,6 +101,13 @@ Signalbox can use ``django_reversion`` to keep track of changes to Answer, Reply
 
 
 
+Performance and Caching
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+We strongly recommend you use [django-cachalot](http://django-cachalot.readthedocs.org/en/latest/). Many views are currently not optimised to minimise the number of database queries, and without caching performance will be poor.
+
+In addition, ensuring the environment variable `CONTRACTS_ENABLED` is `0` is necessary in production (this is the default) to turn of pycontracts checking.
+
 
 
 
