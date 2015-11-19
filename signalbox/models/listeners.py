@@ -7,21 +7,27 @@ observations and allocating memberships to StudyConditions automatically, if
 required by the Study. See https://docs.djangoproject.com/en/dev/topics/signals/
 
 """
-import sys
+from functools import wraps
 import itertools
-from django.db.models import Q
-from django.dispatch import receiver, Signal
-from django.conf import settings
-from django.db.models.signals import post_save, pre_save
-from django.contrib.auth.models import User
-from registration.signals import user_registered
+import logging
+import sys
+import traceback
 
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
+from django.db.models import Q
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver, Signal
+from registration.signals import user_registered
 from signalbox.allocation import allocate
-from signalbox.models import Reply, Observation, Membership, UserProfile, \
-    TextMessageCallback, Alert, AlertInstance
+from signalbox.models import (Reply, Observation, Membership, 
+    UserProfile, TextMessageCallback, Alert, AlertInstance)
+from signalbox.signals import sbox_anonymous_reply_complete
 from signalbox.utils import execute_the_todo_list
 
-from functools import wraps
+logger = logging.getLogger(__name__)
 
 
 def disable_for_loaddata(signal_handler):
@@ -138,3 +144,18 @@ def allocate_new_membership(sender, created, instance, **kwargs):
         # tests awkward (we can't test the intermediate states of some functions.)
         if not settings.TESTING:
             execute_the_todo_list()
+
+
+@receiver(sbox_anonymous_reply_complete, sender=Reply)
+def send_email_after_anonymous_asker(sender, **kwargs):
+    reply = kwargs.get('reply')
+    request = kwargs.get('request')
+    subject = "Signalbox: Anonymous reply made to {}".format(reply.asker)
+    url = request.build_absolute_uri(reverse('admin:signalbox_reply_change', args=(reply.id,)))
+    body = """Anonymous reply made to {} at {}. {}""".format(reply.asker, reply.last_submit, url)
+    try:
+        send_mail(subject, body, "no-reply@thesignalbox.net", settings.DATA_ADMINS, fail_silently=False)
+    except SMPTException:
+        logger.error("Could not send email\n"+traceback.format_exc())
+
+

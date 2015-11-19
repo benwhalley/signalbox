@@ -90,6 +90,19 @@ Others are listed below for reference.
 
 
 
+Notifications
+~~~~~~~~~~~~~~~~~
+
+::
+	DATA_ADMINS
+
+A string of space-separated email addresses to be sent notifications when anonymous questionnaires
+are completed.
+
+
+
+
+
 Version control
 ~~~~~~~~~~~~~~~~~
 
@@ -104,7 +117,11 @@ Signalbox can use ``django_reversion`` to keep track of changes to Answer, Reply
 Performance and Caching
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-We strongly recommend you use [django-cachalot](http://django-cachalot.readthedocs.org/en/latest/). Many views are currently not optimised to minimise the number of database queries, and without caching performance will be poor.
+We strongly recommend you use [django-cachalot](http://django-cachalot.readthedocs.org/en/latest/) in your porject (i.e. as an INSTALLED_APPLICATION). Many views are currently not optimised to minimise the number of database queries, and without caching performance will be poor.
+
+
+::
+	CONTRACTS_ENABLED
 
 In addition, ensuring the environment variable `CONTRACTS_ENABLED` is `0` is necessary in production (this is the default) to turn of pycontracts checking.
 

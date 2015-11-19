@@ -16,6 +16,7 @@ from signalbox.models.scoresheet import ScoreSheet
 from signalbox.utilities.linkedinline import admin_edit_url
 from answer import Answer
 from signalbox.process import Step, ProcessManager
+from signalbox.signals import sbox_anonymous_reply_complete
 from signalbox.utilities.djangobits import supergetattr
 from signalbox.utilities.mixins import TimeStampedModel
 
@@ -241,6 +242,12 @@ class Reply(models.Model, ProcessManager):
 
         self.complete = True
         self.save()
+        sbox_anonymous_reply_complete.send(
+            sender=self.__class__, 
+            reply=self,  
+            request=request,
+            dispatch_uid="reply_finished")
+
 
     class Meta():
         app_label = 'signalbox'
