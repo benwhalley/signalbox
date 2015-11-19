@@ -1,9 +1,11 @@
 import os
 import sys
-from django.core.exceptions import ImproperlyConfigured
+
+import contracts
 import dj_database_url
-import shortuuid
 from django.contrib import messages
+from django.core.exceptions import ImproperlyConfigured
+import shortuuid
 from signalbox.utilities.get_env_variable import get_env_variable
 from twilio.exceptions import TwilioException
 from twilio.rest import TwilioRestClient
