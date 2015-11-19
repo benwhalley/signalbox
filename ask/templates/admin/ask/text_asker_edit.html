@@ -1,4 +1,6 @@
 {% extends "admin/change_form.html" %}
+{% load compress %}
+{% load signalbox_tags %}
 {% load markup %}
 {% load humanize %}
 {% load floppyforms %}
@@ -22,29 +24,59 @@
 
 {% block content %}
    <div class="container">
-    <form action="." method="POST" accept-charset="utf-8">
+    <form id="syntax_form" action="." method="POST" accept-charset="utf-8">
 
 <div class="row">
     <div class="col-md-12">
-    <a class='btn btn-primary pull-right' style="margin-left:.5em;" href='{% url "preview_asker" asker.id 0 %}'>Preview</a>
+    
+    <a class='btn btn-mini' href='{% url 'print_asker' asker.id %}'>Print</a>
+    <a class='btn btn-mini' href='{% url 'show_codebook' asker.id %}'>Codebook</a>
+    {% if user.is_superuser %}
+        <a class='btn btn-mini' href='{% url 'export_asker' asker.id %}'>Export JSON</a>
+    {% endif %}
+    
+    {% anonymous_asker_url asker as anonurl %}
+    <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini'>Copy anonymous URL</a>
 
-    <input type="submit" class="btn btn-danger pull-right" style="margin-left:.5em;" value="Save changes"/>
+    <a class='btn btn-mini btn-success' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details  (&#8984;E)</a>
+    
 
-    <a class='btn pull-right' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details</a>
+    <a class='btn btn-mini btn-primary' href='{{original.get_absolute_url}}'>Preview</a>
+
+
+    <input type="submit" class="btn btn-danger pull-right" style="margin-left:.5em;" value="Save changes  (&#8984;S)"/>
+
+    <br><br>
     </div>
-    &nbsp;
 </div>
 
 <style>
     #id_text {width:98%; font-family:"inconsolata", "menlo", monospace;}
     .scores { font-family:"inconsolata", "menlo", monospace; white-space: pre;}
 </style>
-<script>
-    $(document).ready(function() {
-        var $abc = $("#id_yaml");
-        $abc.css("height", $abc.attr("scrollHeight"));
-    })
-</script>
+
+
+{% compress js %}
+        <script type="text/javascript">
+                $(document).ready(function() {
+                var $abc = $("#id_yaml");
+                $abc.css("height", $abc.attr("scrollHeight"));
+            })
+
+            Mousetrap.bind(['ctrl+return', 'command+return', 'ctrl+s', 'command+s'], function(e) {
+                $('#syntax_form').submit();
+            });
+
+            Mousetrap.bind(['ctrl+e', 'command+e'], function(e) {
+                location = '{% url "admin:ask_asker_change" asker.id %}';
+            });
+
+
+            {% include "js/asker_edit.js" %}
+        </script>
+    {% endcompress %}
+
+
 
 {%if form %}
   <div class="row">

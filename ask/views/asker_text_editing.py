@@ -35,7 +35,7 @@ from ask.views.parse_definitions import block, yaml_header, make_question_dict, 
 class TextEditForm(forms.Form):
 
     text = forms.CharField(required=True,
-        widget=forms.widgets.Textarea(attrs={'rows': 100}))
+        widget=forms.widgets.Textarea(attrs={'rows': 100, 'class': "mousetrap",}))
 
     def __init__(self, *args, **kwargs):
         self.asker = kwargs.pop('asker')

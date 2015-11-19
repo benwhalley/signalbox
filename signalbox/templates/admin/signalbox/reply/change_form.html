@@ -2,7 +2,6 @@
 
 {% block submit_buttons_top %}
     {{block.super}}
-    &nbsp;
     <a class="
     btn btn-warning {% if not request.user.is_superuser %}disabled{%endif%}"
     href={% if request.user.is_superuser %}"{% url 'reassign_reply_to_observation' original.id %}"{%else%}"javascript:window.alert('You do not habve permission to reassign observations.');"{% endif %}>
