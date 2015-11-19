@@ -31,11 +31,12 @@
                 <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini' >Copy anonymous URL</a>
                <a class='btn btn-mini btn-primary' href='{{original.get_absolute_url}}'>Preview</a>
 
-               {% if user.is_superuser %}
+               {% if user.is_superuser and original %}
                  <a class='btn btn-mini btn-success' href='{% url 'edit_asker_as_text' object_id %}'>Edit in text format</a>
                {% endif %}
 	{% endif %}
 
+    {% if original %}
     {% compress js %}
         <script type="text/javascript">
             Mousetrap.bind(['ctrl+e', 'command+e'], function(e) {
@@ -44,6 +45,7 @@
             {% include "js/asker_edit.js" %}
         </script>
     {% endcompress %}
+    {% endif %}
 </div>
 </ul>
 

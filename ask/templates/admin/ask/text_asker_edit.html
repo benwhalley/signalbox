@@ -41,7 +41,7 @@
     <a class='btn btn-mini btn-success' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details  (&#8984;E)</a>
     
 
-    <a class='btn btn-mini btn-primary' href='{{original.get_absolute_url}}'>Preview</a>
+    <a class='btn btn-mini btn-primary' href='{{asker.get_absolute_url}}'>Preview</a>
 
 
     <input type="submit" class="btn btn-danger pull-right" style="margin-left:.5em;" value="Save changes  (&#8984;S)"/>
@@ -69,6 +69,10 @@
 
             Mousetrap.bind(['ctrl+e', 'command+e'], function(e) {
                 location = '{% url "admin:ask_asker_change" asker.id %}';
+            });
+
+            Mousetrap.bind(['ctrl+k', 'command+k'], function(e) {
+                location = '{{asker.get_absolute_url}}';
             });
 
 
