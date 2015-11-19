@@ -412,7 +412,7 @@ class Observation(models.Model):
 
     def can_add_answers(self):
         """Return true if questions can be answered in response to this Observation"""
-        return bool(self.asker or self.created_by_script.external_asker_url)
+        return bool(self.asker or self.created_by_script and self.created_by_script.external_asker_url)
 
     def open_for_data_entry(self, request=None):
         """
