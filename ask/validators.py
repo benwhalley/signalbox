@@ -74,7 +74,7 @@ def illegal_characters(value):
     naughties = ILLEGAL_STATA_CHARS.intersection(set(value))
     if naughties:
         raise ValidationError(
-            "Illegal characters found: %s" % ("".join(illegals), ))
+            "Illegal characters found: %s" % ("".join(naughties), ))
     return value
 
 
