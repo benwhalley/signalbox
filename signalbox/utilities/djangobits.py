@@ -40,7 +40,7 @@ def get_or_modify(klass, lookups, params):
     :type lookups: dict
     :param params: Key value pairs in a dictionary to use to modify found object
     :type params: dict
-    :rtype: tuple(b, bool)
+    :rtype: tuple(b, bool, bool)
 
     Returns
         - a new or modified instance of klass, with params set as specified.
@@ -57,7 +57,7 @@ def get_or_modify(klass, lookups, params):
     modified = any(mods)
     ob.save()
 
-    return ob, modified
+    return ob, created, modified
 
 
 def walk(x, action, format, meta):

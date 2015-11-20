@@ -2,7 +2,6 @@ import re
 import json
 from datetime import datetime
 from django.utils import encoding as en
-from django.contrib import messages
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.template import RequestContext
 from django.shortcuts import render_to_response, get_object_or_404

@@ -80,12 +80,15 @@ class Question(models.Model):
     """Question objects; e.g. mutliple choice, text, etc."""
 
     def check_if_protected(self):
+        if not self.modifiable():
+            raise DataProtectionException("""This question already has
+                answers attached to it and can't be modified.""" )
+
+    def modifiable(self):
         nonpreviewanswercount = self.answer_set.exclude(
             reply__entry_method="preview").count()
         # if we have non-preview answers, don't allow the question to be edited
-        if nonpreviewanswercount:
-            raise DataProtectionException("""This question (%s) already has
-                answers attached to it and can't be modified.""" % self, )
+        return not nonpreviewanswercount
 
     def delete(self, *args, **kwargs):
         # we delete preview answers to this questions to avoid ProtectedErrors
@@ -95,7 +98,6 @@ class Question(models.Model):
         super(Question, self).delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
-        self.check_if_protected()
         super(Question, self).save(*args, **kwargs)
 
     def index(self):

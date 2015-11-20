@@ -6,6 +6,25 @@
 {% load floppyforms %}
 
 
+{% block extrastyle %}{{ block.super }}
+<link href='https://fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
+
+<style type="text/css">
+    .fullheight { height: 100%; }
+    #id_text {
+        width: 100%;
+        border: 1;
+        overflow: scroll;
+        padding: 10px;
+        height:500px;
+        outline: 0;
+        font-family: 'Inconsolata',  monospace;
+    }
+    .scores { font-family: 'Inconsolata', monospace; white-space: pre-wrap; font-size: .8em;}
+</style>
+
+
+{% endblock %}
 
 {% block content_title %}
 <div class="container">
@@ -27,41 +46,107 @@
     <form id="syntax_form" action="." method="POST" accept-charset="utf-8">
 
 <div class="row">
+
     <div class="col-md-12">
     
-    <a class='btn btn-mini' href='{% url 'print_asker' asker.id %}'>Print</a>
-    <a class='btn btn-mini' href='{% url 'show_codebook' asker.id %}'>Codebook</a>
-    {% if user.is_superuser %}
-        <a class='btn btn-mini' href='{% url 'export_asker' asker.id %}'>Export JSON</a>
-    {% endif %}
+    <a class='btn btn-default  btn-mini' href='{% url 'show_codebook' asker.id %}'>Codebook</a>
     
     {% anonymous_asker_url asker as anonurl %}
-    <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini'>Copy anonymous URL</a>
+    <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-default btn-mini'>Copy anonymous URL</a>
 
     <a class='btn btn-mini btn-success' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details  (&#8984;E)</a>
     
 
-    <a class='btn btn-mini btn-primary' href='{{asker.get_absolute_url}}'>Preview</a>
+    <a class='btn btn-mini btn-primary' href='{{asker.get_absolute_url}}'>Preview (&#8984;K)</a>
 
 
-    <input type="submit" class="btn btn-danger pull-right" style="margin-left:.5em;" value="Save changes  (&#8984;S)"/>
+    <input type="submit" class="btn btn-danger" style="margin-left:.5em;" value="Save changes  (&#8984;S)"/>
 
     <br><br>
     </div>
 </div>
 
-<style>
-    #id_text {width:98%; font-family:"inconsolata", "menlo", monospace;}
-    .scores { font-family:"inconsolata", "menlo", monospace; white-space: pre;}
-</style>
 
 
 {% compress js %}
-        <script type="text/javascript">
-                $(document).ready(function() {
-                var $abc = $("#id_yaml");
-                $abc.css("height", $abc.attr("scrollHeight"));
-            })
+    {% if asker.reply_count %}
+    <script type="text/javascript">
+        $.notify({
+            // options
+            message: "WARNING: {{asker.reply_count}} Replies have been made to this questionnaire already. Editing may change the meaning of this previously collected data."
+        }, {
+            // settings
+            element: 'body',
+            type: 'danger',
+            align: 'center',
+
+            delay: 5000
+        });
+    </script>
+    {% endif %}
+    
+
+    <script type="text/javascript">
+        
+        
+        function getCaret(node) {
+          if (node.selectionStart) {
+            return node.selectionStart;
+          } else if (!document.selection) {
+            return 0;
+          }
+
+          var c = "\001",
+              sel = document.selection.createRange(),
+              dul = sel.duplicate(),
+              len = 0;
+
+          dul.moveToElementText(node);
+          sel.text = c;
+          len = dul.text.indexOf(c);
+          sel.moveStart('character',-1);
+          sel.text = "";
+          return len;
+        }
+
+        if (!Array.prototype.last){
+            Array.prototype.last = function(){
+                return this[this.length - 1];
+            };
+        };
+
+
+        $(document).ready(function() {
+            var text = document.getElementById('id_text');
+            var re = /#\w+/g;
+            
+            function findClosest() {
+                // hide everthing to begin
+                $('.questionpreview').hide();
+                
+                // find which quesiton we are near using regex
+                matches = [];
+                while ((match = re.exec(text.value)) != null) {
+                    matches.push({pos: match.index, match: match});
+                }
+                // sort them
+                smatches = _.sortBy(matches, function(o){return o.pos});
+
+                // work out which one is just above the cursor
+                currpos = getCaret(text);
+                prevmatches = _.filter(smatches, function(o){return o.pos < currpos});
+                
+                // if we have a match, show it
+                if (prevmatches.length > 0){
+                    theone = prevmatches.last();
+                    $(theone.match[0]).show();
+                };
+            }
+            
+            $('#id_text').bind("change click keydown focus cut paste drop keypress", 
+                _.debounce(findClosest, 100));
+            
+            findClosest();
 
             Mousetrap.bind(['ctrl+return', 'command+return', 'ctrl+s', 'command+s'], function(e) {
                 $('#syntax_form').submit();
@@ -75,71 +160,74 @@
                 location = '{{asker.get_absolute_url}}';
             });
 
+            $('#showhidebutton').bind('click', function(){
+                $(".questionpreview").show();
+                
+            });
+            
 
-            {% include "js/asker_edit.js" %}
-        </script>
-    {% endcompress %}
+        });
+
+        {% include "js/asker_edit.js" %}
+    </script>
+{% endcompress %}
 
 
 
-{%if form %}
   <div class="row">
       {% csrf_token %}
 
-    <div class="col-md-7">
-        {% if form.errors %}
-            {% for e in form.non_field_errors %}
-                <div class="alert warning">{{e}}</div>
-            {% endfor %}
-        {% endif %}
-        {% if not form.locked %}{{form.text}}
-        {% else %}
-        <div class="alert">Locked for editing because Replies have already been made <a class="btn" href="{% url "admin:signalbox_reply_changelist" %}?asker={{asker.id}}">Delete previous replies</a>
-        </div>
-        <p><pre>{{form.fields.text.initial|markdown}}</pre>
-        {% endif %}
-    </div>
+    <div class="col-md-12">
+        <div class="col-md-8">
+                    {% if form.errors %}
+                        <div class="alert alert-warning">
+                        <ul>
+                        {% for e in form.non_field_errors.as_data %}
+                            {% if e.params.q %}
+                                <li>{{e.params.q}}: {{e.params.e}}</li>
+                            {% else %}
+                                <li>{{e.message}}</li>
+                            {% endif %}
 
+                        {% endfor %}
+                        </ul>
+                    </div>
+                        <!-- {% for e in form.non_field_errors.as_data %}
+                            <div class="alert warning">{{e}}</div>
+                        {% endfor %} -->
+                    {% endif %}
 
-
-    <div class="col-md-5">
-    {% for i in asker.askpage_set.all %}
-
-        <div class="control-group">
-        <h4>{{i.step_name}}</h4>
-        </div>
-
-        {% for j in i.get_questions %}
-            <div >
-                <code><a href="{% url "admin:ask_question_change" j.id %}">#{{j.variable_name}}</a>{% if j.required %}*{% endif %}</code> {% if j.extra_attrs.if %}if {{j.extra_attrs.if}}{% endif %} <span class="muted pull-right">({{j.q_type}})</span>
-            <p>{{j.text}}</p>
-            <div class="scores">
-            {% if j.choiceset %}{{j.choiceset.choices_as_string}}{% endif %}
-            {% if j.scoresheet %}
-            {{j.scoresheet.as_markdown}}{% endif %}
+                    {% if not form.locked %}{{form.text}}
+                    {% else %}
+                    <div class="alert">Locked for editing because Replies have already been made <a class="btn" href="{% url "admin:signalbox_reply_changelist" %}?asker={{asker.id}}">Delete previous replies</a>
+                    </div>
+                    <p><pre>{{form.fields.text.initial|markdown}}</pre></p>
+                    {% endif %}
             </div>
 
+            <div class="col-md-4">
+                    <a href="#" id="showhidebutton" class="btn pull-right btn-default btn-mini">Show all</a>
+                    <h4>Question details</h4>
+                    <hr>
+                        
+
+                    {% for i in asker.askpage_set.all %}
+                        {% for j in i.get_questions %}
+                            <div id="{{j.variable_name}}" class="well questionpreview">
+                                <code><a href="{% url "admin:ask_question_change" j.id %}">#{{j.variable_name}}</a>{% if user.is_superuser %}<code>({{j.id}})</code>{% endif %} {% if j.required %}*{% endif %}</code> {% if j.extra_attrs.if %}if {{j.extra_attrs.if}}{% endif %} <span class="pull-right"><code>({{j.q_type}})</code></span>
+                                
+                                <p>{{j.text|markdown}}</p>
+                                <div class="scores">{% if j.choiceset %}{{j.choiceset.choices_as_string}}{% endif %}{% if j.scoresheet %}{{j.scoresheet.as_markdown}}{% endif %}</div>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
             </div>
-            <hr>
-        {% endfor %}
-    {% endfor %}
-    </div>
+        
+
+
+    
 </div>
 </form>
-
-{% else %}
-
-<div class="container">
-
-<div class="alert alert-warning">
-<h3>Cannot edit questionnaire because {{asker.reply_set.all|length}} responses have already been saved.
-</h3>
-<p>
-<a href="{% url "admin:signalbox_reply_changelist" %}?asker__id__exact={{asker.id}}&q=" class="btn btn-primary">View responses</a>
-</div>
-</div>
-
-{% endif %}
 
 </div>
 {% endblock %}

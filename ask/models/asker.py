@@ -193,6 +193,9 @@ class Asker(models.Model):
 
         return "{}".format(jsonstring)
 
+    def reply_count(self):
+        return self.reply_set.all().count()
+
     @contract
     def as_markdown(self):
         """A helper to convert an asker and associated models to markdown format.
