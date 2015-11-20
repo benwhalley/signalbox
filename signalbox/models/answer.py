@@ -34,7 +34,7 @@ class Answer(models.Model):
         help_text='The question this answer refers to')
 
     page = models.ForeignKey('ask.AskPage', blank=True, null=True,
-        help_text='The page this question was displayed on', on_delete=models.PROTECT)
+        help_text='The page this question was displayed on', on_delete=models.SET_NULL)
 
     other_variable_name = models.CharField(max_length=256, blank=True, null=True)
 
