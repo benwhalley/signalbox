@@ -111,6 +111,8 @@ def make_question_dict(blockParseResult):
                 )[0],
             }
         )
+    else:
+        d.update({'choiceset': None})
 
     keyvals = blockParseResult.keyvals or {}
     classlist = blockParseResult.classes and blockParseResult.classes.asList()
