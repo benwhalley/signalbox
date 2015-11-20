@@ -299,7 +299,7 @@ class Question(models.Model):
     def __unicode__(self):
         return truncatelabel(self.variable_name, 26)
 
-    MARKDOWN_FORMAT = u"""~~~{{{variable_name} {classes} {keyvals} }}\n{text}\n{details}\n~~~"""
+    MARKDOWN_FORMAT = u"""~~~{{{variable_name} {classes} {keyvals}}}\n{text}\n{details}\n~~~"""
 
     def as_markdown(self):
 
@@ -311,7 +311,7 @@ class Question(models.Model):
             classesstring = ".{}".format(self.q_type)
 
         keyvals = self.extra_attrs or {}
-        keyvalsstring = " ".join(["""{}="{}" """.format(k, v) for k, v in keyvals.items()])
+        keyvalsstring = " ".join(["""{}="{}\"""".format(k, v) for k, v in keyvals.items()])
 
         detailsstring = ""
         if self.choiceset:
