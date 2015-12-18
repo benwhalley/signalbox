@@ -6,7 +6,7 @@ from django.core import mail
 from django.conf import settings
 from django.test import TestCase
 import itertools as it
-from helpers import make_user
+from .helpers import make_user
 from signalbox.utils import send_reminders_due_now
 from signalbox.models.observation_timing_functions import observations_due_in_window
 from signalbox.models import Script, ScriptType, Study, Membership, Reminder, ReminderInstance, Observation
@@ -42,7 +42,7 @@ class TestSchedule(TestCase):
         script = Script.objects.get(reference='test-email-survey')
         script.delay_in_whole_days_only = False
         script.save()
-        date = datetime(2012, 07, 01, 23, 59, 0)
+        date = datetime(2012, 0o7, 0o1, 23, 59, 0)
 
         # Test calculate_start_datetime
         start = script.calculate_start_datetime(date)

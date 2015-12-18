@@ -1,5 +1,9 @@
 import json
-import urllib
+try:
+    from urllib import parse
+except:
+    from urlparse import urlparse as parse
+
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -7,7 +11,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from question_methods import say_or_play_phrase, reply_to_twilio
+from .question_methods import say_or_play_phrase, reply_to_twilio
 
 from signalbox.models import Observation, Reply, Answer, TextMessageCallback
 from signalbox.utilities.djangobits import conditional_decorator
@@ -195,7 +199,7 @@ def answerphone(request):
     call_data_fields = ["From", "Called", "CallSid", "AccountSid"]
     blob = request.POST or request.GET
     incoming_data = {i: blob.get(i, None) for i in call_data_fields}
-    incoming = urllib.unquote(incoming_data['Called']).replace("+", "")
+    incoming = urllib.parse.unquote(incoming_data['Called']).replace("+", "")
     twilio_number = TwilioNumber.objects.get(phone_number__icontains=incoming)
     asker = twilio_number.answerphone_script
 
@@ -209,7 +213,7 @@ def answerphone(request):
 
     # save some details of the call right away as Answers attached to the Reply
     answers = [Answer(reply=reply, other_variable_name=i, answer=j)
-        for i, j in incoming_data.items()]
+        for i, j in list(incoming_data.items())]
     [i.save() for i in answers]
 
     return play_twiml(request, first=True, external_id=incoming_data['CallSid'])

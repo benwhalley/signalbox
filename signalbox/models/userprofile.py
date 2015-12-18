@@ -9,10 +9,10 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from shortuuidfield import ShortUUIDField
 
-from validators import is_number_from_study_area, is_mobile_number, is_landline
-from study import StudySite, Study
-from reply import Reply
-from observation import Observation
+from .validators import is_number_from_study_area, is_mobile_number, is_landline
+from .study import StudySite, Study
+from .reply import Reply
+from .observation import Observation
 from signalbox import phone_field
 
 
@@ -170,4 +170,4 @@ class UserProfile(models.Model):
         app_label = 'signalbox'
 
     def __unicode__(self):
-        return u'%s %s (%s)' % (self.user.first_name, self.user.last_name, self.user.username)
+        return '%s %s (%s)' % (self.user.first_name, self.user.last_name, self.user.username)

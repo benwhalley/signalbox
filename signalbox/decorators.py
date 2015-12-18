@@ -8,7 +8,7 @@ def print_all_exceptions(function):
         try:
             ret = function(request, *args, **kwargs)
         except Exception as e:
-            print sys.stderr.write(str(e))
+            print(sys.stderr.write(str(e)))
             ret = str(e)
 
         return ret

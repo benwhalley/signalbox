@@ -1,5 +1,7 @@
-from stats import stats
-
+try:
+    from statistics import median_low, mean, stdev
+except ImportError:
+    from simplestats import median_low, mean, stdev
 
 
 SCORESHEET_FUNCTION_NAMES = "sum mean min max stdev median".split(" ")
@@ -8,9 +10,9 @@ SCORESHEET_FUNCTION_LOOKUP = {
     'min': lambda x: round(min(x), 0),
     'max': lambda x: round(max(x), 0),
     'sum': sum,
-    'mean': stats.mean,
-    'stdev': stats.stdev,
-    'median': lambda x: round(stats.lmedian(x), 0),
+    'mean': mean,
+    'stdev': stdev,
+    'median': lambda x: round(median_low(x), 0),
 }
 
 DATE_INPUT_FORMATS = ('%d/%m/%Y', )
@@ -67,7 +69,7 @@ STATUS_CHOICES_DICT = {
     -999: "missing",
 }
 
-STATUS_CHOICES = sorted(zip(STATUS_CHOICES_DICT.keys(), STATUS_CHOICES_DICT.values()), reverse=True)
+STATUS_CHOICES = sorted(zip(list(STATUS_CHOICES_DICT.keys()), list(STATUS_CHOICES_DICT.values())), reverse=True)
 
 
 SMS_STATUSCODES = {

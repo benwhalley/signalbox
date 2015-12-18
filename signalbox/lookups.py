@@ -3,7 +3,7 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.http import HttpResponseForbidden
-from models import Membership, Observation
+from .models import Membership, Observation
 from selectable import registry
 from selectable.base import ModelLookup
 from django.conf import settings

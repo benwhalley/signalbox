@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from django.contrib.auth.views import password_change
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.conf.urls import patterns, url, include
@@ -27,20 +27,20 @@ v1_api.register(ask.api.AskerResource())
 
 # Other signalbox apps
 
-urlpatterns = patterns('',
-    (r'^ask/', include('ask.urls')),
-    (r'^admin/ask/', include('ask.urls_admin')),
-    (r'^twilio/', include('twiliobox.urls')),
-    (r'^selectable/', include('signalbox.selectable_urls')),
-    (r'^api/', include(v1_api.urls)),
-)
+urlpatterns = [
+    url(r'^ask/', include('ask.urls')),
+    url(r'^admin/ask/', include('ask.urls_admin')),
+    url(r'^twilio/', include('twiliobox.urls')),
+    url(r'^selectable/', include('signalbox.selectable_urls')),
+    url(r'^api/', include(v1_api.urls)),
+]
 
 # ADMIN URLS
 
 class AdminMessageView(ExtraContextView):
     template_name = "admin/message.html"
 
-adminpatterns = patterns('',
+adminpatterns = [
     url(r'^answer/(?P<pk>\d+)/upload/$', AnswerFileView.as_view(), {}, 'user_uploaded_file' ),
 
     # assessor views
@@ -114,53 +114,52 @@ adminpatterns = patterns('',
     url(r'^create/membership/(?P<user_id>\d+)?/?$',
         add_participant, name="create_membership"),
 
-    url(r'^user/password/$', 'django.contrib.auth.views.password_change')
-
-)
+    url(r'^user/password/$', password_change)
+]
 
 
 # FRONTEND URLS
 
-urlpatterns = urlpatterns + patterns('',
-    url(r'^$', user_homepage, name='user_homepage'),
-    url(r'^(?P<id>\d+)?/?$', edit_participant, {}, 'edit_participant'),
-    url(r'^$', edit_participant, {}, 'edit_participant'),
-    url(r'^$', find_participant, {}, 'find_participant'),
+urlpatterns = urlpatterns +[
+    url('^$', user_homepage, name='user_homepage'),
+    url('^(?P<id>\d+)?/?$', edit_participant, {}, 'edit_participant'),
+    url('^$', edit_participant, {}, 'edit_participant'),
+    url('^$', find_participant, {}, 'find_participant'),
 
 
-    url(r'^enter/data/(?P<observation_token>[\w-]+)/?$',
+    url('^enter/data/(?P<observation_token>[\w-]+)/?$',
         start_data_entry, {'entry_method': "participant"}, name="start_data_entry"),
 
-    url(r'^double/enter/data/(?P<observation_token>[\w-]+)/?$',
+    url('^double/enter/data/(?P<observation_token>[\w-]+)/?$',
         start_data_entry, {'entry_method': "double_entry"},
         name="start_double_entry"),
 
-    url(r'^start/adhoc/(?P<membership_id>\d+)/(?P<asker_id>\d+)/?$', use_adhoc_asker,
+    url('^start/adhoc/(?P<membership_id>\d+)/(?P<asker_id>\d+)/?$', use_adhoc_asker,
             name="use_adhoc_asker"),
 
 
-    url(r'^studies/$',
+    url('^studies/$',
         ListView.as_view(model=Study, queryset=Study.objects.filter(visible=True, paused=False)),
         name='study_list'),
 
-    url(r'^studies/(?P<pk>\d+)/$', DetailView.as_view(model=Study,), {}, name='study', ),
-    url(r'^studies/(?P<pk>\d+)/join/$', join_study, name='join_study'),
-    url(r'^studies/(?P<study_id>\d+)?/register/$', SignalboxRegistrationView.as_view(), name='study_registration'),
+    url('^studies/(?P<pk>\d+)/$', DetailView.as_view(model=Study,), {}, name='study', ),
+    url('^studies/(?P<pk>\d+)/join/$', join_study, name='join_study'),
+    url('^studies/(?P<study_id>\d+)?/register/$', SignalboxRegistrationView.as_view(), name='study_registration'),
 
-    url(r'^add/participant/details/(?P<study_pk>\d+)?/?$',
+    url('^add/participant/details/(?P<study_pk>\d+)?/?$',
         update_profile_for_studies, name='update_profile_for_studies'),
 
-    url(r'^profile/membership/(?P<pk>\d+)$',
+    url('^profile/membership/(?P<pk>\d+)$',
         MembershipDetail.as_view(), {}, name='membership_home', ),
 
-    url(r'^accounts/profile/$', RedirectView.as_view(url='/profile/', permanent=True)),
-    url(r'^profile/?$', user_homepage, name='user_homepage'),
+    url('^accounts/profile/$', RedirectView.as_view(url='/profile/', permanent=True)),
+    url('^profile/?$', user_homepage, name='user_homepage'),
 
-    url(r'^logout/?$', logout, {'next_page': '/'}, name='logout'),
+    url('^logout/?$', logout, {'next_page': '/'}, name='logout'),
 
-    url(r'^crossdomain.xml$', lambda x: HttpResponseForbidden("Forbidden")),
-    ('^admin/signalbox/', include(adminpatterns))
-)
+    url('^crossdomain.xml$', lambda x: HttpResponseForbidden("Forbidden")),
+    url('^admin/signalbox/', include(adminpatterns))
+]
 
 
 
@@ -170,5 +169,5 @@ urlpatterns = urlpatterns + patterns('',
 
 if settings.USE_VERSIONING:
     # checking revisions
-    urlpatterns += (url(r'^history/$', VersionView.as_view(), {}, "check_history"),)
+    urlpatterns += [url(r'^history/$', VersionView.as_view(), {}, "check_history"),]
 

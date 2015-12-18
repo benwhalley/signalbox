@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.exceptions import ValidationError
+from six import with_metaclass
 import phonenumbers
 from django.db import models
 from django import forms
@@ -71,9 +72,8 @@ class PhoneNumberFormField(forms.fields.MultiValueField):
         return "".join(value)
 
 
-class PhoneNumberField(models.Field):
 
-    __metaclass__ = models.SubfieldBase
+class PhoneNumberField(with_metaclass(models.SubfieldBase, models.Field)):
 
     def get_internal_type(self):
         return "CharField"

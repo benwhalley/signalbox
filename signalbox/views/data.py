@@ -77,8 +77,8 @@ def export_answers(request, answers):
     "Take a queryset of Answers and export to a zip file."
 
     # extract dicts
-    ad = answers.values(*ANSWER_FIELDS_MAP.keys())
-    rd = answers.values(*ROW_FIELDS_MAP.keys())
+    ad = answers.values(*list(ANSWER_FIELDS_MAP.keys()))
+    rd = answers.values(*list(ROW_FIELDS_MAP.keys()))
 
     # make dataframes
     answerdata = pd.DataFrame({i['id']: i for i in ad}).T
@@ -103,7 +103,7 @@ def export_answers(request, answers):
 
     # make a syntax file to label everything
     questions = set((i.question for i in answers))
-    choicesets = set(filter(lambda x: x.get_choices(), (i.choiceset for i in questions if i.choiceset)))
+    choicesets = set([x for x in (i.choiceset for i in questions if i.choiceset) if x.get_choices()])
     syntaxtdotmp = get_template('signalbox/stata/process-variables.dotemplate')
     syntax_dostring = syntaxtdotmp.render(Context({'questions': questions, 'choicesets': choicesets, 'request':request}))
 

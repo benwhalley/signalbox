@@ -26,9 +26,9 @@ final_consonants = (set(string.ascii_lowercase) - set('aeiou')
 vowels = 'aeiou' # we'll keep this simple
 
 # each syllable is consonant-vowel-consonant "pronounceable"
-syllables = map(''.join, itertools.product(initial_consonants,
+syllables = list(map(''.join, itertools.product(initial_consonants,
                                            vowels,
-                                           final_consonants))
+                                           final_consonants)))
 
 def gibberish(wordcount, wordlist=syllables):
     return '_'.join(random.sample(wordlist, wordcount))

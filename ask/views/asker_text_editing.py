@@ -21,7 +21,7 @@ from contracts import contract
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.forms.util import ErrorList
+from django.forms.utils import ErrorList
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -68,7 +68,7 @@ class TextEditForm(forms.Form):
 
         try:
             asker, _, _ = get_or_modify(Asker, {"id": self.asker.id}, asker_yaml)
-        except ValueError, e:
+        except ValueError as e:
             raise forms.ValidationError("There was a problem with the form: {}".format(e))
 
         if not self.request.user.is_superuser and asker.reply_count():
@@ -86,7 +86,7 @@ class TextEditForm(forms.Form):
 
         
         # check all variables specified in scoresheets can be found
-        scshts = filter(lambda i: i.calculated_score, blocks)
+        scshts = [i for i in blocks if i.calculated_score]
         for i in scshts:
             varset = set(i.calculated_score.variables.asList())
             questions_set = set(variable_names)
@@ -110,10 +110,10 @@ class TextEditForm(forms.Form):
         # because we can't raise validation errors easily otherwise
 
         # group questions by page, using filter(bool) to get rid of empty pages
-        questionsbypage = filter(bool,
-                [filter(isnotpage, (i[1])) for i in groupby(blocks, ispage)])
+        questionsbypage = list(filter(bool,
+                [list(filter(isnotpage, (i[1]))) for i in groupby(blocks, ispage)]))
 
-        pages = filter(ispage, blocks)
+        pages = list(filter(ispage, blocks))
         pages_d = [make_page_dict(i) for i in pages]
 
         # pad to make sure we have enough pages (e.g. if first questions are specified without a page)
@@ -138,17 +138,17 @@ class TextEditForm(forms.Form):
             errors = []
             try:
                 q.full_clean()
-            except Exception, e:
+            except Exception as e:
                 errors.append(e)
 
             try:
                 q.save()
-            except Exception, e:
+            except Exception as e:
                 errors.append(e)
 
             try:
                 q.choiceset and q.choiceset.save()
-            except Exception, e:
+            except Exception as e:
                 errors.append(e)
 
             if any(errors):
@@ -157,11 +157,11 @@ class TextEditForm(forms.Form):
         try:
             # wrap in transaction because is-valid shouldn't have has side effects in the DB
             with transaction.atomic():
-                errors = list(itertools.chain(*filter(bool, list(itertools.chain(*[[trytosavequestion(i) for i in zip(*p)[0]] for p in questionsbypage_obs])))))
+                errors = list(itertools.chain(*list(filter(bool, list(itertools.chain(*[[trytosavequestion(i) for i in zip(*p)[0]] for p in questionsbypage_obs]))))))
                 if any(errors):
                     raise SignalBoxMultipleErrorsException(errors)
 
-        except SignalBoxMultipleErrorsException, e:
+        except SignalBoxMultipleErrorsException as e:
             [self.add_error(None, 
                 forms.ValidationError("Problem with: {}".format(i.get('q')), params=i)) for i in e.errors]
 

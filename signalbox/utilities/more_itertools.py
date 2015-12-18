@@ -1,7 +1,11 @@
 # this is more_itertools...
 
 from functools import partial, wraps
-from itertools import izip_longest
+try:
+    from itertools import zip_longest
+except ImportError:
+    from itertools import izip_longest as zip_longest
+
 
 
 __all__ = ['chunked', 'first', 'peekable', 'collate', 'consumer']
@@ -27,7 +31,7 @@ def chunked(iterable, n):
 
     """
     # Doesn't seem to run into any number-of-args limits.
-    for group in (list(g) for g in izip_longest(*[iter(iterable)] * n,
+    for group in (list(g) for g in zip_longest(*[iter(iterable)] * n,
                                                 fillvalue=_marker)):
         if group[-1] is _marker:
             # If this is the last group, shuck off the padding:
@@ -107,7 +111,7 @@ class peekable(object):
     def __iter__(self):
         return self
 
-    def __nonzero__(self):
+    def __bool__(self):
         try:
             self.peek()
         except StopIteration:
@@ -123,14 +127,14 @@ class peekable(object):
         """
         if not hasattr(self, '_peek'):
             try:
-                self._peek = self._it.next()
+                self._peek = next(self._it)
             except StopIteration:
                 if default is _marker:
                     raise
                 return default
         return self._peek
 
-    def next(self):
+    def __next__(self):
         ret = self.peek()
         del self._peek
         return ret
@@ -158,12 +162,12 @@ def collate(*iterables, **kwargs):
     key = kwargs.pop('key', lambda a: a)
     reverse = kwargs.pop('reverse', False)
 
-    min_or_max = partial(max if reverse else min, key=lambda (a, b): a)
+    min_or_max = partial(max if reverse else min, key=lambda a_b: a_b[0])
     peekables = [peekable(it) for it in iterables]
     peekables = [p for p in peekables if p]  # Kill empties.
     while peekables:
         _, p = min_or_max((key(p.peek()), p) for p in peekables)
-        yield p.next()
+        yield next(p)
         peekables = [p for p in peekables if p]
 
 
@@ -192,6 +196,6 @@ def consumer(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         gen = func(*args, **kwargs)
-        gen.next()
+        next(gen)
         return gen
     return wrapper

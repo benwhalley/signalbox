@@ -1,5 +1,5 @@
 # coding: utf-8
-import StringIO
+import io
 import csv
 from signalbox.views.data import export_answers
 import zipfile
@@ -189,10 +189,10 @@ class TestDataHandling(TestCase):
         questions = Question.objects.filter(id__in=answers.values('question__id'))
         syntax = generate_syntax('admin/ask/stata_syntax.html', questions)
 
-        f = StringIO.StringIO(csvstring)
+        f = io.StringIO(csvstring)
         dicts = list(csv.DictReader(f))
 
-        headings = dicts[0].keys()
+        headings = list(dicts[0].keys())
 
         expected_cols = ['n_in_sequence', 'observation.id', 'membership.id']
         [self.assertTrue(i in headings) for i in expected_cols]
@@ -203,8 +203,8 @@ class TestDataHandling(TestCase):
         # and also that the zipfile is created correctly
         download = export_dataframe(answers, study)
         self.assertTrue(download.status_code == 200)
-        zipped = StringIO.StringIO(download.content)
+        zipped = io.StringIO(download.content)
         pzipped = zipfile.ZipFile(zipped)
-        print set(pzipped.namelist())
+        print(set(pzipped.namelist()))
         assert set(pzipped.namelist()) == set(['syntax.do', 'data.csv', 'make.do'])
         assert LONG_YUCKY_UNICODE in pzipped.open('data.csv').read().decode('utf-8')

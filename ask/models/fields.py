@@ -6,11 +6,11 @@ from datetime import datetime, time
 from string import capwords
 
 from django.utils.functional import SimpleLazyObject
-import stata_functions as stata
+from . import stata_functions as stata
 import ask.validators as validators
 import ast
 from contracts import contract
-import custom_widgets
+from . import custom_widgets
 from django.conf import settings
 from django.core.files.base import ContentFile
 from django.utils.safestring import mark_safe
@@ -58,7 +58,7 @@ __all__ = [class_name(i) for i in FIELD_NAMES]
 
 def _merge_field_or_extra_attrs(old, extra):
     if extra:
-        for k, v in extra.items():
+        for k, v in list(extra.items()):
             if isinstance(v, dict) and old.get(k, None):
                 old[k].update(v)
             else:
@@ -173,7 +173,7 @@ class SignalboxField(object):
         # Extra information about the field stored on the Question
         # XXXTODO check this is still needed and document what uses it if so...
         if question.extra_attrs:
-            for k, v in question.extra_attrs.items():
+            for k, v in list(question.extra_attrs.items()):
                 setattr(self, k, v)
 
         # Setup choices
@@ -381,7 +381,7 @@ class Time(SignalboxField, floppyforms.TimeField):
         baseline = datetime.today()
         difference = datetime.combine(
             baseline, thetime) - datetime.combine(baseline, time())
-        return ",".join((value, unicode(difference.total_seconds())))
+        return ",".join((value, str(difference.total_seconds())))
 
 
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -392,8 +392,8 @@ class Integer(SignalboxField, floppyforms.IntegerField):
 
     def __init__(self, *args, **kwargs):
         super(Integer, self).__init__(*args, **kwargs)
-        self.validators += [MinValueValidator(int(getattr(self, 'min', -sys.maxint - 1))),
-        MaxValueValidator(int(getattr(self, 'max', sys.maxint)))]
+        self.validators += [MinValueValidator(int(getattr(self, 'min', -sys.maxsize - 1))),
+        MaxValueValidator(int(getattr(self, 'max', sys.maxsize)))]
 
     has_choices = False
     error_messages = {'invalid': _(

@@ -8,7 +8,7 @@ class FilterPersistMiddleware(object):
         if '/admin/' not in request.path:
             return None
 
-        if not request.META.has_key('HTTP_REFERER'):
+        if 'HTTP_REFERER' not in request.META:
             return None
 
         popup = 'pop=1' in request.META['QUERY_STRING']

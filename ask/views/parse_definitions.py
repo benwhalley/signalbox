@@ -8,7 +8,6 @@ from ask.models.fields import FIELD_NAMES
 from django.core.exceptions import ValidationError
 from signalbox.models import ScoreSheet
 from signalbox.utilities.djangobits import get_or_modify, flatten
-from stats import stats
 import yaml
 from signalbox.utilities.gibberish import random_stata_varname
 from pyparsing import *
@@ -116,8 +115,8 @@ def make_question_dict(blockParseResult):
 
     keyvals = blockParseResult.keyvals or {}
     classlist = blockParseResult.classes and blockParseResult.classes.asList()
-    d.update({'extra_attrs': {k: v for k, v in keyvals.items()}})
-    d.update({'extra_attrs': {k: v for k, v in keyvals.items()}})
+    d.update({'extra_attrs': {k: v for k, v in list(keyvals.items())}})
+    d.update({'extra_attrs': {k: v for k, v in list(keyvals.items())}})
 
     d['extra_attrs'].update({'classes': {k: True for k in classlist}})
     d.update({'required': 'required' in classlist})

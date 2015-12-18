@@ -27,4 +27,4 @@ class SplitSelectDateTimeWidget(MultiWidget):
         Returns a Unicode string representing the HTML for the whole lot.
         """
         rendered_widgets.insert(-1, '<br/>')
-        return u''.join(rendered_widgets)
+        return ''.join(rendered_widgets)

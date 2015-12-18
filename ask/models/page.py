@@ -62,7 +62,7 @@ class AskPage(models.Model, Step):
         if self.questions_which_require_answers(reply) == 0:
             return False
         answers = self.answers(reply)
-        answers = filter(lambda x: bool(x.answer), answers)
+        answers = [x for x in answers if bool(x.answer)]
         return bool(len(answers) >= len(self.visible_variable_names(reply)))
 
     def natural_key(self):
@@ -161,10 +161,10 @@ class AskPage(models.Model, Step):
     def admin_edit_url(self):
         return admin_edit_url(self)
 
-    MARKDOWN_FORMAT = u"\n\n# {}\n"
+    MARKDOWN_FORMAT = "\n\n# {}\n"
 
     def as_markdown(self):
         return self.MARKDOWN_FORMAT.format(self.step_name or "")
 
     def __unicode__(self):
-        return u"{}: {} (p {})".format(self.asker, self.step_name, self.order)
+        return "{}: {} (p {})".format(self.asker, self.step_name, self.order)

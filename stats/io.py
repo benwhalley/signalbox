@@ -66,7 +66,7 @@ try:
 except:
     pass
 
-import pstat
+from . import pstat
 import glob, re, string, types, os, struct, copy, time, tempfile, sys
 from types import *
 import numpy as N
@@ -144,10 +144,10 @@ Usage:   rename (source, dest)     e.g., rename('*.txt', '*.c')
                 newname = newname[0:lastone] + re.sub(findpattern2,replpattern2,fname[lastone:],1)
             else:
                 lastone = string.rfind(fname,findpattern2)
-                if lastone <> -1:
+                if lastone != -1:
                     newname = fname[0:lastone]
                     newname = newname + re.sub(findpattern2,replpattern2,fname[lastone:],1)
-        print fname, newname
+        print(fname, newname)
         os.rename(fname,newname)
     return
 
@@ -173,15 +173,15 @@ Returns: a 1D or 2D list of lists from whitespace delimited text files
         
     if len(fnames) == 0:
         if verbose:
-            print 'NO FILENAMES MATCH ('+namepatterns+') !!'
+            print('NO FILENAMES MATCH ('+namepatterns+') !!')
         return None
 
     if verbose:
-        print fnames             # so user knows what has been loaded
+        print(fnames)             # so user knows what has been loaded
     elements = []
     for i in range(len(fnames)):
         file = open(fnames[i])
-        newelements = map(string.split,file.readlines())
+        newelements = list(map(string.split,file.readlines()))
         for i in range(len(newelements)):
             for j in range(len(newelements[i])):
                 try:
@@ -209,14 +209,14 @@ Returns: a list of strings, one per line in each text file specified by
     fnames = glob.glob(namepattern)
     if len(fnames) == 0:
         if verbose:
-            print 'NO FILENAMES MATCH ('+namepattern+') !!'
+            print('NO FILENAMES MATCH ('+namepattern+') !!')
         return None
     if verbose:
-        print fnames
+        print(fnames)
     elements = []
     for filename in fnames:
         file = open(filename)
-        newelements = map(string.split,file.readlines())
+        newelements = list(map(string.split,file.readlines()))
         elements = elements + newelements
     return elements
 
@@ -273,10 +273,10 @@ Returns: an array of integers, floats or objects (type='O'), depending on the
     fnames = glob.glob(namepattern)
     if len(fnames) == 0:
         if verbose:
-            print 'NO FILENAMES MATCH ('+namepattern+') !!'
+            print('NO FILENAMES MATCH ('+namepattern+') !!')
             return None
     if verbose:
-        print fnames
+        print(fnames)
     elements = []
     for filename in fnames:
         file = open(filename)
@@ -289,7 +289,7 @@ Returns: an array of integers, floats or objects (type='O'), depending on the
         del_list.reverse()
         for i in del_list:
             newelements.pop(i)
-        newelements = map(string.split,newelements)
+        newelements = list(map(string.split,newelements))
         for i in range(len(newelements)):
             for j in range(len(newelements[i])):
                 try:
@@ -298,8 +298,8 @@ Returns: an array of integers, floats or objects (type='O'), depending on the
                     pass
         elements = elements + newelements
     for row in range(len(elements)):
-        if N.add.reduce(N.array(map(isstring,elements[row])))==len(elements[row]):
-            print "A row of strings was found.  Returning a LIST."
+        if N.add.reduce(N.array(list(map(isstring,elements[row]))))==len(elements[row]):
+            print("A row of strings was found.  Returning a LIST.")
             return elements
     try:
         elements = N.array(elements)
@@ -319,10 +319,10 @@ Returns: None
     if len(outarray.shape) == 1:
         outarray = outarray[N.newaxis,:]
     if len(outarray.shape) > 2:
-        raise TypeError, "put() and aput() require 1D or 2D arrays.  Otherwise use some kind of pickling."
+        raise TypeError("put() and aput() require 1D or 2D arrays.  Otherwise use some kind of pickling.")
     else: # must be a 2D array
         for row in outarray:
-            outfile.write(string.join(map(str,row),delimit))
+            outfile.write(string.join(list(map(str,row)),delimit))
             outfile.write('\n')
         outfile.close()
     return None
@@ -380,10 +380,10 @@ Usage:  mincget(imfile,unpackstr=N.int16,shp=None)  default shp = -1,20,64,64
     try:
         d = braw('minctemp.bshort',unpackstr)
     except:
-        print "Couldn't find file:  "+imfile
-        raise IOError, "Couldn't find file in mincget()"
+        print("Couldn't find file:  "+imfile)
+        raise IOError("Couldn't find file in mincget()")
 
-    print shp, d.shape
+    print(shp, d.shape)
     d.shape = shp
     os.system('rm minctemp.bshort')
     return d
@@ -400,24 +400,24 @@ Usage:  brikget(imfile,unpackstr=N.int16,shp=None)  default shp: (-1,48,61,51)
     try:
         file = open(imfile, "rb")
     except:
-        print "Couldn't find file:  "+imfile
-        raise IOError, "Couldn't find file in brikget()"
+        print("Couldn't find file:  "+imfile)
+        raise IOError("Couldn't find file in brikget()")
     try:
         header = imfile[0:-4]+'HEAD'
         lines = open(header).readlines()
         for i in range(len(lines)):
-            if string.find(lines[i],'DATASET_DIMENSIONS') <> -1:
+            if string.find(lines[i],'DATASET_DIMENSIONS') != -1:
                 dims = string.split(lines[i+2][0:string.find(lines[i+2],' 0')])
-                dims = map(string.atoi,dims)
-            if string.find(lines[i],'BRICK_FLOAT_FACS') <> -1:
+                dims = list(map(string.atoi,dims))
+            if string.find(lines[i],'BRICK_FLOAT_FACS') != -1:
                 count = string.atoi(string.split(lines[i+1])[2])
                 mults = []
                 for j in range(int(N.ceil(count/5.))):
-                    mults += map(string.atof,string.split(lines[i+2+j]))
+                    mults += list(map(string.atof,string.split(lines[i+2+j])))
                 mults = N.array(mults)
-            if string.find(lines[i],'BRICK_TYPES') <> -1:
+            if string.find(lines[i],'BRICK_TYPES') != -1:
                 first5 = lines[i+2]
-                first5 = map(string.atoi,string.split(first5))
+                first5 = list(map(string.atoi,string.split(first5)))
                 if first5[0] == 0:
                     unpackstr = N.uint8
                 elif first5[0] == 1:
@@ -429,11 +429,11 @@ Usage:  brikget(imfile,unpackstr=N.int16,shp=None)  default shp: (-1,48,61,51)
         dims.reverse()
         shp = [-1]+dims
     except IOError:
-        print "No header file.  Continuing ..."
+        print("No header file.  Continuing ...")
     lines = None
 
-    print shp
-    print 'Using unpackstr:',unpackstr  #,', bytesperpixel=',bytesperpixel
+    print(shp)
+    print('Using unpackstr:',unpackstr)  #,', bytesperpixel=',bytesperpixel
 
     file = open(imfile, "rb")
     bdata = file.read()
@@ -446,8 +446,8 @@ Usage:  brikget(imfile,unpackstr=N.int16,shp=None)  default shp: (-1,48,61,51)
     try:
         bdata.shape = shp
     except:
-        print 'Incorrect shape ...',shp,len(bdata)
-        raise ValueError, 'Incorrect shape for file size'
+        print('Incorrect shape ...',shp,len(bdata))
+        raise ValueError('Incorrect shape for file size')
     if len(bdata) == 1:
         bdata = bdata[0]
 
@@ -478,8 +478,8 @@ Usage:   mghbget(imfile, numslices=-1, xsize=64, ysize=64,
     try:
         file = open(imfile, "rb")
     except:
-        print "Couldn't find file:  "+imfile
-        raise IOError, "Couldn't find file in bget()"
+        print("Couldn't find file:  "+imfile)
+        raise IOError("Couldn't find file in bget()")
     try:
         header = imfile[0:-6]+'hdr'
         vals = get(header,0)  # '0' means no missing-file warning msg
@@ -492,7 +492,7 @@ Usage:   mghbget(imfile, numslices=-1, xsize=64, ysize=64,
             ysize = int(vals[1])
             numslices = int(vals[2])
     except:
-        print "No header file.  Continuing ..."
+        print("No header file.  Continuing ...")
 
     suffix = imfile[-6:]
     if suffix == 'bshort':
@@ -504,8 +504,8 @@ Usage:   mghbget(imfile, numslices=-1, xsize=64, ysize=64,
         bytesperpixel = 4.0
         sliceinit = 0.0
     else:
-        print 'Not a bshort, bfloat or img file.'
-        print 'Using unpackstr:',unpackstr,', bytesperpixel=',bytesperpixel
+        print('Not a bshort, bfloat or img file.')
+        print('Using unpackstr:',unpackstr,', bytesperpixel=',bytesperpixel)
 
     imsize = xsize*ysize
     file = open(imfile, "rb")
@@ -513,7 +513,7 @@ Usage:   mghbget(imfile, numslices=-1, xsize=64, ysize=64,
 
     numpixels = len(bdata) / bytesperpixel
     if numpixels%1 != 0:
-        raise ValueError, "Incorrect file size in fmri.bget()"
+        raise ValueError("Incorrect file size in fmri.bget()")
     else:  # the > forces big-endian (for or from Sun/SGI)
         bdata = N.fromstring(bdata,unpackstr)
 #        littleEndian = ( struct.pack('i',1)==struct.pack('<i',1) )
@@ -530,7 +530,7 @@ Usage:   mghbget(imfile, numslices=-1, xsize=64, ysize=64,
         for i in range(numslices):
             istart = i*8 + i*xsize*ysize
             iend = i*8 + (i+1)*xsize*ysize
-            print i, istart,iend
+            print(i, istart,iend)
             slices[i] = N.reshape(N.array(bdata[istart:iend]),(xsize,ysize))
     else:
         if numslices == 1:
@@ -596,7 +596,7 @@ Returns: array of 'btype elements with shape 'shape', suitable for im.ashow()
         carray = N.array([r,g,b])
     except:
         outstr = "glget: shape not correct for data of length "+str(len(d))
-        raise ValueError, outstr
+        raise ValueError(outstr)
     return carray
 
 
@@ -618,9 +618,9 @@ Usage:   mget(fname,btype)
             xsize = int(vals[0])
             ysize = int(vals[1])
             numslices = int(vals[2])
-        print xsize,ysize,numslices, d.shape
+        print(xsize,ysize,numslices, d.shape)
     except:
-        print "No header file.  Continuing ..."
+        print("No header file.  Continuing ...")
     if numslices == 1:
         d.shape = [ysize,xsize]
         return N.transpose(d)*1
@@ -649,7 +649,7 @@ Save a file for use in matlab.
             hdr = [outarray.shape[1],outarray.shape[0], 1, 0]
         else:
             hdr = [outarray.shape[2],outarray.shape[1],outarray.shape[0], 0,'\n']
-        print hdrname+'.hdr'
+        print(hdrname+'.hdr')
         outfile = open(hdrname+'.hdr','w')
         outfile.write(pstat.list2string(hdr))
         outfile.close()
@@ -669,7 +669,7 @@ Usage:   bput (outarray,filename,writeheader=0,packtype=N.int16,writetype='wb')
     elif suffix == 'bfloat':
         packtype = N.float32
     else:
-        print 'Not a bshort or bfloat file.  Using packtype=',packtype
+        print('Not a bshort or bfloat file.  Using packtype=',packtype)
 
     outdata = N.ravel(outarray).astype(packtype)
 #    littleEndian = ( struct.pack('i',1)==struct.pack('<i',1) )
@@ -689,7 +689,7 @@ Usage:   bput (outarray,filename,writeheader=0,packtype=N.int16,writetype='wb')
             hdr = [outarray.shape[0],outarray.shape[1], 1, 0]
         else:
             hdr = [outarray.shape[1],outarray.shape[2],outarray.shape[0], 0,'\n']
-        print hdrname+'.hdr'
+        print(hdrname+'.hdr')
         outfile = open(hdrname+'.hdr','w')
         outfile.write(pstat.list2string(hdr))
         outfile.close()
@@ -728,13 +728,13 @@ Returns: array filled with data in fname
     f = open(fname,'r')
     d = f.readlines()
     f.close()
-    print fname,'read in.'
+    print(fname,'read in.')
     d = d[linestocut:]
-    d = map(string.split,d)
-    print 'Done with string.split on lines.'
+    d = list(map(string.split,d))
+    print('Done with string.split on lines.')
     for i in range(len(d)):
-        d[i] = map(string.atoi,d[i])
-    print 'Conversion to ints done.'
+        d[i] = list(map(string.atoi,d[i]))
+    print('Conversion to ints done.')
     return N.array(d)
 
 def writedelimited (listoflists, delimiter, file, writetype='w'):
@@ -794,8 +794,8 @@ Returns: None
     maxsize = [0]*len(list2print[0])
     for col in range(len(list2print[0])):
         items = pstat.colex(list2print,col)
-        items = map(pstat.makestr,items)
-        maxsize[col] = max(map(len,items)) + extra
+        items = list(map(pstat.makestr,items))
+        maxsize[col] = max(list(map(len,items))) + extra
     for row in listoflists:
         if row == ['\n'] or row == '\n':
             outfile.write('\n')
@@ -865,26 +865,26 @@ Returns: numpy array of specified type
     elif type in ['f','d']:
         intype = float
     else:
-        raise ValueError, "type can be 'i', 'f' or 'd' in load()"
+        raise ValueError("type can be 'i', 'f' or 'd' in load()")
 
     ## STRIP OUT % AND # LINES
     tmpname = tempfile.mktemp()
     if sys.platform == 'win32':
         # NT VERSION OF GREP DOESN'T DO THE STRIPPING ... SIGH
         cmd = "grep.exe -v \'%\' "+fname+" > "+tmpname
-        print cmd
+        print(cmd)
         os.system(cmd)
     else:
         # UNIX SIDE SHOULD WORK
         cmd = "cat "+fname+" | grep -v \'%\' |grep -v \'#\' > "+tmpname
-        print cmd
+        print(cmd)
         os.system(cmd)
 
     ## GET NUMBER OF ROWS, COLUMNS AND LINE-LENGTH, USING WC
     wc = string.split(os.popen("wc "+tmpname).read())
     numlines = int(wc[0]) - lines_to_ignore
     tfp = open(tmpname)
-    if lines_to_ignore <> 0:
+    if lines_to_ignore != 0:
         for i in range(lines_to_ignore):
             junk = tfp.readline()
     numcols = len(string.split(tfp.readline())) #int(float(wc[1])/numlines)
@@ -894,22 +894,22 @@ Returns: numpy array of specified type
     a = N.zeros((numlines*numcols), type)
     block = 65536  # chunk to read, in bytes
     data = mmapfile.mmapfile(tmpname, '', 0)
-    if lines_to_ignore <> 0 and sys.platform == 'win32':
+    if lines_to_ignore != 0 and sys.platform == 'win32':
         for i in range(lines_to_ignore):
             junk = data.readline()
     i = 0
     d = ' '
     carryover = ''
-    while len(d) <> 0:
+    while len(d) != 0:
         d = carryover + data.read(block)
         cutindex = string.rfind(d,'\n')
         carryover = d[cutindex+1:]
         d = d[:cutindex+1]
-        d = map(intype,string.split(d))
+        d = list(map(intype,string.split(d)))
         a[i:i+len(d)] = d
         i = i + len(d)
     end = time.time()
-    print "%d sec" % round(end-start,2)
+    print("%d sec" % round(end-start,2))
     data.close()
     os.remove(tmpname)
     return N.reshape(a,[numlines,numcols])
@@ -956,7 +956,7 @@ Returns: data in file fname of type btype
     try:
         bdata = N.fromstring(bdata,btype)
     except:
-        raise ValueError, "Bad unpacking type."
+        raise ValueError("Bad unpacking type.")
 
     # force the data on disk to be LittleEndian (for more efficient PC/Linux use)
     if not N.little_endian:
@@ -965,7 +965,7 @@ Returns: data in file fname of type btype
     try:
         header = fname[:-3]+'hdr'
         vals = get(header,0)  # '0' means no missing-file warning msg
-        print vals
+        print(vals)
         if type(vals[0]) == ListType:  # it's an extended header
             xsize = int(vals[0][0])
             ysize = int(vals[0][1])
@@ -973,7 +973,7 @@ Returns: data in file fname of type btype
         else:
             bdata.shape = vals
     except:
-        print "No (or bad) header file. Returning unshaped array."
+        print("No (or bad) header file. Returning unshaped array.")
     return N.array(bdata)
 
 
@@ -997,7 +997,7 @@ Usage:  binput(outarray,filename,packtype=None,writetype='wb')
     if packtype == N.int16 and outarray.dtype.char == 'f':
         # check to see if there's data loss
         if max(N.ravel(outarray)) > 32767 or min(N.ravel(outarray))<-32768:
-            print "*** WARNING: CONVERTING FLOAT DATA TO OUT-OF RANGE INT16 DATA"
+            print("*** WARNING: CONVERTING FLOAT DATA TO OUT-OF RANGE INT16 DATA")
     outdata = N.ravel(outarray).astype(packtype)
 
     # force the data on disk to be little_endian (for more efficient PC/Linux use)
@@ -1015,7 +1015,7 @@ Usage:  binput(outarray,filename,packtype=None,writetype='wb')
     except ValueError:
         hdrname = fname
     hdr = outarray.shape
-    print hdrname
+    print(hdrname)
     outfile = open(hdrname,'w')
     outfile.write(pstat.list2string(hdr))
     outfile.close()
@@ -1033,7 +1033,7 @@ Returns: appropriate "type" for params, or None if fails
     d = get(headfilename)
     lines = open(headfilename,'r').readlines()
     for i in range(len(lines)):
-        if string.find(lines[i],paramname) <> -1:
+        if string.find(lines[i],paramname) != -1:
             count = d[i+1][-1]
             gotten = 0
             result = []
@@ -1063,7 +1063,7 @@ Returns: None
     d = get(headfilename)
     lines = open(headfilename,'r').readlines()
     for i in range(len(lines)):
-        if string.find(lines[i],'HISTORY_NOTE') <> -1:
+        if string.find(lines[i],'HISTORY_NOTE') != -1:
             bytecount = d[i+1][-1]
             oldstr = lines[i+2][:-2]
             date = '[python:***  %s] ' %time.asctime()
@@ -1104,7 +1104,7 @@ Returns: None
 
     # Verify that the data is proper size (3- or 4-D)
     if len(d.shape) not in [3,4]:
-        raise ValueError, "A 3D or 4D array is required for array2afni() ... %s" %d.shape
+        raise ValueError("A 3D or 4D array is required for array2afni() ... %s" %d.shape)
 
     # Save out the array to a binary file, homebrew style
     if d.dtype.char == N.float64:
@@ -1146,7 +1146,7 @@ Returns: None
         cmd += '-geomparent %s ' % geomparent
     cmd += timestr
     cmd += '3D%s:0:0:%d:%d:%d:%s' % (typecodemapping[d.dtype.char],d.shape[-1],d.shape[-2],slices*timepts,tmpoutname)
-    print cmd
+    print(cmd)
     os.system(cmd)
     os.remove(tmpoutname)
     os.remove(tmpoutname[:-3]+'hdr')

@@ -5,7 +5,7 @@ def observations_due_in_window(start=None, end=None):
     """Get the list of Observations which are ready to send now."""
 
     # this is yuck, but circulur imports are a pain
-    from observation import Observation
+    from .observation import Observation
 
     start = start or datetime.now()-timedelta(weeks=4)
     end = end or datetime.now()

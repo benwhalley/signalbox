@@ -45,10 +45,10 @@ def execute_the_todo_list(study=None, user=None):
     todo = observations_due_in_window()
 
     if study:
-        todo = filter(lambda x: supergetattr(x, 'dyad.study', None) == study, todo)
+        todo = [x for x in todo if supergetattr(x, 'dyad.study', None) == study]
 
     if user:
-        todo = filter(lambda x: supergetattr(x, 'dyad.user', None) == user, todo)
+        todo = [x for x in todo if supergetattr(x, 'dyad.user', None) == user]
 
     return [(i, i.do()) for i in todo]
 

@@ -32,7 +32,7 @@ USE_VERSIONING = get_env_variable('USE_VERSIONING', default=False)
 
 # override setting above in testing because some tests need it
 if bool('test' in sys.argv):
-    print "Turning on versioning because we are testing"
+    print("Turning on versioning because we are testing")
     USE_VERSIONING = True
 
 

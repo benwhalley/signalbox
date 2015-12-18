@@ -1,11 +1,11 @@
-from __future__ import division
+
 import random
 from itertools import permutations
 from uuid import uuid4
 from operator import gt, mul
 import itertools
 import random
-from stats import stats
+import statistics as stats
 from collections import Counter
 
 from django.test import TestCase
@@ -32,9 +32,10 @@ def _get_p_for_allocation(study, users, ratio):
 
     # make each group min = 1 because otherwise chisq can blow up
     observed = {i.weight: min([1, i.membership_set.all().count()]) for i in groups}
-    ex_ob = [(expected[i], observed[i]) for i in observed.keys()]
+    ex_ob = [(expected[i], observed[i]) for i in list(observed.keys())]
 
-    chi, p = stats.lchisquare(*zip(*ex_ob))
+    # XXX TODO reinstatewith python 3 functionality
+    # chi, p = stats.lchisquare(*list(zip(*ex_ob)))
 
     return p
 

@@ -1,6 +1,5 @@
 """Functions to allocate Memberships to a StudyCondition"""
-from __future__ import division
-from stats import stats
+
 from collections import Counter
 from datetime import datetime
 import random
@@ -11,7 +10,7 @@ from itertools import chain, repeat, permutations
 def weighted_choice(items):
     """Returns 1 of items: a list of tuples in the form (item, weight)"""
 
-    things, weights = zip(*items)
+    things, weights = list(zip(*items))
     pools = list(chain(*[list(repeat(i, w)) for i, w in items]))
     return random.choice(list(pools))
 

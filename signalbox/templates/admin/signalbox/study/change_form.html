@@ -43,7 +43,9 @@ Study Dashboard: {{original.name}}
 
                     {% if original.membership_set.count > 4 %}
                     <p>Current imbalance in membership allocations is:
+                    {#
                     {%if original.chisq_imbalance.1 < .05 %}significant{% else %}non-significant{% endif%} (chisq={{original.chisq_imbalance.0|floatformat}}, p={{original.chisq_imbalance.1|floatformat}})
+                    #}
                     </p>
                     {% endif %}
 

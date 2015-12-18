@@ -13,7 +13,7 @@ from django.forms.models import model_to_dict
 from django.template import Context, Template
 from django.template.loader import get_template
 from collections import defaultdict
-import fields
+from . import fields
 import markdown
 
 from signalbox.exceptions import DataProtectionException
@@ -21,7 +21,7 @@ from signalbox.utilities.djangobits import supergetattr, flatten, safe_help, int
 from signalbox.utilities.linkedinline import admin_edit_url
 from signalbox.custom_contracts import *
 from yamlfield.fields import YAMLField
-from parse_conditional import parse_conditional
+from .parse_conditional import parse_conditional
 
 
 truncatelabel = lambda x, y: (x[:int(y) / 2] + '...' + x[- int(y) / 2:]) if len(x) > y else x
@@ -110,7 +110,7 @@ class Question(models.Model):
             "choiceset": supergetattr(self, "choiceset.name", None),
             "required": self.required,
         }
-        return {self.variable_name: {k: v for k, v in d.items() if v}}
+        return {self.variable_name: {k: v for k, v in list(d.items()) if v}}
 
     page = models.ForeignKey('ask.AskPage', null=True, blank=True)
     scoresheet = models.ForeignKey('signalbox.ScoreSheet', blank=True, null=True)
@@ -196,13 +196,13 @@ class Question(models.Model):
         if reply and reply.asker and fc.compute_scores:
             context['scores'] = self.page.summary_scores(reply)
             # put actual values into main namespace too
-            context.update({k: v.get('score', None) for k, v in context['scores'].items()})
+            context.update({k: v.get('score', None) for k, v in list(context['scores'].items())})
 
         if fc.allow_showing_answers and reply:
             context['answers'] = {i.variable_name(): int_or_string(i.answer) for i in reply.answer_set.all()}
 
         for i in self.questionasset_set.all():
-            context[i.slug] = unicode(i)
+            context[i.slug] = str(i)
         from django.template.base import VariableDoesNotExist
         try:
             return markdown.markdown(templ.render(Context(context)))
@@ -301,25 +301,25 @@ class Question(models.Model):
     def __unicode__(self):
         return truncatelabel(self.variable_name, 26)
 
-    MARKDOWN_FORMAT = u"""~~~{{{variable_name} {classes} {keyvals}}}\n{text}\n{details}\n~~~"""
+    MARKDOWN_FORMAT = """~~~{{{variable_name} {classes} {keyvals}}}\n{text}\n{details}\n~~~"""
 
     def as_markdown(self):
 
         iden = "#" + self.variable_name
         if self.extra_attrs:
             classes = self.extra_attrs.pop('classes', {})
-            classesstring = " ".join([".{}".format(k) for k, v in classes.items() if v])
+            classesstring = " ".join([".{}".format(k) for k, v in list(classes.items()) if v])
         else:
             classesstring = ".{}".format(self.q_type)
 
         keyvals = self.extra_attrs or {}
-        keyvalsstring = " ".join(["""{}="{}\"""".format(k, v) for k, v in keyvals.items()])
+        keyvalsstring = " ".join(["""{}="{}\"""".format(k, v) for k, v in list(keyvals.items())])
 
         detailsstring = ""
         if self.choiceset:
-            detailsstring = u">>>\n" + self.choiceset.as_markdown()
+            detailsstring = ">>>\n" + self.choiceset.as_markdown()
         elif self.scoresheet:
-            detailsstring = u">>>\n" + self.scoresheet.as_markdown()
+            detailsstring = ">>>\n" + self.scoresheet.as_markdown()
 
         return self.MARKDOWN_FORMAT.format(**{
             'variable_name': iden,
@@ -400,7 +400,7 @@ class Choice(models.Model):
 
     order = models.IntegerField(db_index=True, help_text="""Order in which the choices are displayed.""")
 
-    label = models.CharField(u"Label", max_length=200, blank=True, null=True)
+    label = models.CharField("Label", max_length=200, blank=True, null=True)
 
     score = models.IntegerField(help_text="This is the value saved in the DB")
 
@@ -408,7 +408,7 @@ class Choice(models.Model):
         help_text="""The value to be used when computing scoresheets. Does not affect what is stored or exported.""")
 
     def __unicode__(self):
-        return u'%s (%s)' % (self.label, self.score)
+        return '%s (%s)' % (self.label, self.score)
 
     class Meta:
         app_label = 'ask'
@@ -439,7 +439,7 @@ class ChoiceSet(models.Model):
             {'score': i.score, 'label': i.label, 'is_default_value': i.is_default_value}
             for i in self.get_choices()}
         # comprehension to filter out null values to make things clearer to edit by hand
-        sd = {k: {a: b for a, b in v.items() if b is not None} for k, v in sd.items()}
+        sd = {k: {a: b for a, b in list(v.items()) if b is not None} for k, v in list(sd.items())}
         return {self.name: sd}
 
     @contract
@@ -448,12 +448,12 @@ class ChoiceSet(models.Model):
         :returns: The default value of the choiceset
         :rtype: int|None
         """
-        choices = filter(lambda x: x.is_default_value, self.get_choices())
+        choices = [x for x in self.get_choices() if x.is_default_value]
         if choices:
             return int(getattr(choices[0], 'is_default_value'))
 
     def values_as_json(self):
-        choices = dict([(unicode(i.score), unicode(i.label)) for i in self.get_choices()])
+        choices = dict([(str(i.score), str(i.label)) for i in self.get_choices()])
         return json.dumps(choices, indent=4, sort_keys=True)
 
     @contract
@@ -464,7 +464,7 @@ class ChoiceSet(models.Model):
         """
         return [(int(i.score), i.label) for i in self.get_choices()]
 
-    MARKDOWN_FORMAT = u"""{isdefault}{score}{mapped_score}={label} """
+    MARKDOWN_FORMAT = """{isdefault}{score}{mapped_score}={label} """
 
     def as_markdown(self):
         if not self.yaml:
@@ -484,7 +484,7 @@ class ChoiceSet(models.Model):
                 'label': c['label'],
             }
             )
-            for i, c in self.yaml.items()])
+            for i, c in list(self.yaml.items())])
 
     # synonym in case we want to change display
     choices_as_string = lambda self: self.as_markdown()
@@ -504,7 +504,7 @@ class ChoiceSet(models.Model):
                     [Choice(choiceset=self, score=choice.get('score'),
                     mapped_score=choice.get('mapped_score', choice.get('score')),
                     is_default_value=choice.get('isdefault', False), label=choice.get('label', ''), order=i)
-                    for i, choice in self.yaml.items()],
+                    for i, choice in list(self.yaml.items())],
                     key=lambda x: x.order)
             except:
                 return []
@@ -522,7 +522,7 @@ class ChoiceSet(models.Model):
         return [int(i.score) for i in self.get_choices()]
 
     def __unicode__(self):
-        return u'%s' % (self.name, )
+        return '%s' % (self.name, )
 
     class Meta:
         app_label = 'ask'
@@ -576,12 +576,12 @@ class ShowIf(models.Model):
 
         if self.values:
             valid_value_set = set(self.valid_values())
-            vals_to_be_tested = map(str, vals_to_be_tested)
+            vals_to_be_tested = list(map(str, vals_to_be_tested))
             return bool(not valid_value_set.isdisjoint(vals_to_be_tested))
 
         if (self.more_than or self.less_than):
             inrange = lambda x: x > self.more_than and x < self.less_than
-            return False not in map(inrange, vals_to_be_tested)
+            return False not in list(map(inrange, vals_to_be_tested))
 
     def lowest(self):
         """Return a number that the user's previous response should be higher than"""
@@ -601,7 +601,7 @@ class ShowIf(models.Model):
 
         if self.values and supergetattr(self, 'previous_question.choices', None):
             possibles = set(self.previous_question.choiceset.allowed_responses())
-            vals = set(filter(bool, map(valid.is_int, self.values.split(","))))
+            vals = set(filter(bool, list(map(valid.is_int, self.values.split(",")))))
             if not vals.issubset(possibles):
                 raise ValidationError("""Valid choices for the selected question are: %s""" % (
                     "; ".join(map(str, possibles)), ))

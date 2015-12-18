@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 from shortuuidfield import ShortUUIDField
 from signalbox.models.scoresheet import ScoreSheet
 from signalbox.utilities.linkedinline import admin_edit_url
-from answer import Answer
+from .answer import Answer
 from signalbox.process import Step, ProcessManager
 from signalbox.signals import sbox_anonymous_reply_complete
 from signalbox.utilities.djangobits import supergetattr
@@ -88,10 +88,10 @@ class Reply(models.Model, ProcessManager):
 
         # add any additional answers - should just be page_id really
         remaining_variables = set(unordered_anwers) - set(ordered_answers)
-        map(
+        list(map(
             lambda x: ordered_answers.append(
                 answers_dict.get(x.variable_name(), x)),
-            remaining_variables)
+            remaining_variables))
 
         return ordered_answers
 
@@ -105,7 +105,7 @@ class Reply(models.Model, ProcessManager):
             supergetattr(i, 'question.variable_name', i.other_variable_name): i.answer
             for i in self.answer_set.all()
         }
-        mapping.update({k: v.get('score', None) for k, v in self.asker.summary_scores(self).items()})
+        mapping.update({k: v.get('score', None) for k, v in list(self.asker.summary_scores(self).items())})
         return mapping
 
     def add_data(self, key, value):
@@ -169,7 +169,7 @@ class Reply(models.Model, ProcessManager):
                         help_text="""Reference for external API, e.g. Twilio""")
 
     entry_method = models.CharField(
-        choices=[(k, v) for k, v in ENTRY_METHOD_LOOKUP.items()],
+        choices=[(k, v) for k, v in list(ENTRY_METHOD_LOOKUP.items())],
         max_length=100, null=True, blank=True,)
 
     notes = models.TextField(null=True, blank=True,)

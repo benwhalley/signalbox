@@ -7,6 +7,8 @@ observations and allocating memberships to StudyConditions automatically, if
 required by the Study. See https://docs.djangoproject.com/en/dev/topics/signals/
 
 """
+from __future__ import print_function
+
 from functools import wraps
 import itertools
 import logging
@@ -67,8 +69,8 @@ def _check_alert_and_save_alertinstance(alert, reply):
 
     if meetscriteria:
         if alertcount > 0:
-            print >> sys.stderr, "Alert triggered for reply {} but not sending another message".format(
-                reply.id)
+            print("Alert triggered for reply {} but not sending another message".format(
+                reply.id), file=sys.stderr)
             return
 
         ai = AlertInstance(reply=reply, alert=alert)

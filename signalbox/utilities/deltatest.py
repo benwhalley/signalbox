@@ -87,7 +87,7 @@ month_matches_ = [MatchFirst([CL(j), CL(j[:3])]).setParseAction(replaceWith(i))
 monthname = MatchFirst(month_matches_).setResultsName('month')
 nth_ = Suppress(oneOf(['st', 'nd', 'rd','th' ]))
 day_matches_ = [(CL(str(i))  + nth_ ).setParseAction(lambda t:int(t[0]))
-    for i in reversed(range(1,32))]
+    for i in reversed(list(range(1,32)))]
 monthday = (MatchFirst(day_matches_)).setResultsName('day')
 year = Word(nums,exact=4).setResultsName('year').setParseAction(lambda y: int(y[0]) )
 
@@ -192,6 +192,6 @@ def _proc_repeats(toks):
 repeating.setParseAction(_proc_repeats)
 
 
-print repeating.parseString("now")
-print repeating.parseString("every monday from thursday")
-print repeating.parseString("every monday for 2 weeks from 1 jun 2014")
+print(repeating.parseString("now"))
+print(repeating.parseString("every monday from thursday"))
+print(repeating.parseString("every monday for 2 weeks from 1 jun 2014"))

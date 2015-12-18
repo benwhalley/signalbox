@@ -16,7 +16,7 @@ from signalbox.lookups import UserLookup, MembershipLookup
 from signalbox.utilities.linkedinline import LinkedInline
 from signalbox.models import *
 from signalbox.allocation import *
-from views import *
+from .views import *
 from django.conf import settings
 
 if settings.USE_VERSIONING:
@@ -37,10 +37,10 @@ class ConditionInline(admin.StackedInline):
 class StudyAdminForm(forms.ModelForm):
 
     def clean(self):
-        problemscripts = filter(lambda x: x.asker is None, self.cleaned_data.get('ad_hoc_scripts', []))
+        problemscripts = [x for x in self.cleaned_data.get('ad_hoc_scripts', []) if x.asker is None]
         if problemscripts:
             raise ValidationError("All ad-hoc scripts must link to a Questionnaire ({})".format(
-                ", ".join(map(lambda x: x.name, problemscripts)))
+                ", ".join([x.name for x in problemscripts]))
             )
 
         return self.cleaned_data

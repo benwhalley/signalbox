@@ -14,8 +14,8 @@ from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.forms.models import model_to_dict
-from page import AskPage
-from question import Question
+from .page import AskPage
+from .question import Question
 from signalbox.utilities.djangobits import supergetattr, flatten, dict_map
 from signalbox.utilities.linkedinline import admin_edit_url
 from yamlfield.fields import YAMLField
@@ -126,7 +126,7 @@ class Asker(models.Model):
         :rtype: list
         """
 
-        questionsbypage = map(lambda i: i.get_questions(reply=reply), self.askpage_set.all())
+        questionsbypage = [i.get_questions(reply=reply) for i in self.askpage_set.all()]
 
         for i, pagelist in enumerate(questionsbypage):
             for q in pagelist:
@@ -159,7 +159,7 @@ class Asker(models.Model):
         another signalbox instance (or 3rd party system) with the
         exception of question assets."""
 
-        _asdict = lambda object, fields: {i: unicode(supergetattr(object, i)) for i in fields}
+        _asdict = lambda object, fields: {i: str(supergetattr(object, i)) for i in fields}
 
         pages = self.askpage_set.all()
         questionlists = [i.get_questions() for i in pages]

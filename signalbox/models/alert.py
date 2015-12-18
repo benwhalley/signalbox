@@ -1,12 +1,14 @@
+from __future__ import print_function
+
 import sys
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.conf import settings
 from twiliobox.models import TwilioNumber
 from signalbox.models import Observation
-from validators import is_mobile_number
+from .validators import is_mobile_number
 from phonenumber_field.modelfields import PhoneNumberField
-from observation_helpers import send_email, send_sms
+from .observation_helpers import send_email, send_sms
 from signalbox.utilities.mixins import TimeStampedModel
 
 
@@ -43,12 +45,12 @@ class AlertInstance(TimeStampedModel):
         if self.alert.email:
             _from = self.reply.observation.dyad.study.study_email
             send_email([self.alert.email], _from, subject, message)
-            print >> sys.stderr, "sent alert email for reply {}".format(self.reply.id)
+            print("sent alert email for reply {}".format(self.reply.id), file=sys.stderr)
 
         if self.alert.mobile:
             _from = TwilioNumber.objects.get(is_default_account=True).phone_number
             send_sms(self.alert.mobile, _from, "{}\n{}".format(subject, message))
-            print >> sys.stderr, "sent alert SMS for reply {}".format(self.reply.id)
+            print("sent alert SMS for reply {}".format(self.reply.id), file=sys.stderr)
 
     def __unicode__(self):
         return "Alert: {} {} ({})".format(self.alert.alerted_who(),

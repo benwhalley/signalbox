@@ -1,10 +1,10 @@
 from datetime import datetime
 import itertools
 from django.conf import settings
-from answer import Answer
+from signalbox.models.answer import Answer
 from contracts import contract
 from django.db import models
-from observation import Observation
+from signalbox.models.observation import Observation
 from signalbox.utilities.linkedinline import admin_edit_url
 from signalbox.utils import proportion
 

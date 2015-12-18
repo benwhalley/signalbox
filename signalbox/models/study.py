@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import division
+
 
 from datetime import datetime, timedelta
 import itertools
@@ -17,7 +17,7 @@ from django.template import Context, loader
 from signalbox.models import Reply, Answer
 from signalbox.models.validators import is_24_hour, only_includes_allowed_fields
 from signalbox.utils import incomplete, in_range
-from stats.stats import chisquare
+# from stats.stats import chisquare
 from signalbox.s3 import CustomS3BotoStorage
 from yamlfield.fields import YAMLField
 
@@ -143,8 +143,8 @@ class Study(models.Model):
         `working_day_ends` fields."""
 
         hour = hour or datetime.now().time().hour
-        workinghours = range(
-            self.working_day_starts, self.working_day_ends - 1)
+        workinghours = list(range(
+            self.working_day_starts, self.working_day_ends - 1))
         if hour in workinghours:
             return True
         return False
@@ -239,20 +239,20 @@ class Study(models.Model):
         ordering = ["name"]
         verbose_name_plural = "studies"
 
-    @contract
-    def chisq_imbalance(self):
-        """Returns the chi2 and p value for the imbalance in allocations.
+    # @contract
+    # def chisq_imbalance(self):
+    #     """Returns the chi2 and p value for the imbalance in allocations.
 
-        That is, between current membership allocations and the expected
-        frequencies based on the StudyCondition weights.
+    #     That is, between current membership allocations and the expected
+    #     frequencies based on the StudyCondition weights.
 
-        :rtype: tuple(float, float)
-        """
-        conditions = self.studycondition_set.all()
-        counts = [i.users.count() for i in conditions]
-        expected = [i.expected_n() for i in conditions]
+    #     :rtype: tuple(float, float)
+    #     """
+    #     conditions = self.studycondition_set.all()
+    #     counts = [i.users.count() for i in conditions]
+    #     expected = [i.expected_n() for i in conditions]
 
-        return chisquare(counts, expected)
+    #     return chisquare(counts, expected)
 
     def get_absolute_url(self):
         return reverse('study', args=(self.pk,))
@@ -263,7 +263,7 @@ class Study(models.Model):
             raise ValidationError("""Observations can only be added automatically
                 when participants are automatically randomised to a condition.""")
 
-        needtwilio = bool(sum(map(lambda x: x.script_type.require_study_ivr_number, self.scripts_used_by_this_study())))
+        needtwilio = bool(sum([x.script_type.require_study_ivr_number for x in self.scripts_used_by_this_study()]))
         if needtwilio and not self.twilio_number:
             raise ValidationError("This study uses Scripts which will make calls and require Twilio account details.")
 

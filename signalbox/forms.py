@@ -210,11 +210,11 @@ class UserProfileForm(forms.ModelForm):
             setattr(self.fields[k], 'required', True)
 
         # but delete if not needed as visible
-        for k, v in self.fields.items():
+        for k, v in list(self.fields.items()):
             if k not in visible_fields:
                 del self.fields[k]
 
-        self.num_fields = len(filter(bool, visible_fields))
+        self.num_fields = len(list(filter(bool, visible_fields)))
 
     class Meta:
         model = UserProfile

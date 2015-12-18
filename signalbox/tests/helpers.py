@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from signalbox.models import Membership, Study, Observation
 from signalbox.allocation import allocate
 
-LONG_YUCKY_UNICODE = u"""Testing «ταБЬℓσ»: 1<2 & 4+1>3, now 20% off! ٩(-̮̮̃-̃)
+LONG_YUCKY_UNICODE = """Testing «ταБЬℓσ»: 1<2 & 4+1>3, now 20% off! ٩(-̮̮̃-̃)
 ۶ ٩(●̮̮̃•̃)۶ ٩(͡๏̯͡๏)۶ ٩(-̮̮̃•̃).Bãｃòｎ ｉｐｓûｍ Ꮷｏｌòｒ ｓïｔ âｍêｔ òｃｃａé
 ｃáｔ ｋïéｌｂäｓâ ｃåｐïｃｏｌà, ｃｈùｃｋ ｐｏｒｋ ｂéｌｌｙ íｎ àｌïｑûïｐ ｍ
 éａｔｌòåｆ ｍòｌｌíｔ êｎíｍ ëｘ ｐｒòｓｃïüｔｔò âｎｄｏüｉｌｌｅ ｂèëｆ ｒíｂ
@@ -39,7 +39,7 @@ def make_user(details, profile_details=None):
 
     if profile_details:
         profile = user.userprofile
-        [setattr(profile, k, v) for k,v in profile_details.items()]
+        [setattr(profile, k, v) for k,v in list(profile_details.items())]
 
 
     return user

@@ -5,7 +5,7 @@ from django.template import RequestContext, Context, Template, loader
 from django.contrib.auth.decorators import login_required, permission_required
 
 from django import forms
-from django.core.context_processors import csrf
+from django.template.context_processors import csrf
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib import messages
 
@@ -42,7 +42,7 @@ def send_usermessage(request, username=None, message_type='Email'):
             result = usermessage.send()
             messages.add_message(request, messages.INFO, "Message sent.")
             return http.HttpResponseRedirect(reverse('participant_overview', args=(usermessage.message_to.id,)) + "#tabmessages")
-        except Exception, e:
+        except Exception as e:
             messages.add_message(request, messages.WARNING, "Message not sent: " + str(e))
 
     return render_to_response('manage/user_message.html', {'form':form}, RequestContext(request))

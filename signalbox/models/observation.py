@@ -21,12 +21,12 @@ from ask.models import Question
 from signalbox.exceptions import CategoryErrorException
 from signalbox.utils import pretty_datetime, current_site_url
 from signalbox.exceptions import DataProtectionException
-import observation_timing_functions as tf
-import observation_methods.default as default
-import observation_helpers as hlp
-from reply import Reply
-from answer import Answer
-from schedule import ScriptReminder
+from signalbox.models import observation_timing_functions as tf
+from signalbox.models.observation_methods import  default as default
+from signalbox.models import observation_helpers as hlp
+from signalbox.models.reply import Reply
+from signalbox.models.answer import Answer
+from signalbox.models.schedule import ScriptReminder
 from signalbox.utilities.djangobits import supergetattr
 
 
@@ -103,7 +103,7 @@ class ReminderInstance(models.Model):
         verbose_name_plural = "Reminders sent"
 
     def __unicode__(self):
-        return u"%s (reminder) due at %s" % (self.reminder, pretty_datetime(self.due))
+        return "%s (reminder) due at %s" % (self.reminder, pretty_datetime(self.due))
 
 
 class ObservationManager(models.Manager):
@@ -560,7 +560,7 @@ class Observation(models.Model):
         app_label = 'signalbox'
 
     def __unicode__(self):
-        return u"%s %s" % (self.id, self.label)
+        return "%s %s" % (self.id, self.label)
 
 
 class ObservationData(models.Model):

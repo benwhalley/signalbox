@@ -37,7 +37,7 @@ from signalbox.lookups import UserLookup, MembershipLookup, ObservationLookup
 from django.contrib.auth.forms import PasswordResetForm
 
 from django.views.generic.detail import SingleObjectMixin
-from download_view import DownloadView
+from .download_view import DownloadView
 
 from django.core.exceptions import PermissionDenied
 from signalbox.models.naturaltimes import parse_natural_date
@@ -253,7 +253,7 @@ def preview_timings_as_txt(request):
     syntax = request.POST.get("syntax", "")
     if not syntax:
         raise Http404
-    dates = map(parse_natural_date, syntax.splitlines())
+    dates = list(map(parse_natural_date, syntax.splitlines()))
     output = templ.render(Context({'object_list': dates}))
     return HttpResponse(output)
 
@@ -278,7 +278,7 @@ def preview_timings(request, klass="Study", pk=None):
     datelist = itertools.chain(
         *[[(i, j['script']) for i in j['times']] for j in datelist])
 
-    datelist = filter(lambda x: bool(x[0]['datetime']), datelist)
+    datelist = [x for x in datelist if bool(x[0]['datetime'])]
     datelist = sorted(list(datelist), key=operator.itemgetter(0))
     extra = {'dl': datelist, 'object': obj, 'object_type': obj.__class__.__name__}
     return render_to_response('admin/signalbox/rule_preview.html', extra, RequestContext(request))

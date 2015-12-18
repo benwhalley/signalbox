@@ -6,13 +6,13 @@ class ExtraContextView(TemplateView):
 
     Usage example:
 
-        urlpatterns = patterns('',
+        urlpatterns = [
             (r'^myurl/$', ExtraContextView.as_view(
                 template_name='mytemplate.html',
                 extra_context={
                     ...
                 },
-            )),
+            )]
 
     """
     extra_context = {}

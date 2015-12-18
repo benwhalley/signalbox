@@ -8,4 +8,4 @@ def parse_natural_date(date_str):
     try:
         return (ntime.parseString(date_str).datetime, None)
     except Exception as e:
-        return (None, date_str + ": " + unicode(e))
+        return (None, date_str + ": " + str(e))

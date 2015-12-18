@@ -6,13 +6,13 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from signalbox.phone_field import PhoneNumber
 from django.utils.safestring import mark_safe
-from naturaltimes import parse_natural_date
+from .naturaltimes import parse_natural_date
 
 
 def valid_natural_datetime(value):
     output = "relative to now (%s) <pre>   "
 
-    results, errors = zip(*[parse_natural_date(t) for t in value.splitlines()])
+    results, errors = list(zip(*[parse_natural_date(t) for t in value.splitlines()]))
 
     if sum([bool(i) for i in errors if i]):
         raise ValidationError(", ".join([i for i in errors if i]))
@@ -96,7 +96,7 @@ def is_landline(value):
 
 def is_number_from_study_area(value):
     from signalbox.models import Study
-    VALID_COUNTRY_CODES = set(map(lambda x: int(x.valid_telephone_country_codes), Study.objects.all()))
+    VALID_COUNTRY_CODES = set([int(x.valid_telephone_country_codes) for x in Study.objects.all()])
 
     if value.country_code not in VALID_COUNTRY_CODES:
         raise ValidationError("Country code not allowed.")

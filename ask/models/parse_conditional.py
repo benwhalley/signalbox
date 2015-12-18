@@ -13,7 +13,7 @@ def parse_conditional(condition, mapping_of_answers, SHOW_IF_NO_INFORMATION=True
     if not condition:
         return True
 
-    map_tuples = [(i,int_or_None(j)) for i, j in mapping_of_answers.items()
+    map_tuples = [(i,int_or_None(j)) for i, j in list(mapping_of_answers.items())
         if i and isinstance(int_or_None(j), int)]
 
     if not map_tuples:
@@ -37,9 +37,9 @@ def parse_conditional(condition, mapping_of_answers, SHOW_IF_NO_INFORMATION=True
     try:
         return expression.parseString(condition)[0]
     except NameError as e:
-        print "Error parsing conditional showif for question:"
-        print condition, mapping_of_answers
-        print e
+        print("Error parsing conditional showif for question:")
+        print(condition, mapping_of_answers)
+        print(e)
 
         # if we are missing one of the variables shown we default to showing the question
         return SHOW_IF_NO_INFORMATION

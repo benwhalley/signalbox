@@ -8,16 +8,16 @@ def checkyamlchoiceset(yaml):
     if not isinstance(yaml, dict):
         raise ValidationError("Choicesets must be dictionaries of items.")
 
-    if not len(yaml.keys()) == sum([isinstance(i, int) for i in yaml.keys()]):
+    if not len(list(yaml.keys())) == sum([isinstance(i, int) for i in list(yaml.keys())]):
         raise ValidationError("All orders need to be integers.")
 
-    if sum([not isinstance(v.get('is_default_value', False), bool) for k, v in yaml.items()]):
+    if sum([not isinstance(v.get('is_default_value', False), bool) for k, v in list(yaml.items())]):
         raise ValidationError("All is_default_value items must be boolean")
 
-    if sum([v.get('is_default_value', False) for k, v in yaml.items()]) > 1:
+    if sum([v.get('is_default_value', False) for k, v in list(yaml.items())]) > 1:
         raise ValidationError("No more than one default allowed.")
 
-    if sum([not isinstance(v.get('score'), int) for k, v in yaml.items()]):
+    if sum([not isinstance(v.get('score'), int) for k, v in list(yaml.items())]):
         raise ValidationError("All scores must be integers")
 
 
@@ -62,7 +62,7 @@ def first_char_is_alpha(value):
 # a-z), digits (0-9), and underscores (_). The first character of a name
 # must be a letter or an underscore.
 
-LEGAL_STATA_CHARS = set('_-' + string.lowercase + string.uppercase + string.digits)
+LEGAL_STATA_CHARS = set('_-' + string.ascii_lowercase + string.ascii_uppercase + string.digits)
 ILLEGAL_STATA_CHARS = set(string.printable) - LEGAL_STATA_CHARS
 
 

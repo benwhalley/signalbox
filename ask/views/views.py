@@ -37,7 +37,7 @@ def mock_page(questions):
     page = AskPage(asker=Asker(id=99999999))
     page.save()
     [setattr(i, 'page', page) for i in questions]
-    [setattr(i, 'order', j) for i, j in zip(questions, range(len(questions)))]
+    [setattr(i, 'order', j) for i, j in zip(questions, list(range(len(questions))))]
     return page  # remember to delete it, along with questions later
 
 

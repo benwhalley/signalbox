@@ -42,10 +42,10 @@ class ProcessManager(object):
         """Return whether a step should be available or not, and whether all questions have non-null responses."""
         if not self.asker.steps_are_sequential:
             return [(i, True) for i in self]
-        steps, isvalids, iscompletes = zip(*self.progress())
+        steps, isvalids, iscompletes = list(zip(*self.progress()))
         seqs = [((True,) + isvalids[0:i]) for i in range(1, len(isvalids) + 1)]
         isvalids = [bool(min((i[0:-1]))) for i in seqs]
-        return zip(steps, isvalids, iscompletes)
+        return list(zip(steps, isvalids, iscompletes))
 
     def validate_step(self, step, *args, **kwargs):
         try:
@@ -69,5 +69,5 @@ class ProcessManager(object):
         return errors
 
     def is_complete(self, *args, **kwargs):
-        steps, done, _ = zip(*self.progress())
+        steps, done, _ = list(zip(*self.progress()))
         return bool(min(done))

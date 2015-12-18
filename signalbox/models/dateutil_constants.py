@@ -8,7 +8,7 @@
  DAILY,
  HOURLY,
  MINUTELY,
- SECONDLY) = range(7)
+ SECONDLY) = list(range(7))
 
 FREQ_MAP = {"YEARLY": YEARLY,
              "MONTHLY": MONTHLY,
@@ -18,10 +18,10 @@ FREQ_MAP = {"YEARLY": YEARLY,
              "MINUTELY": MINUTELY,
              "SECONDLY": SECONDLY}
 
-MO, TU, WE, TH, FR, SA, SU = range(7)
+MO, TU, WE, TH, FR, SA, SU = list(range(7))
 
 WEEKDAY_MAP = {"MO":0,"TU":1,"WE":2,"TH":3,"FR":4,"SA":5,"SU":6}
-WEEKDAY_TUPLES = [(v,k) for k,v in WEEKDAY_MAP.items()]
+WEEKDAY_TUPLES = [(v,k) for k,v in list(WEEKDAY_MAP.items())]
 WEEKDAY_TUPLES = sorted(WEEKDAY_TUPLES)
 WEEKDAY_TUPLES = [(k,k) for j,k in WEEKDAY_TUPLES]
 

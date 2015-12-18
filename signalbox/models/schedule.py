@@ -7,22 +7,22 @@ import itertools as it
 from dateutil import *
 from dateutil.parser import *
 from dateutil.rrule import *
-from dateutil_constants import *
+from .dateutil_constants import *
 from django.contrib.humanize.templatetags.humanize import ordinal
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.template import Context, Template
-from naturaltimes import parse_natural_date
+from .naturaltimes import parse_natural_date
 from signalbox.utilities.djangobits import render_string_with_context, safe_help
 from signalbox.utilities.djangobits import supergetattr
 from signalbox.utilities.linkedinline import admin_edit_url
 from signalbox.utils import csv_to_list
-import validators as v
+from . import validators as v
 
 
 
 
-NATURAL_DATE_SYNTAX_HELP = safe_help(u"""
+NATURAL_DATE_SYNTAX_HELP = safe_help("""
 Each line in this field will be read as a date on which to make an observation
 when the script is executed. By default each date is created relative to the
 current date and time at midnight. For example, if a user signed up when this
@@ -446,7 +446,7 @@ will not result in an error, but won't produce any output either. """))
                 'dtstart': self.calculate_start_datetime(start_date=start_date)
             }
             # filter out properties with null values
-            kwargs = dict([(k, v) for k, v in kwargs.items() if v])
+            kwargs = dict([(k, v) for k, v in list(kwargs.items()) if v])
 
             # return an rrule iterator containing the dates
             return rrule(FREQ_MAP[self.repeat], **kwargs)
@@ -456,7 +456,7 @@ will not result in an error, but won't produce any output either. """))
         from signalbox.models import Observation
 
         times = self.datetimes(membership.date_randomised)
-        times_indexes = zip(times, xrange(1, len(list(times)) + 1))
+        times_indexes = list(zip(times, list(range(1, len(list(times)) + 1))))
 
         observations = []
         for time, index in times_indexes:
@@ -500,4 +500,4 @@ will not result in an error, but won't produce any output either. """))
             raise
 
     def __unicode__(self):
-        return u'(%s) %s' % (self.reference, self.name)
+        return '(%s) %s' % (self.reference, self.name)

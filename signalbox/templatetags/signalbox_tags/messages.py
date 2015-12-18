@@ -25,13 +25,13 @@ class MessagesNode(template.Node):
             out_str = ''
 
             d = {}
-            for level, tag in sorted(grouped.iterkeys()):
+            for level, tag in sorted(grouped.keys()):
                 d[tag] = grouped[(level, tag)]
 
             context['sorted_messages'] = d
             return ""
 
-            for level, tag in sorted(grouped.iterkeys()):
+            for level, tag in sorted(grouped.keys()):
                 out_str += '<div class="messages %s">\n<ul class="messages-list-%s">' % (tag,tag)
                 for m in grouped[(level, tag)]:
                     out_str += '<li>%s</li>' % (m)

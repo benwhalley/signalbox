@@ -4,13 +4,13 @@ from ask.models import Asker
 from ask.views import preview_asker, show_page, start_anonymous_survey
 from ask.views import print_asker, show_codebook, preview_questions
 from ask.views.asker_text_editing import edit_asker_as_text
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import DetailView
 from signalbox.decorators import group_required
 from signalbox.views.replies import *
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^asker/(?P<asker_id>\d+)/text/$', edit_asker_as_text,
         name="edit_asker_as_text"),
 
@@ -26,4 +26,4 @@ urlpatterns = patterns('',
                 )
             ),
             name="export_asker"),
-)
+]

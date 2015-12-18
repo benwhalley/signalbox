@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 from django.db import models
 from django.forms.models import model_to_dict
@@ -63,7 +63,7 @@ class ScoreSheet(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.function)
 
-    MARKDOWN_FORMAT = u"""\n{name} <- {function}({variable_string})"""
+    MARKDOWN_FORMAT = """\n{name} <- {function}({variable_string})"""
 
     def as_markdown(self):
         d = model_to_dict(self)

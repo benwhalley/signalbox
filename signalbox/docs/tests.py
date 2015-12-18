@@ -30,7 +30,7 @@ coverage = coverage.coverage()
 
 def test_runner_with_coverage(test_labels, verbosity=1, interactive=True, extra_tests=[]):
   """Custom test runner.  Follows the django.test.simple.run_tests() interface."""
-  print "cs test_runner_with_coverage " + str(getattr(settings, 'COVERAGE_MODULES')) + " , " + str(test_labels)
+  print("cs test_runner_with_coverage " + str(getattr(settings, 'COVERAGE_MODULES')) + " , " + str(test_labels))
   
   coverage.use_cache(0) # Do not cache any of the coverage.py stuff
   coverage.start()

@@ -9,7 +9,7 @@ from django.conf import settings
 import floppyforms as forms
 from signalbox.models.listeners import user_input_received
 from ask.models.fields import FIELD_NAMES
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_text
 import ask.validators as valid
 from ask.utils import statify
 from twilio import twiml
@@ -28,7 +28,7 @@ class PageForm(forms.Form):
 
         reply = kwargs.pop('reply')
         page = kwargs.pop('page')
-        for key, val in self.cleaned_data.iteritems():
+        for key, val in self.cleaned_data.items():
             save_question_response(val, reply, page, variable_name=key)
 
         # broadcast a signal

@@ -241,7 +241,7 @@ class NTime(object):
         monthname = MatchFirst(month_matches_).setResultsName('month')
         nth_ = Suppress(oneOf(['st', 'nd', 'rd','th' ]))
         day_matches_ = [(CL(str(i))  + nth_ ).setParseAction(lambda t:int(t[0]))
-            for i in reversed(range(1,32))]
+            for i in reversed(list(range(1,32)))]
         monthday = (MatchFirst(day_matches_)).setResultsName('day')
         year = Word(nums,exact=4).setResultsName('year').setParseAction(lambda y: int(y[0]) )
 

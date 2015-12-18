@@ -14,20 +14,19 @@ from django.core.exceptions import ImproperlyConfigured
 from django.http import Http404
 from django.template import Context, Template
 from django.utils.safestring import mark_safe
-import hotshot
 import markdown
 from django.conf import settings
 
 
 safe_help = lambda x: mark_safe(markdown.markdown(x))
-dict_map = lambda f, d: {k: f(v) for k, v in d.items()}
+dict_map = lambda f, d: {k: f(v) for k, v in list(d.items())}
 
 
 def int_or_None(thing):
     try:
         return int(thing)
     except Exception as e:
-        print e
+        print(e)
         return None
 
 
@@ -49,8 +48,8 @@ def get_or_modify(klass, lookups, params):
     """
     ob, created = klass.objects.get_or_create(**lookups)
     mods = []
-    klassfields = map(lambda x: getattr(x, "name"), klass.__dict__['_meta'].fields)
-    for k, v in params.iteritems():
+    klassfields = [getattr(x, "name") for x in klass.__dict__['_meta'].fields]
+    for k, v in params.items():
         if k in klassfields:  # ignore extra fields by default
             mods.append(not getattr(ob, k) == v)
             setattr(ob, k, v)
@@ -101,7 +100,7 @@ def int_or_string(string):
 
 def flatten(l):
     for el in l:
-        if isinstance(el, collections.Iterable) and not isinstance(el, basestring):
+        if isinstance(el, collections.Iterable) and not isinstance(el, str):
             for sub in flatten(el):
                 yield sub
         else:
@@ -122,7 +121,7 @@ def supergetattr(obj, field, default=None, required=False, call=True):
     try:
         for f in fields:
             obj = getattr(obj, f)
-        if callable(obj):
+        if isinstance(obj, collections.Callable):
             return obj()
         return obj
     except AttributeError:
