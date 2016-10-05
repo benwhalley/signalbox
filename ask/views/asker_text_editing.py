@@ -13,7 +13,7 @@ import re
 
 from ask import validators as vals
 from ask.models import Asker, ChoiceSet, Question, AskPage, Choice, ShowIf
-from ask.views.parse_definitions import (block, yaml_header, make_question_dict, 
+from ask.views.parse_definitions import (block, yaml_header, make_question_dict,
     make_page_dict, add_scoresheet_to_question, ispage, isnotpage)
 from ask.yamlextras import yaml
 import ast
@@ -41,7 +41,7 @@ def append_error_to_form(form, field, error):
         d[field] = d[field].append(error)
     except KeyError:
         d[field] = error
-    return 
+    return
 
 
 class TextEditForm(forms.Form):
@@ -49,7 +49,7 @@ class TextEditForm(forms.Form):
     text = forms.CharField(required=True,
         widget=forms.widgets.Textarea(attrs={'rows': 100, 'class': "mousetrap",}))
 
-        
+
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         self.asker = kwargs.pop('asker')
@@ -77,14 +77,14 @@ class TextEditForm(forms.Form):
         # check variable names are valid and not used in other questionnaires
         variable_names = [i.iden for i in filter(isnotpage, blocks)]
 
-        
+
         naughtyquestions = Question.objects.filter(variable_name__in=variable_names).exclude(page__asker=asker)
         if naughtyquestions.count():
             raise forms.ValidationError(
                 "Some variable names are already in use by other questionnaires ({})".format(
                     ", ".join([i.variable_name for i in naughtyquestions])))
 
-        
+
         # check all variables specified in scoresheets can be found
         scshts = [i for i in blocks if i.calculated_score]
         for i in scshts:
@@ -120,15 +120,15 @@ class TextEditForm(forms.Form):
         pages_d = padleft(pages_d, len(questionsbypage), {})
 
         [j.update({'asker': asker, 'order': i}) for i, j in enumerate(pages_d)]
-        new_pages = [get_or_modify(AskPage, {'asker': asker, 'order': i['order']}, i) 
+        new_pages = [get_or_modify(AskPage, {'asker': asker, 'order': i['order']}, i)
             for i in pages_d]
 
         questionsbypage_dicts = [[make_question_dict(i) for i in j] for j in questionsbypage]
 
         # add askpages and ordering to questions
         [[q.update({'page': p, 'order': i}) for i, q in enumerate(plist)]
-            for plist, p in zip(questionsbypage_dicts, zip(*new_pages)[0])]
-        
+            for plist, p in zip(questionsbypage_dicts, list(zip(*new_pages))[0])]
+
         # make question objects in format [(question, created, modified), ...]
         questionsbypage_obs = [[get_or_modify(Question, {'variable_name': q['variable_name']}, q)
             for q in page] for page in questionsbypage_dicts]
@@ -157,21 +157,21 @@ class TextEditForm(forms.Form):
         try:
             # wrap in transaction because is-valid shouldn't have has side effects in the DB
             with transaction.atomic():
-                errors = list(itertools.chain(*list(filter(bool, list(itertools.chain(*[[trytosavequestion(i) for i in zip(*p)[0]] for p in questionsbypage_obs]))))))
+                errors = list(itertools.chain(*list(filter(bool, list(itertools.chain(*[[trytosavequestion(i) for i in list(zip(*p))[0]] for p in questionsbypage_obs]))))))
                 if any(errors):
                     raise SignalBoxMultipleErrorsException(errors)
 
         except SignalBoxMultipleErrorsException as e:
-            [self.add_error(None, 
+            [self.add_error(None,
                 forms.ValidationError("Problem with: {}".format(i.get('q')), params=i)) for i in e.errors]
 
         # add scoresheets back in
         [[add_scoresheet_to_question(question, parseresult)
             for question, parseresult in zip(pageq, pagep)]
-            for pageq, pagep in zip(zip(*questionsbypage_obs)[0], questionsbypage)]
+            for pageq, pagep in zip(list(zip(*questionsbypage_obs))[0], questionsbypage)]
 
         asker.save()
-        
+
         # delete unused pages and questions which aren't in the created/updated sets
         def delete_question_if_unused(q, asker):
             try:
@@ -180,7 +180,7 @@ class TextEditForm(forms.Form):
                 # we don't delete question altogether, but do remove from pages
                 [p.question_set.remove(q) for p in justpages if q in p.question_set.all()]
                 pass
-        
+
         justquestions = [i for i, c, m in itertools.chain(*questionsbypage_obs)]
         justpages = [i for i, c, m in new_pages]
         [p.delete() for p in set(asker.askpage_set.all()) - set(justpages)]
@@ -207,6 +207,3 @@ def edit_asker_as_text(request, asker_id):
     return render_to_response(
         'admin/ask/text_asker_edit.html', {'form': form, 'asker': asker},
         context_instance=RequestContext(request))
-
-
-
