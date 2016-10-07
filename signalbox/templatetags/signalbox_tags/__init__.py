@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+from django.core.urlresolvers import reverse
 from signalbox.decorators import _is_in_group
 from signalbox.forms import FindParticipantForm
 from signalbox.models import Reply
@@ -43,12 +44,22 @@ register.assignment_tag(takes_context=True)(ad_hoc_scripts)
 
 
 def anonymous_asker_url(context, asker):
-    """Shows ad hoc scripts which this user is allowed to see."""
+    """Creates anonymous participation url"""
 
     request = context['request']
     return request.build_absolute_uri(asker.get_anonymous_url(request))
 
 register.assignment_tag(takes_context=True)(anonymous_asker_url)
+
+
+def anonymous_data_url(context, asker):
+    """Creates anonymous data download url"""
+    request = context['request']
+    return request.build_absolute_uri(
+        reverse('export_anonymous_asker_data', kwargs={'token': asker.anonymous_download_token}
+    ))
+
+register.assignment_tag(takes_context=True)(anonymous_data_url)
 
 
 @register.inclusion_tag('admin/signalbox/_fragments/_visible_replies.html', takes_context=True)

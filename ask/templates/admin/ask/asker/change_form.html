@@ -5,10 +5,7 @@
 {% endblock %}
 
 
-
-
 {% block content %}
-
 <ul class="nav nav-tabs" id="usertabs">
     <li class="active">
         <a href="#tabmain" data-toggle="tab">Main</a>
@@ -20,20 +17,26 @@
     <div class="pull-right">
     {% if object_id %}
 
-	    <a class='btn btn-mini' href='{% url 'print_asker' object_id %}'>Print</a>
-	    <a class='btn btn-mini' href='{% url 'show_codebook' object_id %}'>Codebook</a>
+	    <a class='btn btn-mini btn-default' href='{% url 'print_asker' object_id %}'>Print</a>
+	    <a class='btn btn-mini btn-default' href='{% url 'show_codebook' object_id %}'>Codebook</a>
 	    {% if user.is_superuser %}
-            <a class='btn btn-mini' href='{% url 'export_asker' object_id %}'>Export JSON</a>
+            <a class='btn btn-mini btn-default' href='{% url 'export_asker' object_id %}'>Export JSON</a>
         {% endif %}
-        
 
             {% anonymous_asker_url original as anonurl %}
-                <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-mini' >Copy anonymous URL</a>
-               <a class='btn btn-mini btn-primary' href='{{original.get_absolute_url}}'>Preview</a>
+            <a href="#" data-clipboard-text="{{anonurl}}" class='copy-button btn btn-mini btn-default' >Copy Anonymous URL</a>
 
-               {% if user.is_superuser and original %}
-                 <a class='btn btn-mini btn-success' href='{% url 'edit_asker_as_text' object_id %}'>Edit in text format</a>
-               {% endif %}
+
+            {% if original.allow_unauthenticated_download_of_anonymous_data %}
+                {% anonymous_data_url original as anondataurl %}
+                <a href="#" data-clipboard-text="{{anondataurl}}" class='copy-button btn btn-mini btn-default'>Copy Data URL</a>
+            {% endif %}
+
+            <a class='btn btn-mini btn-primary' href='{{original.get_absolute_url}}'>Preview</a>
+
+            {% if user.is_superuser and original %}
+             <a class='btn btn-mini btn-success' href='{% url 'edit_asker_as_text' object_id %}'>Edit in text format</a>
+            {% endif %}
 	{% endif %}
 
     {% if original %}
@@ -91,4 +94,3 @@
 </div>
 
 {% endblock %}
-

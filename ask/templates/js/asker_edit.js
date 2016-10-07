@@ -4,7 +4,7 @@ ZeroClipboard.setDefaults({
 ZeroClipboard.setDefaults({
     moviePath: '{{STATIC_URL}}js/ZeroClipboard.swf'
 });
-var clip = new ZeroClipboard($("#copy-button"));
+var clip = new ZeroClipboard($(".copy-button"));
 clip.on('complete', function(client, args) {
     $.notify({
         // options
@@ -12,6 +12,6 @@ clip.on('complete', function(client, args) {
     }, {
         // settings
         type: 'info',
-        delay: 5000
+        delay: 500
     });
 });

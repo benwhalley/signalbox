@@ -48,14 +48,21 @@
 <div class="row">
 
     <div class="col-md-12">
-    
+
     <a class='btn btn-default  btn-mini' href='{% url 'show_codebook' asker.id %}'>Codebook</a>
-    
+
     {% anonymous_asker_url asker as anonurl %}
-    <a id="copy-button" href="#" data-clipboard-text="{{anonurl}}" class='btn btn-default btn-mini'>Copy anonymous URL</a>
+    <a href="#" data-clipboard-text="{{anonurl}}" class='copy-button btn btn-mini btn-default' >Copy Anonymous URL</a>
+
+
+    {% if asker.allow_unauthenticated_download_of_anonymous_data %}
+        {% anonymous_data_url asker as anondataurl %}
+        <a href="#" data-clipboard-text="{{anondataurl}}" class='copy-button btn btn-mini btn-default'>Copy Data URL</a>
+    {% endif %}
+
 
     <a class='btn btn-mini btn-success' style="margin-left:.5em;" href='{% url "admin:ask_asker_change" asker.id %}'>Edit details  (&#8984;E)</a>
-    
+
 
     <a class='btn btn-mini btn-primary' href='{{asker.get_absolute_url}}'>Preview (&#8984;K)</a>
 
@@ -84,11 +91,11 @@
         });
     </script>
     {% endif %}
-    
+
 
     <script type="text/javascript">
-        
-        
+
+
         function getCaret(node) {
           if (node.selectionStart) {
             return node.selectionStart;
@@ -119,11 +126,11 @@
         $(document).ready(function() {
             var text = document.getElementById('id_text');
             var re = /#\w+/g;
-            
+
             function findClosest() {
                 // hide everthing to begin
                 $('.questionpreview').hide();
-                
+
                 // find which quesiton we are near using regex
                 matches = [];
                 while ((match = re.exec(text.value)) != null) {
@@ -135,17 +142,17 @@
                 // work out which one is just above the cursor
                 currpos = getCaret(text);
                 prevmatches = _.filter(smatches, function(o){return o.pos < currpos});
-                
+
                 // if we have a match, show it
                 if (prevmatches.length > 0){
                     theone = prevmatches.last();
                     $(theone.match[0]).show();
                 };
             }
-            
-            $('#id_text').bind("change click keydown focus cut paste drop keypress", 
+
+            $('#id_text').bind("change click keydown focus cut paste drop keypress",
                 _.debounce(findClosest, 100));
-            
+
             findClosest();
 
             Mousetrap.bind(['ctrl+return', 'command+return', 'ctrl+s', 'command+s'], function(e) {
@@ -162,9 +169,9 @@
 
             $('#showhidebutton').bind('click', function(){
                 $(".questionpreview").show();
-                
+
             });
-            
+
 
         });
 
@@ -209,23 +216,23 @@
                     <a href="#" id="showhidebutton" class="btn pull-right btn-default btn-mini">Show all</a>
                     <h4>Question details</h4>
                     <hr>
-                        
+
 
                     {% for i in asker.askpage_set.all %}
                         {% for j in i.get_questions %}
                             <div id="{{j.variable_name}}" class="well questionpreview">
                                 <code><a href="{% url "admin:ask_question_change" j.id %}">#{{j.variable_name}}</a>{% if user.is_superuser %}<code>({{j.id}})</code>{% endif %} {% if j.required %}*{% endif %}</code> {% if j.extra_attrs.if %}if {{j.extra_attrs.if}}{% endif %} <span class="pull-right"><code>({{j.q_type}})</code></span>
-                                
+
                                 <p>{{j.text|markdown}}</p>
                                 <div class="scores">{% if j.choiceset %}{{j.choiceset.choices_as_string}}{% endif %}{% if j.scoresheet %}{{j.scoresheet.as_markdown}}{% endif %}</div>
                             </div>
                         {% endfor %}
                     {% endfor %}
             </div>
-        
 
 
-    
+
+
 </div>
 </form>
 
