@@ -7,6 +7,7 @@ import functools
 import itertools
 import json
 import re
+from shortuuidfield import ShortUUIDField
 
 from ask.models import Choice
 from ask.yamlextras import yaml, MyDumper
@@ -34,6 +35,9 @@ class Asker(models.Model):
 
     def natural_key(self):
         return (self.slug, )
+
+    allow_unauthenticated_download_of_anonymous_data = models.BooleanField(default=False)
+    anonymous_download_token = ShortUUIDField(auto=True)
 
     name = models.CharField(max_length=255, null=True)
 

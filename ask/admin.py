@@ -113,6 +113,8 @@ class AskerAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     list_editable = ['name', ]
     inlines = [AskPageInline]
+    readonly_fields = ('anonymous_download_token', )
+
     def purge_preview_replies(self, request, queryset):
         """Purge preview replies for this asker."""
         previews = [i.reply_set.filter(entry_method="preview") for i in queryset]
@@ -128,6 +130,12 @@ class AskerAdmin(admin.ModelAdmin):
                 'name',
                 'slug',
                 )
+        }),
+        ("Data download", {
+            'fields': (
+                'allow_unauthenticated_download_of_anonymous_data',
+                'anonymous_download_token'
+            )
         }),
         ("Settings", {
             'fields': (

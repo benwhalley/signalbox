@@ -104,6 +104,8 @@ adminpatterns = [
     # exporting data
     url(r'^export/study/data/$',
         export_data, {}, "export_data"),
+    url(r'^export/anonymous/asker/data/(?P<token>\w+)$',
+        export_anonymous_asker_data, {}, "export_anonymous_asker_data"),
 
     url(r'^addobs/(?P<membership_id>\d+)/$',
         add_observations_for_membership, name="add_observations_for_membership"),
@@ -170,4 +172,3 @@ urlpatterns = urlpatterns +[
 if settings.USE_VERSIONING:
     # checking revisions
     urlpatterns += [url(r'^history/$', VersionView.as_view(), {}, "check_history"),]
-

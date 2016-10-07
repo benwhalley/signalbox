@@ -19,6 +19,7 @@ from signalbox.utilities.djangobits import conditional_decorator
 from django.conf import settings
 import reversion
 
+from ask.models.asker import Asker
 
 ANSWER_FIELDS_MAP = dict([
     ('id', 'id'),
@@ -48,6 +49,19 @@ ROW_FIELDS_MAP = dict([
     ('reply__observation__dyad__condition__tag', 'condition'),
     ('reply__observation__dyad__date_randomised', 'randomised_on'),
 ])
+
+import feather
+import io
+
+
+def export_anonymous_asker_data(request, token):
+    a = get_object_or_404(Asker, anonymous_download_token=token)
+    assert(a.allow_unauthenticated_download_of_anonymous_data==True)
+    answers =  Answer.objects.filter(reply__asker__in=[a])
+    df = pd.DataFrame.from_records(answers.values('question__variable_name', 'answer', 'reply__id', 'reply__started'))
+    feather.write_dataframe(df, token)
+    return HttpResponse(open(token, 'rb').read(), content_type='application/octet-stream')
+
 
 
 @group_required(['Researchers', ])
