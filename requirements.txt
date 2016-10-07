@@ -35,5 +35,5 @@ django-formtools==1.0
 django-mathfilters==0.3.0
 djangorestframework
 django-debug-toolbar
-feather-format==0.3.0
-Cython==0.24.1
+#feather-format==0.3.0
+#Cython==0.24.1
