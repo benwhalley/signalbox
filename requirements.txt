@@ -36,3 +36,4 @@ django-mathfilters==0.3.0
 djangorestframework
 django-debug-toolbar
 feather-format==0.3.0
+Cython==0.24.1
