@@ -1,4 +1,3 @@
-import feather
 import os
 from datetime import datetime
 from zipfile import ZipFile
@@ -58,8 +57,7 @@ def export_anonymous_asker_data(request, token):
     assert(a.allow_unauthenticated_download_of_anonymous_data==True)
     answers =  Answer.objects.filter(reply__asker__in=[a])
     df = pd.DataFrame.from_records(answers.values('question__variable_name', 'answer', 'reply__id', 'reply__started'))
-    feather.write_dataframe(df, token)
-    return HttpResponse(open(token, 'rb').read(), content_type='application/octet-stream')
+    return HttpResponse(df.to_csv(), content_type='application/octet-stream')
 
 
 
