@@ -35,3 +35,4 @@ django-formtools==1.0
 django-mathfilters==0.3.0
 djangorestframework
 django-debug-toolbar
+feather-format==0.3.0
