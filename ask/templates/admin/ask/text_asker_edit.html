@@ -1,5 +1,4 @@
 {% extends "admin/change_form.html" %}
-{% load compress %}
 {% load signalbox_tags %}
 {% load markup %}
 {% load humanize %}
@@ -74,8 +73,6 @@
 </div>
 
 
-
-{% compress js %}
     {% if asker.reply_count %}
     <script type="text/javascript">
         $.notify({
@@ -177,8 +174,6 @@
 
         {% include "js/asker_edit.js" %}
     </script>
-{% endcompress %}
-
 
 
   <div class="row">

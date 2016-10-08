@@ -5,7 +5,6 @@ from tempfile import NamedTemporaryFile
 from django.core.exceptions import ValidationError
 import pandas as pd
 from django.contrib import messages
-from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -13,7 +12,7 @@ from django.template.loader import get_template
 from django.template import Context, Template
 from signalbox.decorators import group_required
 from signalbox.models import Answer, Study, Reply, Question, Membership
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from signalbox.forms import SelectExportDataForm, get_answers, DateShiftForm
 from signalbox.utilities.djangobits import conditional_decorator
 from django.conf import settings
@@ -65,8 +64,7 @@ def export_anonymous_asker_data(request, token):
 def export_data(request):
     form = SelectExportDataForm(request.POST or None)
     if not form.is_valid():
-        return render_to_response('manage/export_data.html', {'form': form},
-                              context_instance=RequestContext(request))
+        return render(request, 'manage/export_data.html', {'form': form})
 
     studies = form.cleaned_data['studies']
     questionnaires = form.cleaned_data['questionnaires']
@@ -180,5 +178,5 @@ def dateshift_membership(request, pk=None):
 
         return HttpResponseRedirect(reverse('admin:signalbox_membership_change', args=(membership.pk,)))
 
-    return render_to_response('admin/signalbox/dateshift.html',
-                              {'form': form, 'membership': membership}, context_instance=RequestContext(request))
+    return render(request, 'admin/signalbox/dateshift.html',
+                              {'form': form, 'membership': membership})

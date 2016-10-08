@@ -8,7 +8,6 @@ from django.core.mail import send_mail
 
 from django_fsm.db.fields import FSMField, transition
 
-from signalbox.phone_field import international_string
 from twiliobox.models import TwilioNumber
 
 MESSAGE_TYPES = [(i, i) for i in ["Email", "SMS"]]
@@ -72,7 +71,7 @@ class UserMessage(models.Model):
 
         number = TwilioNumber.objects.get(is_default_account=True)
         client = number.client()
-        to_number = international_string(self.message_to.userprofile.mobile)
+        to_number = self.message_to.userprofile.mobile
         from_number = number.phone_number
         sms = client.sms.messages.create(
             to=to_number, from_=from_number, body=self.message)

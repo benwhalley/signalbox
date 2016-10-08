@@ -1,5 +1,4 @@
-from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from twiliobox.exceptions import TwilioBoxException
 from twiliobox.question_methods import reply_to_twilio, say_or_play_phrase
 from django.http import HttpResponse

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
-from django.template import RequestContext, Context, Template
-from django.shortcuts import render_to_response, get_object_or_404
+from django.template import Context, Template
+from django.shortcuts import render, get_object_or_404
 from django import forms
 from signalbox.models import Observation, Reply, Answer, StudySite
 from signalbox.decorators import group_required
@@ -41,5 +41,5 @@ def observations_outstanding(request):
             obs_due = obs_due.exclude(status=1)
 
     pagedict = {'observation_list': obs_due, 'form': form, }
-    return render_to_response('admin/signalbox/assessor/observations_due.html',
-                              pagedict, context_instance=RequestContext(request))
+    return render('admin/signalbox/assessor/observations_due.html',
+                              pagedict)

@@ -20,7 +20,7 @@ from signalbox.lookups import UserLookup
 from signalbox.models import Membership, Reply, Study, UserProfile, UserMessage, ContactRecord, Answer
 from signalbox.models.validators import date_in_past
 from signalbox.models.validators import is_mobile_number, is_number_from_study_area, could_be_number
-from signalbox.phone_field import PhoneNumberFormField, as_phone_number
+
 from signalbox.utilities.djangobits import supergetattr
 
 from django.contrib.auth import get_user_model

@@ -10,6 +10,7 @@ import json
 import os
 from pprint import pprint
 import re
+from django.shortcuts import render
 
 from ask import validators as vals
 from ask.models import Asker, ChoiceSet, Question, AskPage, Choice, ShowIf
@@ -23,7 +24,7 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.forms.utils import ErrorList
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.template import RequestContext
 from django.views.decorators.cache import never_cache
 import floppyforms as forms
@@ -204,6 +205,5 @@ def edit_asker_as_text(request, asker_id):
         form.save()
         return HttpResponseRedirect(reverse('edit_asker_as_text', args=(asker.id,)))
 
-    return render_to_response(
-        'admin/ask/text_asker_edit.html', {'form': form, 'asker': asker},
-        context_instance=RequestContext(request))
+    return render(request, 'admin/ask/text_asker_edit.html',
+        {'form': form, 'asker': asker})

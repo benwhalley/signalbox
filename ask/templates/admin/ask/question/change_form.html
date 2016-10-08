@@ -1,8 +1,4 @@
 {% extends "admin/change_form.html" %}
-{% load compress %}
-
-
-
 
 {% block sidebar %}
     <div class="span3">
@@ -35,7 +31,7 @@
 </div>
 {% endif %}
 
-{% compress js %}
+
 <script type="text/javascript">
 (function() {
   var _this = this;
@@ -54,7 +50,5 @@
 
 }).call(this);
 </script>
-{% endcompress %}
 
 </div>
-{% endblock %}

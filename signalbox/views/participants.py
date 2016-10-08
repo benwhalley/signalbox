@@ -3,9 +3,8 @@
 
 from django.contrib import messages
 import django.http as http
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
 
@@ -40,8 +39,8 @@ def show_followups_outstanding(request):
     # yuck, we query for each user separately, but this isn't a public view
     everyone = [i for i in User.objects.all() if awaiting_followup(i)]
 
-    return render_to_response('manage/followups_outstanding.html',
-                              {'users': everyone, }, RequestContext(request))
+    return render(request, 'manage/followups_outstanding.html',
+                              {'users': everyone, })
 
 
 @group_required(['Researchers', 'Clinicians', 'Assessors', 'Research Assistants', ])
@@ -50,8 +49,7 @@ def find_participant(request):
     if request.POST and form.is_valid():
         user = form.cleaned_data['participant']
         return HttpResponseRedirect(reverse('participant_overview', args=(str(user.id),)))
-    return render_to_response('manage/find_participant.html',
-                              {'form': form, }, RequestContext(request))
+    return render(request, 'manage/find_participant.html', {'form': form, })
 
 
 @group_required(['Researchers', 'Clinicians', 'Research Assistants', 'Assessors'])
@@ -71,11 +69,10 @@ def participant_overview(request, pk):
         messages.success(request, "Contact note saved")
         return HttpResponseRedirect(reverse('participant_overview', args=(user.id, ))+"#tabcontactlog")
 
-    return render_to_response('manage/participant_overview.html', {
+    return render(request, 'manage/participant_overview.html', {
         'participant': participant,
         'contactrecordform': contactrecordform,
-        'messageform': messageform
-    }, RequestContext(request))
+        'messageform': messageform })
 
 
 @group_required(['Researchers', 'Clinicians', 'Research Assistants' ])
@@ -98,5 +95,5 @@ def edit_participant(request, pk):
         messages.success(request, "Details for %s saved." % user.username)
         return http.HttpResponseRedirect(reverse('participant_overview', args=(user.id, )))
 
-    return render_to_response('manage/edit_participant.html',
-          {'form': pform, 'title': title, 'user': user}, RequestContext(request))
+    return render(request, 'manage/edit_participant.html',
+          {'form': pform, 'title': title, 'user': user})

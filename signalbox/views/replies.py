@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import *
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext, Context, Template, loader
 from signalbox.decorators import group_required
 from signalbox.models import Script, Membership, Observation, Reply, ScoreSheet

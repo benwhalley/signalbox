@@ -10,6 +10,7 @@ from dateutil.rrule import *
 from .dateutil_constants import *
 from django.contrib.humanize.templatetags.humanize import ordinal
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
 from django.template import Context, Template
 from .naturaltimes import parse_natural_date
@@ -302,9 +303,10 @@ will not result in an error, but won't produce any output either. """))
         but with HOURLY, it means once every two hours.""",
                                           verbose_name="repeat interval")
 
-    repeat_byhours = models.CommaSeparatedIntegerField(blank=True, null=True,
+    repeat_byhours = models.CharField(
+        validators=[validate_comma_separated_integer_list, v.valid_hours_list],
+        blank=True, null=True,
        max_length=20,
-       validators=[v.valid_hours_list],
        help_text="""A number or list of integers, indicating the hours of the
        day at which observations are made. For example, '13,19' would make
        observations happen at 1pm and 7pm.""",
@@ -313,10 +315,10 @@ will not result in an error, but won't produce any output either. """))
     def repeat_byhours_list(self):
         return [int(i) for i in csv_to_list(self.repeat_byhours) if int(i) < 24]
 
-    repeat_byminutes = models.CommaSeparatedIntegerField(blank=True, null=True,
+    repeat_byminutes = models.CharField(
+        validators=[validate_comma_separated_integer_list, v.in_minute_range],
+        blank=True, null=True,
         max_length=20,
-        validators=[
-        v.in_minute_range],
         help_text="""A list of numbers indicating at what minutes past the
         hour the observations should be created. E.g. 0,30 will create
         observations on the hour and half hour""",
@@ -333,22 +335,24 @@ will not result in an error, but won't produce any output either. """))
     def repeat_bydays_list(self):
         return [WEEKDAY_MAP[i.strip()[0:2]] for i in csv_to_list(self.repeat_bydays)]
 
-    repeat_bymonths = models.CommaSeparatedIntegerField(blank=True,
-                                                        null=True, max_length=20,
-                                                        help_text="""A comma separated list of months as numbers (1-12),
+    repeat_bymonths = models.CharField(validators=[validate_comma_separated_integer_list],
+        blank=True, null=True, max_length=20,
+        help_text="""A comma separated list of months as numbers (1-12),
         indicating the months in which obervations can be made. E.g. '1,6' would
         mean observations are only made in Jan and June.""",
-                                                        verbose_name="repeat in these months")
+        verbose_name="repeat in these months")
 
     def repeat_bymonths_list(self):
         return [int(i) for i in csv_to_list(self.repeat_bymonths)]
 
-    repeat_bymonthdays = models.CommaSeparatedIntegerField(blank=True,
-                                                           null=True, max_length=20,
-                                                           help_text="""An integer or comma separated list of integers; represents
+    repeat_bymonthdays = models.CharField(
+        validators=[validate_comma_separated_integer_list],
+        blank=True,
+       null=True, max_length=20,
+       help_text="""An integer or comma separated list of integers; represents
         days within a  month on observations are created. For example, '1, 24'
         would create observations on the first and 24th of each month.""",
-                                                           verbose_name="on these days in the month")
+       verbose_name="on these days in the month")
 
     def repeat_bymonthdays_list(self):
         return [int(i) for i in csv_to_list(self.repeat_bymonthdays)]
@@ -423,7 +427,7 @@ will not result in an error, but won't produce any output either. """))
     def datetimes_with_natural_syntax(self):
         datesyntax = self.natural_date_syntax or "ADVANCED"
         return [{'datetime': i, 'syntax': j} for i, j, k in
-                it.izip_longest(self.datetimes(), datesyntax.split("\n"), "")]
+                it.zip_longest(self.datetimes(), datesyntax.split("\n"), "")]
 
     def preview_of_datetimes(self):
         code = lambda x: "<code>" + str(x) + "</code>"

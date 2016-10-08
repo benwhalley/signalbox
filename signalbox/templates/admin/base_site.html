@@ -1,20 +1,16 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
 {% load admin_static bootstrapped_goodies_tags %}
-{% load compress %}
 
 
 {% block extrahead %}
-	{% compress css %}
 		<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.ui.css" type="text/css">
-		<link href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
-		<link href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+		<link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
+		<link href="{{ STATIC_URL }}css/bootstrap-responsive.min.css" rel="stylesheet">
 		<link type="text/css" href="{{ STATIC_URL }}css/signalbox.css" rel="stylesheet">
 		<link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
-	{% endcompress %}
 
 
-	{% compress js %}
 		<script type="text/javascript" src="{{STATIC_URL}}js/bootstrap-notify.min.js"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}js/ZeroClipboard.min.js"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}js/underscore-min.js"></script>
@@ -33,7 +29,6 @@
 		    });
 		}(jQuery));
 		</script>
-	{% endcompress %}
 
 
 {% endblock %}

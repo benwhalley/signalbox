@@ -7,8 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
 from registration.backends.simple.views import RegistrationView
 from registration.backends.simple.views import RegistrationView
@@ -83,9 +82,8 @@ def update_profile_for_studies(request, study_pk):
         execute_the_todo_list(user=request.user)
         return HttpResponseRedirect(reverse('user_homepage'))
 
-    return render_to_response('signalbox/additional_info.html',
-                              {'form': form},
-                              context_instance=RequestContext(request))
+    return render(request, 'signalbox/additional_info.html',
+                              {'form': form})
 
 
 def join_study(request, pk):
@@ -117,9 +115,8 @@ def user_homepage(request):
     else:
         execute_the_todo_list(user=request.user)
 
-    return render_to_response('signalbox/user_home.html',
-                              {'hideprofilebutton': True},
-                              context_instance=RequestContext(request))
+    return render(request, 'signalbox/user_home.html',
+                              {'hideprofilebutton': False })
 
 
 class MembershipDetail(DetailView):

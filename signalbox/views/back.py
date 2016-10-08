@@ -12,9 +12,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseRedirect, HttpResponse, \
     HttpResponseForbidden, Http404
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, UpdateView
 from django.views.generic.edit import FormView
 
@@ -174,8 +173,8 @@ def add_participant(request, study_id=None, user_id=None):
         form.save()
         return HttpResponseRedirect(reverse('participant_overview',
                                             args=(form.cleaned_data['user'].id,)))
-    return render_to_response('admin/signalbox/add_participant.html',
-                              {'form': form}, RequestContext(request, {}))
+    return render(request, 'admin/signalbox/add_participant.html',
+                              {'form': form})
 
 
 @group_required(['Researchers'])
@@ -281,15 +280,14 @@ def preview_timings(request, klass="Study", pk=None):
     datelist = [x for x in datelist if bool(x[0]['datetime'])]
     datelist = sorted(list(datelist), key=operator.itemgetter(0))
     extra = {'dl': datelist, 'object': obj, 'object_type': obj.__class__.__name__}
-    return render_to_response('admin/signalbox/rule_preview.html', extra, RequestContext(request))
+    return render(request, 'admin/signalbox/rule_preview.html', extra)
 
 
 @group_required(['Researchers', 'Research Assistants'])
 def show_todo(request):
     todo_list = observations_due_in_window()
-    return render_to_response('admin/signalbox/todo_list.html',
-                              {'item_list': todo_list, 'results': []},
-                              context_instance=RequestContext(request))
+    return render(request, 'admin/signalbox/todo_list.html',
+                              {'item_list': todo_list, 'results': []})
 
 
 @group_required(['Researchers', ])
@@ -328,25 +326,22 @@ def resolve_double_entry_conflicts(request, study_id=None, observation_id=None):
             [i for i in studies if i[2]], key=lambda a: a[1], reverse=True)
 
         pagevars = {'studies': studies}
-        return render_to_response(
-            'admin/signalbox/answer/list_studies_with_duplicates.html', pagevars,
-            context_instance=RequestContext(request))
+        return render(request,
+            'admin/signalbox/answer/list_studies_with_duplicates.html', pagevars)
 
     pagevars = {}
     if study_id:
         pagevars['study'] = get_object_or_404(Study, id=study_id)
         pagevars['with_dupes'] = pagevars[
             'study'].observations_with_duplicate_replies()
-        return render_to_response(
-            'admin/signalbox/answer/list_duplicates.html', pagevars,
-            context_instance=RequestContext(request))
+        return render(request,
+            'admin/signalbox/answer/list_duplicates.html', pagevars)
 
     if observation_id:
         pagevars['observation'] = get_object_or_404(Observation,
                                                     id=observation_id)
-        return render_to_response(
-            'admin/signalbox/answer/resolve_duplicates.html', pagevars,
-            context_instance=RequestContext(request))
+        return render(request,
+            'admin/signalbox/answer/resolve_duplicates.html', pagevars)
 
     pagevars = {'with_dupes': with_dupes}
 

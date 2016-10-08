@@ -4,7 +4,7 @@ from django.contrib.humanize.templatetags.humanize import naturalday
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.conf import settings
-from signalbox.phone_field import PhoneNumber
+from phonenumbers import PhoneNumber
 from django.utils.safestring import mark_safe
 from .naturaltimes import parse_natural_date
 

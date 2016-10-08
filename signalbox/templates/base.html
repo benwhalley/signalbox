@@ -1,4 +1,3 @@
-{% load compress %}
 {% load signalbox_tags %}
 {% load sekizai_tags %}
 {% load markup %}
@@ -7,19 +6,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    
+
     <title>{% block title %}Signalbox: Online Research{% endblock title %}</title>
-    
-    {% compress css %}
+
         <link href="{{STATIC_URL}}css/bootstrap.min.css" rel="stylesheet" media="screen,print">
         <link rel="stylesheet" href="{{STATIC_URL}}css/jquery.ui.css" type="text/css" media="screen">
         <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
         <link rel="stylesheet" href="{{STATIC_URL}}css/signalbox.css" type="text/css" media="screen,print">
-    {% endcompress %}
+
     <link rel="stylesheet" href="{{STATIC_URL}}css/custom.css" type="text/css" media="screen,print">
 
     {% render_block "css" %}
-    
+
     <script type="text/javascript" src="{{STATIC_URL}}js/jquery.min.js"></script>
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -93,10 +91,8 @@
         {% endblock %}
     </div>
     {% endblock %}
-    {% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
 
-
-    {% compress js %}
+    {% addtoblock "js" %}
     <script type="text/javascript">
     (function() {
       $(document).ready(function() {
@@ -111,6 +107,8 @@
 
     }).call(this);
     </script>
+    {% endaddtoblock %}
+
     <script>
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
           (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -120,8 +118,6 @@
           ga('create', '{{GOOGLE_TRACKING_ID}}', 'auto');
           ga('send', 'pageview');
     </script>
-
-      {% endcompress %}
 
 
     </body>
@@ -137,3 +133,5 @@
   <script type="text/javascript" src="{{STATIC_URL}}audiojs/audio.min.js"></script>
 {% endaddtoblock %}
 
+
+{% render_block "js" %}

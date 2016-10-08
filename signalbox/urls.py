@@ -2,7 +2,7 @@
 from django.contrib.auth.views import password_change
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.contrib.auth.views import logout
 from django.http import HttpResponseForbidden
 from django.views.generic import DetailView, ListView, RedirectView

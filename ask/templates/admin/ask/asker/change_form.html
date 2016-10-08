@@ -1,5 +1,4 @@
 {% extends "admin/change_form.html" %}
-{% load compress %}
 {% load signalbox_tags %}
 {% block object-tools-items %}
 {% endblock %}
@@ -40,14 +39,12 @@
 	{% endif %}
 
     {% if original %}
-    {% compress js %}
         <script type="text/javascript">
             Mousetrap.bind(['ctrl+e', 'command+e'], function(e) {
                 location = "{% url 'edit_asker_as_text' object_id %}";
             });
             {% include "js/asker_edit.js" %}
         </script>
-    {% endcompress %}
     {% endif %}
 </div>
 </ul>

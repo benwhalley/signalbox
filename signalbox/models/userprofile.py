@@ -3,17 +3,19 @@
 
 from datetime import datetime
 import itertools
+import phonenumbers
 
 from django.conf import settings
 from django.db import models
 from django.core.urlresolvers import reverse
 from shortuuidfield import ShortUUIDField
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 from .validators import is_number_from_study_area, is_mobile_number, is_landline
 from .study import StudySite, Study
 from .reply import Reply
 from .observation import Observation
-from signalbox import phone_field
 
 
 class UserProfile(models.Model):
@@ -32,16 +34,18 @@ class UserProfile(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
 
-    landline = phone_field.PhoneNumberField(blank=True, null=True,
+    landline = PhoneNumberField(blank=True, null=True,
         validators=[is_number_from_study_area, is_landline])
 
-    mobile = phone_field.PhoneNumberField(blank=True, null=True,
+    mobile = PhoneNumberField(blank=True, null=True,
         verbose_name="Mobile telephone number",
         validators=[is_number_from_study_area],
         help_text='mobile phone number, with international prefix')
 
     def formatted_mobile(self):
-        return phone_field.international_string(self.mobile)
+        if self.mobile:
+            return phonenumbers.format_number(self.mobile, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+
 
     prefer_mobile = models.BooleanField(default=True,
         help_text="""Make calls to mobile telephone number where possible. Unticking this

@@ -1,5 +1,4 @@
 {% extends "django_admin_bootstrapped/admin/base.html" %}
-{% load compress %}
 {% load admin_static bootstrapped_goodies_tags %}
 
 
@@ -8,19 +7,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 {% block extrastyle %}{% endblock %}
 
-{% compress css %}
+
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.ui.css" type="text/css">
 <link href="{{ STATIC_URL }}bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link href="{{ STATIC_URL }}bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
 <link type="text/css" href="{{ STATIC_URL }}css/signalbox.css" rel="stylesheet">
 <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui-timepicker-addon.css" type="text/css" media="screen">
-{% endcompress %}
 
 
-
-
-
-{% compress js %}
 <script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
 
 <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ui.js"></script>
@@ -42,7 +36,6 @@
 }(jQuery));
 </script>
 
-{% endcompress %}
 
 <script type="text/javascript" src="{{ STATIC_URL }}selectable/js/jquery.dj.selectable.js"></script>
 

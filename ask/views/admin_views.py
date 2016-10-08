@@ -3,8 +3,7 @@ import json
 from datetime import datetime
 from django.utils import encoding as en
 from django.http import HttpResponseRedirect, Http404, HttpResponse
-from django.template import RequestContext
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django import forms
@@ -24,8 +23,8 @@ def show_codebook(request, asker_id=None):
     '''Displays a Stata-style codebook for all of a survey's variables'''
 
     askers = [get_object_or_404(Asker, id=int(asker_id))]
-    return render_to_response('admin/ask/codebook.html',
-        {'askers': askers}, context_instance=RequestContext(request))
+    return render(request, 'admin/ask/codebook.html',
+        {'askers': askers})
 
 @login_required
 def preview_asker(request, asker_id=None, page_num=None):

@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from django.contrib import messages
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -60,9 +59,8 @@ def preview_questions(request, ids):
     form = page_preview(page, request)
     form.is_valid()
 
-    return render_to_response(
-        'admin/ask/question_preview.html', {'form': form, },
-        context_instance=RequestContext(request))
+    return render(request,
+        'admin/ask/question_preview.html', {'form': form, })
 
 
 def show_page(request, reply_token, preview=False):
@@ -140,14 +138,14 @@ def show_page(request, reply_token, preview=False):
         if page.next_page() and page.next_page().is_last():
             showredbutton = True
 
-    return render_to_response('asker_page.html',
+    return render(request, 'asker_page.html',
         {
             'form': form,
             'page': page,
             'redbutton': showredbutton,
             'hidemenu': page.asker.hide_menu,
             'reply': reply
-        }, context_instance=RequestContext(request))
+        })
 
 
 def print_asker(request, asker_id):
@@ -157,7 +155,5 @@ def print_asker(request, asker_id):
     listofforms = [PageForm(request.POST or None, request=request, page=p, reply=None)
                    for p in asker.askpage_set.all()]
 
-    return render_to_response('asker_print.html',
-                              {'forms': [(i, i.questions)
-                                         for i in listofforms], 'asker': asker, },
-                              context_instance=RequestContext(request))
+    return render(request, 'asker_print.html',
+        {'forms': [(i, i.questions) for i in listofforms], 'asker': asker, })

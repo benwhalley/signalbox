@@ -110,12 +110,12 @@ class ObservationManager(models.Manager):
     """A manager to ensure user roles are respected when querying observations."""
 
     def personalised(self, user, due_now=False):
-        
+
         if not user.is_authenticated():
             raise DataProtectionException("User not authenticated.")
 
         allobs = super(ObservationManager, self).get_queryset().order_by('-due')
-        
+
         if not user.is_staff:
             # only show your own
             return allobs.filter(dyad__user__pk=user.id)
@@ -270,12 +270,13 @@ class Observation(models.Model):
     def display_time_remaining(self):
 
         days, hours = self.days_hours_remaining()
+        if not(days or hours):
+            return ""
         if days > 0:
             return "{} days {} hours remaining".format(days, hours)
         elif hours:
             return "{} hours remaining".format(hours)
-        else:
-            return ""
+        
 
     def has_required_details(self):
         return self.dyad.user.userprofile.has_all_required_details()

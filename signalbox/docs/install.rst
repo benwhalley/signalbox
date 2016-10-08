@@ -160,7 +160,6 @@ Each of these is loaded from an environment variable by signalbox.configurable_s
 	DEBUG
 
 	AWS_STORAGE_BUCKET_NAME
-	COMPRESS_ENABLED
 	AWS_QUERYSTRING_AUTH
 
 	SECRET_KEY
@@ -189,4 +188,3 @@ Each of these is loaded from an environment variable by signalbox.configurable_s
 
 
 .. _Twilio: http://twilio.com
-

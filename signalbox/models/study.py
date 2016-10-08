@@ -10,6 +10,7 @@ from contracts import contract
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
+from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
 from django.db.models import Count
 from django.apps import apps
@@ -177,7 +178,9 @@ class Study(models.Model):
         separated by a space.""".format(", ".join(settings.USER_PROFILE_FIELDS)),
         validators=[only_includes_allowed_fields])
 
-    valid_telephone_country_codes = models.CommaSeparatedIntegerField(max_length=32, default="44",
+    valid_telephone_country_codes = models.CharField(
+        validators=[validate_comma_separated_integer_list],
+        max_length=32, default="44",
         help_text="""Valid national dialing codes for participants in this study.""")
 
     def profile_fields_dict(self):
@@ -285,8 +288,8 @@ class StudyCondition(models.Model):
     weight = models.IntegerField(default=1,
                                  help_text="""Relative weights to allocate users to conditions""")
     scripts = models.ManyToManyField('signalbox.Script', blank=True)
-    metadata = YAMLField(blank=True, null=True, 
-        help_text="""YAML meta data available describing this condition. Can be used on Questionnaires, 
+    metadata = YAMLField(blank=True, null=True,
+        help_text="""YAML meta data available describing this condition. Can be used on Questionnaires,
         e.g. to conditionally display questions.""")
 
     def expected_n(self):
