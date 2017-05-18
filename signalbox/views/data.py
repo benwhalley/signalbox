@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime
 from zipfile import ZipFile
@@ -51,13 +52,26 @@ ROW_FIELDS_MAP = dict([
 
 
 
-def export_anonymous_asker_data(request, token):
+def get_parts_(token):
     a = get_object_or_404(Asker, anonymous_download_token=token)
     assert(a.allow_unauthenticated_download_of_anonymous_data==True)
     answers =  Answer.objects.filter(reply__asker__in=[a])
     df = pd.DataFrame.from_records(answers.values('question__variable_name', 'answer', 'reply__id', 'reply__started'))
-    return HttpResponse(df.to_csv(), content_type='text/plain')
 
+    questions = [i.question for i in answers]
+    meta_json = json.dumps([i.dict_for_dataframe() for i in questions if i],
+        indent=True)
+
+    df = [i.dict_for_dataframe() for i in answers]
+
+    return {'data': json.dumps(df, indent=2), 'metadata': meta_json }
+
+
+def export_anonymous_asker_data(request, part, token):
+    return HttpResponse(
+        get_parts_(token)[part],
+        content_type='text/javascript'
+    )
 
 
 @group_required(['Researchers', ])

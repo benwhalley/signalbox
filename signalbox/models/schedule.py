@@ -427,7 +427,7 @@ will not result in an error, but won't produce any output either. """))
     def datetimes_with_natural_syntax(self):
         datesyntax = self.natural_date_syntax or "ADVANCED"
         return [{'datetime': i, 'syntax': j} for i, j, k in
-                it.zip_longest(self.datetimes(), datesyntax.split("\n"), "")]
+                list(it.izip_longest(self.datetimes(), datesyntax.split("\n"), ""))]
 
     def preview_of_datetimes(self):
         code = lambda x: "<code>" + str(x) + "</code>"

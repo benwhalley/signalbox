@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import OrderedDict
 import json
 from pyparsing import *
 from ask.models.fields import FIELD_NAMES
@@ -103,6 +104,22 @@ class Question(models.Model):
     def index(self):
         return self.page.asker.questions().index(self)
 
+    def dict_for_dataframe(self):
+        out = {
+            "variable_name": self.variable_name,
+            "text": self.text
+        }
+
+        if self.choiceset:
+            dl = list(map(dict, [v for k, v in self.choiceset.yaml.items()]))
+            out.update({
+                "labels" : [i['label'] for i in dl],
+                "scores" : [i['score'] for i in dl]
+            })
+
+        return out
+
+
     def dict_for_yaml(self):
         d = {
             "text": self.text,
@@ -157,7 +174,7 @@ class Question(models.Model):
 
     help_text = models.TextField(blank=True, null=True)
     javascript = models.TextField(blank=True, null=True)
-    
+
 
     @contract
     def show_as_image_data_url(self):
@@ -244,6 +261,7 @@ class Question(models.Model):
         """Returns the function to render instructions for external telephony API."""
 
         return self.field_class().voice_function
+
 
     def choices_as_json(self):
         """Question -> String"""
@@ -442,6 +460,9 @@ class ChoiceSet(models.Model):
         sd = {k: {a: b for a, b in list(v.items()) if b is not None} for k, v in list(sd.items())}
         return {self.name: sd}
 
+    def to_dict(self):
+        return self.yaml
+
     @contract
     def default_value(self):
         """
@@ -454,7 +475,7 @@ class ChoiceSet(models.Model):
 
     def values_as_json(self):
         choices = dict([(str(i.score), str(i.label)) for i in self.get_choices()])
-        return json.dumps(choices, indent=4, sort_keys=True)
+        return json.dumps(values(self), indent=4, sort_keys=True)
 
     @contract
     def choice_tuples(self):

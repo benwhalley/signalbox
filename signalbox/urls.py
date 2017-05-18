@@ -105,7 +105,9 @@ adminpatterns = [
     url(r'^export/study/data/$',
         export_data, {}, "export_data"),
     url(r'^export/anonymous/asker/data/(?P<token>\w+)$',
-        export_anonymous_asker_data, {}, "export_anonymous_asker_data"),
+        export_anonymous_asker_data, {'part':'data'}, "export_anonymous_asker_data"),
+    url(r'^export/anonymous/asker/metadata/(?P<token>\w+)$',
+        export_anonymous_asker_data, {'part':'metadata'}, "export_anonymous_asker_data"),
 
     url(r'^addobs/(?P<membership_id>\d+)/$',
         add_observations_for_membership, name="add_observations_for_membership"),

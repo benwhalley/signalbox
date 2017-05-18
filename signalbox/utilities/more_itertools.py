@@ -1,10 +1,7 @@
 # this is more_itertools...
 
 from functools import partial, wraps
-try:
-    from itertools import zip_longest
-except ImportError:
-    from itertools import izip_longest as zip_longest
+from itertools import izip_longest
 
 
 
@@ -31,8 +28,8 @@ def chunked(iterable, n):
 
     """
     # Doesn't seem to run into any number-of-args limits.
-    for group in (list(g) for g in zip_longest(*[iter(iterable)] * n,
-                                                fillvalue=_marker)):
+    for group in (list(g) for g in list(zip_longest(*[iter(iterable)] * n,
+                                                    fillvalue=_marker))):
         if group[-1] is _marker:
             # If this is the last group, shuck off the padding:
             del group[group.index(_marker):]

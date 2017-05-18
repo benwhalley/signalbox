@@ -29,6 +29,12 @@ class Answer(models.Model):
     def __contains__(self, x):
         return x in getattr(self, 'answer')
 
+    def dict_for_dataframe(self):
+        d = self.question and self.question.dict_for_dataframe() or {}
+        d.update({'reply': self.reply.id})
+        d.update({'answer': self.answer})
+        return d
+
     question = models.ForeignKey('ask.Question', blank=True, null=True,
         on_delete=models.PROTECT,
         help_text='The question this answer refers to')
