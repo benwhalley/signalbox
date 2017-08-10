@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Hello World!
-tagline: Supporting tagline
+title: Running online studies with SignalBox
+tagline: 
 ---
 {% include JB/setup %}
 
