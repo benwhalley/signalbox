@@ -16,21 +16,19 @@ It takes about 15 minutes to deploy a copy of Signalbox on Heroku, using their p
 
 As part of the setup you will:
 
-- Set an administrator password and email address
 - Register with Heroku and provide a credit card to validate your account (the default setup remains free, however)
+- Set an administrator username, password and email address
 
 
-Optionally, can call also
+Optionally, can also
 
-- If you wish to use SMS messages and/or automated telephone calls, register with [Twilio.com](https://www.twilio.com) and [get an api access key and password](https://www.twilio.com/help/faq/twilio-basics/what-is-the-auth-token-and-how-can-it-be-reset)
-- If you would like to display images on your study pages, you should register for Amazon's AWS service and [get an access key](http://aws.amazon.com/iam/).[^You can read an [introduction to Amazon S3 here](http://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html).]
-
-
+- To use SMS messages and/or automated telephone calls, register with [Twilio.com](https://www.twilio.com) and [get an api access key and password](https://www.twilio.com/help/faq/twilio-basics/what-is-the-auth-token-and-how-can-it-be-reset)
+- To display images on your study pages, register for Amazon's AWS service and [get an access key](http://aws.amazon.com/iam/).[^You can read an [introduction to Amazon S3 here](http://docs.aws.amazon.com/AmazonS3/latest/dev/Introduction.html).]
 
 During the setup, Heroku will
 
 - Create your own copy of the code
-- Setup a [managed postgres database](https://www.heroku.com/postgres) and [configure daily backups](https://devcenter.heroku.com/articles/pgbackups)
+- Setup a [managed postgres database](https://www.heroku.com/postgres)
 - Create a new administrative user and set the password you select
 - Start a single [web process (dyno)](https://devcenter.heroku.com/articles/how-heroku-works) running your site
 
@@ -38,8 +36,6 @@ During the setup, Heroku will
 Get started now:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/puterleat/signalbox-example-project/tree/master)
-
-
 
 
 ### Final setup tasks
