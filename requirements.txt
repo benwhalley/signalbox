@@ -21,7 +21,7 @@ envoy==0.0.3
 parsedatetime==1.1.2
 phonenumbers==7.2.2
 PyContracts==1.7.8
-pyparsing==2.0.6
+pyparsing==2.2.0
 python-dateutil==2.5.3
 python-magic>=0.4.3
 PyYAML>=3.10
