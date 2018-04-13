@@ -7,7 +7,7 @@ install_reqs = list(filter(bool,[str(ir.req) for ir in reqs]))
 
 setup(
     name='signalbox',
-    version='0.3.7',
+    version='2.3.8',
     author='Ben Whalley',
     author_email='benwhalley@gmail.com',
     packages=find_packages(),
