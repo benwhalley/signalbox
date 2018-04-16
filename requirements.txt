@@ -1,8 +1,7 @@
 Markdown==2.3.1
 Pillow==2.3.1
 South==0.8.2
--e git+git://github.com/hellpanderrr/django-admin-bootstrapped-1.9-compatible.git@master#egg=django_admin_bootstrapped
-
+django-admin-bootstrapped==2.5.7
 django-admin-tools==0.7.0
 django-apptemplates>=0.0.1
 django-bootstrap-pagination==1.5.1
