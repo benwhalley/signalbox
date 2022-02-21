@@ -48,7 +48,7 @@ class Test_Allocation(TestCase):
     def test_allocation(self):
         """Simulate studies and check we have sane allocation ratios at N=30."""
 
-    def test_allocation(self):
+    def test_allocation_two(self):
         study = Study.objects.get(slug='test-allocation-study')
         study.auto_randomise = False
         # note - we just test this, because it uses weighted_ranomisation too
